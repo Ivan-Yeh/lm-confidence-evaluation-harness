@@ -1,0 +1,12 @@
+qa_model:
+  host: hf_ar # hf_ar: hf autoregressive models, hf_dllm: hf diffusion language models
+  name: default_model
+  temperature: 0.0
+  max_tokens: 1024
+
+grader_model:
+  host: hf_ar # hf_ar: hf autoregressive models, hf_dllm: hf diffusion language models
+  name: default_grader_model
+  temperature: 0.0
+  max_tokens: 1024
+

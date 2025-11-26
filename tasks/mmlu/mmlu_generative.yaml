@@ -1,0 +1,21 @@
+defaults:
+  - _self_
+  - _defaults.yaml  # inherit shared defaults first
+
+dataset_path: cais/mmlu
+prompt: "Q: {{question.strip()}}\n(A) {{choices[0]}} (B) {{choices[1]}} (C) {{choices[2]}} (D) {{choices[3]}}\nA:"
+system_prompt: ""
+subset: "all"
+split: test
+fewshot_split: dev
+fewshot_examples: 0
+limit: 3
+
+generation_type: generation # generate, conditional_likelihood
+processing_output: utils.process_output
+estimate_confidence: utils.vnc
+grade_response: utils.grading
+metrics:
+  - metrics.accuracy
+  - metrics.ece
+  - metrics.auroc
