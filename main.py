@@ -3,8 +3,11 @@ import sys
 from hydra import compose, initialize_config_dir
 from omegaconf import OmegaConf
 import os
+import importlib
 
-from preprocessing.datasets_manager import DatasetsManager
+from default_utils.datasets_manager import DatasetsManager
+from default_utils.utils import import_yaml_lib
+from models.model_manager import ModelManager
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Run tasks with Hydra config')
@@ -30,6 +33,7 @@ def parse_args():
         sys.exit(1)
     return dataset_name, task_name, other_overrides
 
+
 def get_task_yaml():
     dataset_name, task_name, overrides = parse_args()
     
@@ -43,23 +47,38 @@ def get_task_yaml():
             config_name=f"{task_name}",
             overrides=overrides
         )
-        return cfg
+        return dataset_name, task_name, cfg
+
 
 if __name__ == "__main__":
     # obtain config
-    cfg = get_task_yaml()
+    dataset_name, task_name, cfg = get_task_yaml()
+
     
     # prepare dataset
-    print(DatasetsManager(cfg).load_dataset())
+    dataset_manager = DatasetsManager(cfg)
     
     # format prompts
-    
+    prompts = import_yaml_lib(cfg, "prompt_formatter")(cfg, dataset_manager)
+    print(prompts)
+
+
     # generate outputs
+    # TODO: let model manager handle model and generation types (generative, likelihood) 
+    model_manager = ModelManager(cfg)
+
 
     # process output
+    # output_processing_func = import_yaml_lib(cfg, "output_processor")
+
 
     # estimate confidence
+    # confidence_estimation_func = import_yaml_lib(cfg, "confidence_metrics")
 
     # grade response
+    # grader_func = import_yaml_lib(cfg, "grade_response")
+
 
     # calculate metrics
+    # for metric in cfg.metrics:
+    #     metric_func = import_yaml_lib(cfg, metric)

@@ -1,0 +1,31 @@
+from dataclasses import dataclass
+import pandas as pd
+from .datasets_manager import DatasetsManager
+from jinja2 import Template
+from .custom_types import PromptCollection
+
+
+def get_multiple_choice_prompts(cfg: dict, dataset_manager: DatasetsManager) -> PromptCollection:
+    template: Template = Template(cfg.get("question_format", ""))
+    prompts = []
+    
+    few_shot = dataset_manager.fewshot_examples if dataset_manager.fewshot_examples else 0
+    
+    # Iterate through the dataset
+    continuation_texts = dict()
+    for _, row in dataset_manager.get_dataset().iterrows():
+        # Build few-shot examples if requested
+        few_shot_text = ""
+        if few_shot > 0:
+            few_shot_examples = dataset_manager.get_few_shot_dataset().sample(n=few_shot)
+            for _, example in few_shot_examples.iterrows():
+                few_shot_text += template.render(**example.to_dict())
+                few_shot_text += f"Answer: {chr(65 + example['answer_index'])}\n\n"
+                
+        base_prompt = few_shot_text + template.render(**row.to_dict()) + "Answer: "
+        continuations = []
+        for i in range(len(row['choices'])):
+            continuations.append(chr(65 + i))  # Append choice letters A, B, C, ...
+        prompts.append(base_prompt)
+        continuation_texts[base_prompt] = continuations
+    return PromptCollection(system_prompt=cfg.get("system_prompt", ""), context_texts=prompts, continuation_texts=continuation_texts)
