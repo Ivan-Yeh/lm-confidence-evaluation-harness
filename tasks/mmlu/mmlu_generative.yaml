@@ -7,8 +7,8 @@ dataset_name: mmlu # must match the folder name under tasks/
 dataset_path: cais/mmlu
 subset: "all"
 split: test
-fewshot_split: dev
-fewshot_examples: 0
+few_shot_split: dev
+few_shot_examples: 0
 limit: 1
 
 # multiple choice: "question: str", "choices : list", and "answer_index: int"

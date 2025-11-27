@@ -9,7 +9,7 @@ def get_multiple_choice_prompts(cfg: dict, dataset_manager: DatasetsManager) -> 
     template: Template = Template(cfg.get("question_format", ""))
     prompts = []
     
-    few_shot = dataset_manager.fewshot_examples if dataset_manager.fewshot_examples else 0
+    few_shot = dataset_manager.few_shot_examples if dataset_manager.few_shot_examples else 0
     
     # Iterate through the dataset
     continuation_texts = dict()

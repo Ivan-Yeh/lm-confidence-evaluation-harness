@@ -14,8 +14,8 @@ grader_model:
 dataset_path: cais/mmlu
 subset: "all"
 split: test
-fewshot_split: dev
-fewshot_examples: null
+few_shot_split: dev
+few_shot_examples: null
 limit: null
 
 # the placeholder variables must match the dataset column names, formatted using Jinja2 templating
