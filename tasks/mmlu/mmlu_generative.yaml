@@ -17,7 +17,7 @@ dataset_preprocessor: task_utils.preprocess_dataset
 
 # placeholder variables must match the dataset column names, formatted using Jinja2
 question_format: "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\n\n"   # question formatting template
-prompt: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"  # full prompt formatting template: requires {few_shot_examples} and {formatted_question}
+prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"  # full prompt formatting template: requires {few_shot_examples} and {formatted_question}
 system_prompt: "You are a helpful assistant that answers multiple choice questions."
 
 # The following are sequential function calls
