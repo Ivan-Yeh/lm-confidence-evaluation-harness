@@ -9,18 +9,20 @@ subset: "all"
 split: test
 few_shot_split: dev
 few_shot_examples: 0
-limit: 1
+limit: 100
+
 
 # multiple choice: "question: str", "choices : list", and "answer_index: int"
 dataset_preprocessor: task_utils.preprocess_dataset
 
 # placeholder variables must match the dataset column names, formatted using Jinja2
-question_format: "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\n\n"
+question_format: "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\n\n"   # question formatting template
+prompt: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"  # full prompt formatting template: requires {few_shot_examples} and {formatted_question}
 system_prompt: "You are a helpful assistant that answers multiple choice questions."
 
 # The following are sequential function calls
 prompt_formatter: default_utils.prompt_manager.get_multiple_choice_prompts
-generation_type: generation # generation or continuation
+generation_type: generation
 output_processor: task_utils.process_output
 confidence_metrics: confidence_metrics.log_likelihood.lnll
 grade_response: default_utils.grader.exact_match
@@ -31,13 +33,21 @@ metrics:
 
 
 qa_model:
-  host: hf_ar # hf_ar: hf autoregressive models, hf_dllm: hf diffusion language models
-  name: default_model
-  temperature: 0.0
-  max_tokens: 1024
+  type: hf_ar # hf_ar: hf autoregressive models, hf_dlm: hf diffusion language models
+  name: openai/gpt-oss-20b
+  repeat: 2
+  sampling_params:
+    temperature: 1
+    max_tokens: 1024
+    logprobs: 1
+  chat_template_kwargs:
+    reasoning_effort: low
+
 
 grader_model:
-  host: hf_ar # hf_ar: hf autoregressive models, hf_dllm: hf diffusion language models
-  name: default_grader_model
-  temperature: 0.0
-  max_tokens: 1024
+  type: hf_ar # hf_ar: hf autoregressive models, hf_dllm: hf diffusion language models
+  name: openai/gpt-oss-20b
+  repeat: 1
+  generation_parameters:
+    temperature: 0.0
+    max_tokens: 1024

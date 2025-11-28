@@ -1,5 +1,6 @@
 from datasets import load_dataset
 from .utils import import_yaml_lib
+import pandas as pd
 
 
 class DatasetsManager:
@@ -16,7 +17,7 @@ class DatasetsManager:
         self.preprocess_fn = import_yaml_lib(config, "dataset_preprocessor") if config.get("dataset_preprocessor") else lambda x: x
 
 
-    def get_dataset(self):
+    def get_dataset(self) -> pd.DataFrame:
         match self.dataset_path:
             case _:
                 ds = load_dataset(self.dataset_path, self.subset)[self.split] if self.subset else load_dataset(self.dataset_path)[self.split]
@@ -25,7 +26,7 @@ class DatasetsManager:
         return self.preprocess_fn(ds.to_pandas())
     
 
-    def get_few_shot_dataset(self):
+    def get_few_shot_dataset(self) -> pd.DataFrame:
         match self.dataset_path:
             case _:
                 ds = load_dataset(self.dataset_path, self.subset)[self.few_shot_split] if self.subset else load_dataset(self.dataset_path)[self.few_shot_split]

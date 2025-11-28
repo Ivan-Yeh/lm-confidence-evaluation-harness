@@ -1,15 +1,15 @@
 import argparse
 import sys
 from hydra import compose, initialize_config_dir
-from omegaconf import OmegaConf
 import os
-import importlib
 
 from default_utils.datasets_manager import DatasetsManager
 from default_utils.utils import import_yaml_lib
 from models.model_manager import ModelManager
+from default_utils.custom_types import ModelOutputs, PromptCollection
 
-def parse_args():
+
+def parse_args() -> tuple[str, str, list[str]]:
     parser = argparse.ArgumentParser(description='Run tasks with Hydra config')
     parser.add_argument('args', nargs='*', help='Config overrides in key=value format')
     # Parse arguments
@@ -34,7 +34,7 @@ def parse_args():
     return dataset_name, task_name, other_overrides
 
 
-def get_task_yaml():
+def get_task_yaml() -> tuple[str, str, dict]:
     dataset_name, task_name, overrides = parse_args()
     
     # Get absolute path to config directory
@@ -56,24 +56,31 @@ if __name__ == "__main__":
 
     
     # prepare dataset
-    dataset_manager = DatasetsManager(cfg)
-    
+    dataset_manager: DatasetsManager = DatasetsManager(cfg)
+
+
     # format prompts
-    prompts = import_yaml_lib(cfg, "prompt_formatter")(cfg, dataset_manager)
-    print(prompts)
+    prompts: PromptCollection = import_yaml_lib(cfg, "prompt_formatter")(cfg, dataset_manager)
 
 
-    # generate outputs
-    # TODO: let model manager handle model and generation types (generative, likelihood) 
-    model_manager = ModelManager(cfg)
+    # generate qa outputs
+    model_manager: ModelManager = ModelManager(master_cfg=cfg, model_config_type="qa_model")
+    if cfg.get("generation_type", "generation") == "generation":
+        outputs: ModelOutputs = model_manager.run_generation(prompts)
+    elif cfg.get("generation_type") == "continuation":
+        outputs: ModelOutputs = model_manager.run_continuation(prompts)
+    else:
+        raise ValueError(f"Unknown generation type: {cfg.generation_type}")
 
 
-    # process output
+    # # process output
     # output_processing_func = import_yaml_lib(cfg, "output_processor")
+    # processed_outputs = output_processing_func(outputs)
 
 
     # estimate confidence
     # confidence_estimation_func = import_yaml_lib(cfg, "confidence_metrics")
+
 
     # grade response
     # grader_func = import_yaml_lib(cfg, "grade_response")
