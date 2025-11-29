@@ -9,7 +9,7 @@ subset: "all"
 split: test
 few_shot_split: dev
 few_shot_examples: 0
-limit: 100
+limit: 3
 
 
 # multiple choice: "question: str", "choices : list", and "answer_index: int"
@@ -22,7 +22,7 @@ system_prompt: "You are a helpful assistant that answers multiple choice questio
 
 # The following are sequential function calls
 prompt_formatter: default_utils.prompt_manager.get_multiple_choice_prompts
-generation_type: generation
+generation_type: continuation
 output_processor: task_utils.process_output
 confidence_metrics: confidence_metrics.log_likelihood.lnll
 grade_response: default_utils.grader.exact_match
@@ -33,9 +33,9 @@ metrics:
 
 
 qa_model:
-  type: hf_ar # hf_ar: hf autoregressive models, hf_dlm: hf diffusion language models
+  type: dream # hf_ar: hf autoregressive models, hf_dlm: hf diffusion language models
   name: openai/gpt-oss-20b
-  repeat: 2
+  repeat: 1
   sampling_params:
     temperature: 1
     max_tokens: 1024

@@ -15,6 +15,12 @@ class ModelManager:
                 self.model = DreamDLM(self.model_cfg)
             case "llada":
                 self.model = LlaDADLM(self.model_cfg)
+            case "openai_batch":
+                raise NotImplementedError("Not implemented yet")
+            case "claude_batch":
+                raise NotImplementedError("Not implemented yet")
+            case "together_ai_batch":
+                raise NotImplementedError("Not implemented yet")
             case None:
                 raise ValueError(f"Model type not specified in config for {model_config_type}")
             case _:
