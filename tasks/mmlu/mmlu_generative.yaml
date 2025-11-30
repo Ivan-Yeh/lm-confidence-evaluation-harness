@@ -9,7 +9,7 @@ subset: "all"
 split: test
 few_shot_split: dev
 few_shot_examples: 0
-limit: 3
+limit: 30
 
 
 # multiple choice: "question: str", "choices : list", and "answer_index: int"
@@ -33,7 +33,7 @@ metrics:
 
 
 qa_model:
-  type: dream # hf_ar: hf autoregressive models, hf_dlm: hf diffusion language models
+  backend: hf_ar 
   name: openai/gpt-oss-20b
   repeat: 1
   sampling_params:
@@ -45,7 +45,7 @@ qa_model:
 
 
 grader_model:
-  type: hf_ar # hf_ar: hf autoregressive models, hf_dllm: hf diffusion language models
+  backend: hf_ar 
   name: openai/gpt-oss-20b
   repeat: 1
   generation_parameters:

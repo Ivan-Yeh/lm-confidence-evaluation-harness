@@ -72,7 +72,7 @@ if __name__ == "__main__":
     else:
         raise ValueError(f"Unknown generation type: {cfg.generation_type}")
 
-
+    print(outputs)
     # # process output
     # output_processing_func = import_yaml_lib(cfg, "output_processor")
     # processed_outputs = output_processing_func(outputs)

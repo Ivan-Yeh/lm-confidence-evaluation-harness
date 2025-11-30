@@ -1,7 +1,6 @@
-from dataclasses import dataclass
 import pandas as pd
-from .datasets_manager import DatasetsManager
 from jinja2 import Template
+from .datasets_manager import DatasetsManager
 from .custom_types import PromptCollection
 
 

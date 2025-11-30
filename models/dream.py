@@ -1,6 +1,5 @@
-from tqdm import tqdm
 from default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
-from vllm import LLM, SamplingParams
+from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModel
 import torch
 import torch.nn.functional as F
@@ -11,17 +10,12 @@ class DreamDLM(AbstractModel):
         self.cfg = cfg
         self.model_name = cfg.get("name", None)
         self.repeat = cfg.get("repeat", 1)
-        # Dream models require custom tokenizer/model code from the repo
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            self.model_name,
-            trust_remote_code=True,
-        )
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         
     
     def run_generation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
         pass
         
-    
     def run_continuation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
 
         hf_model = AutoModel.from_pretrained(
