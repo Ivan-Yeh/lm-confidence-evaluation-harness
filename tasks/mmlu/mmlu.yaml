@@ -23,13 +23,14 @@ system_prompt: "You are a helpful assistant that answers multiple choice questio
 # The following are sequential function calls
 prompt_formatter: default_utils.prompt_manager.get_multiple_choice_prompts
 generation_type: continuation
-output_processor: task_utils.process_output
-confidence_metrics: confidence_metrics.log_likelihood.lnll
+# confidence_metrics: confidence_metrics.self_eval.p_true_by_continuation
+confidence_metrics: confidence_metrics.token_probs.length_normalised_log_likelihood
+post_processor: null
 grade_response: default_utils.grader.exact_match
-metrics:
-  - metrics.accuracy
-  - metrics.ece
-  - metrics.auroc
+metrics: # refer to metrics/__init__.py for available metrics or define your own
+  - accuracy_scalar_with_na
+  - ece_scalar
+  - auroc_scalar
 
 
 qa_model:
@@ -37,7 +38,7 @@ qa_model:
   name: openai/gpt-oss-20b
   repeat: 1
   sampling_params:
-    temperature: 1
+    temperature: 0.7
     max_tokens: 512
     logprobs: 1
   chat_template_kwargs:
@@ -45,6 +46,15 @@ qa_model:
 
 
 grader_model:
+  backend: hf_ar 
+  name: openai/gpt-oss-20b
+  repeat: 1
+  generation_parameters:
+    temperature: 0.0
+    max_tokens: 1024
+
+
+decisiveness_model:
   backend: hf_ar 
   name: openai/gpt-oss-20b
   repeat: 1

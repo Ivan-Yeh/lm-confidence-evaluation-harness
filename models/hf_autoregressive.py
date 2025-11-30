@@ -84,7 +84,7 @@ class HFAutoregressiveLLM(AbstractModel):
         hf_model = AutoModelForCausalLM.from_pretrained(
             self.model_name,
             torch_dtype=torch.bfloat16,
-            device_map="auto",
+            device_map={"": 0},
             trust_remote_code=True,
         )
         hf_model.eval()
@@ -100,53 +100,52 @@ class HFAutoregressiveLLM(AbstractModel):
                 continuations = prompt_collection.continuation_texts[context]
                 candidates = []
 
+                # tokenize context once
+                ctx_ids = self.tokenizer(context, add_special_tokens=False).input_ids
+                len_ctx = len(ctx_ids)
+
                 for continuation in continuations:
+
                     # prepare full prompt
                     full_prompt = context + " " + continuation
-
-                    # tokenize (keep as Python ints)
-                    ctx_ids = self.tokenizer(context, add_special_tokens=False).input_ids
                     full_ids = self.tokenizer(full_prompt, add_special_tokens=False).input_ids
-                    cont_ids = full_ids[len(ctx_ids):]
+                    cont_ids = full_ids[len_ctx:]   # continuation ids only
 
-                    # convert to tensor on CPU
-                    input_ids = torch.tensor([full_ids], dtype=torch.long)  # CPU tensor
+                    # tensor (CPU → GPU inside forward)
+                    input_ids = torch.tensor([full_ids], dtype=torch.long)
 
-                    # forward pass on GPU
+                    # forward pass
                     with torch.inference_mode():
                         outputs = hf_model(input_ids.to(hf_model.device))
-                        logits = outputs.logits  # [1, seq, vocab]
+                        logits = outputs.logits
 
-                    # compute logprobs and extract continuation logprobs
+                    # logprobs over vocab
                     logprobs = F.log_softmax(logits, dim=-1)
-                    cont_tokens, cont_logps = [], []
-                    offset = len(ctx_ids)
 
+                    # compute continuation logprobs
+                    cont_logps = []
                     for i, token_id in enumerate(cont_ids):
-                        tok_str = self.tokenizer.decode([token_id])
-                        logp = logprobs[0, offset + i - 1, token_id].item()  # move to CPU float
-                        cont_tokens.append(tok_str)
-                        cont_logps.append(logp)
+                        # continuation token position = context_length + i
+                        pos = len_ctx + i - 1
+                        lp = logprobs[0, pos, token_id].item()
+                        cont_logps.append(lp)
 
+                    tokens_decoded = self.tokenizer.decode(cont_ids)
                     logprob_sum = sum(cont_logps)
 
                     candidates.append({
                         'text': continuation,
-                        'tokens': cont_tokens,
+                        'tokens': tokens_decoded,
                         'logprobs': cont_logps,
-                        'sum': logprob_sum
+                        'sum': logprob_sum,
                     })
 
-                    # free GPU memory
-                    del input_ids, logits, logprobs
-                    torch.cuda.empty_cache()
+                # choose best
+                best = max(candidates, key=lambda x: x['sum'])
 
-                # select best candidate
-                best_candidate = max(candidates, key=lambda x: x['sum'])
-
-                all_output_texts.append(best_candidate['text'])
-                all_output_tokens.append(best_candidate['tokens'])
-                all_output_logprobs.append(best_candidate['logprobs'])
+                all_output_texts.append(best['text'])
+                all_output_tokens.append(best['tokens'])
+                all_output_logprobs.append(best['logprobs'])
 
             model_outputs_list.append(
                 ModelOutputs(

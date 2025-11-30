@@ -1,20 +1,32 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 
 @dataclass
 class PromptCollection:
+    questions: list[str] = field(default_factory=list)  # a list of questions
+    answer_keys: list[str] = field(default_factory=list)  # a list of answer keys
     system_prompt: str = ""  # optional system prompt
-    context_texts: list[str] = None # a list of strings
-    continuation_texts : dict[str, list[str]] = None # context (str) and continuations (list of strings) mapping
+    context_texts: list[str] = field(default_factory=list) # a list of strings
+    continuation_texts : dict[str, list[str]] = field(default_factory=dict) # context (str) and continuations (list of strings) mapping
 
 
 @dataclass
 class ModelOutputs:
-    context_texts: list[str] = None # a list of strings
-    output_texts: list[str] = None # a list of strings
-    output_tokens: list[list[str]] = None # a list of strings
-    output_logprobs: list[list[float]] = None # a list of floats
-    token_logprobs: list[dict[str, float]] = None # a list token-logprob mappings
+    context_texts: list[str] = field(default_factory=list) # a list of strings
+    output_texts: list[str] = field(default_factory=list) # a list of strings
+    output_tokens: list[list[str]] = field(default_factory=list) # a list of strings
+    output_logprobs: list[list[float]] = field(default_factory=list) # a list of floats
+    token_logprobs: list[dict[str, float]] = field(default_factory=list) # a list token-logprob mappings
+
+
+@dataclass
+class OrganisedOutputs:
+    """
+    Each sublist corresponds to a sampling round
+    """
+    extracted_answers: list[list[str]] = field(default_factory=list) 
+    extracted_confidences: list[list[float]] = field(default_factory=list)
+    accuracy_scores: list[list[float]] = field(default_factory=list)
 
 
 class AbstractModel(ABC):

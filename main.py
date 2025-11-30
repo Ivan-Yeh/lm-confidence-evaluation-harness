@@ -6,8 +6,8 @@ import os
 from default_utils.datasets_manager import DatasetsManager
 from default_utils.utils import import_yaml_lib
 from models.model_manager import ModelManager
-from default_utils.custom_types import ModelOutputs, PromptCollection
-
+from default_utils.custom_types import OrganisedOutputs, ModelOutputs, PromptCollection
+from metrics import METRICS_FUNCTIONS
 
 def parse_args() -> tuple[str, str, list[str]]:
     parser = argparse.ArgumentParser(description='Run tasks with Hydra config')
@@ -54,39 +54,36 @@ if __name__ == "__main__":
     # obtain config
     dataset_name, task_name, cfg = get_task_yaml()
 
-    
     # prepare dataset
     dataset_manager: DatasetsManager = DatasetsManager(cfg)
-
 
     # format prompts
     prompts: PromptCollection = import_yaml_lib(cfg, "prompt_formatter")(cfg, dataset_manager)
 
-
     # generate qa outputs
     model_manager: ModelManager = ModelManager(master_cfg=cfg, model_config_type="qa_model")
     if cfg.get("generation_type", "generation") == "generation":
-        outputs: ModelOutputs = model_manager.run_generation(prompts)
+        outputs: list[ModelOutputs] = model_manager.run_generation(prompts)
     elif cfg.get("generation_type") == "continuation":
-        outputs: ModelOutputs = model_manager.run_continuation(prompts)
+        outputs: list[ModelOutputs] = model_manager.run_continuation(prompts)
     else:
         raise ValueError(f"Unknown generation type: {cfg.generation_type}")
-
-    print(outputs)
-    # process output
-    output_processing_func = import_yaml_lib(cfg, "output_processor")
-    outputs = output_processing_func(outputs)
-
-
+    
     # extract confidence
     confidence_extraction_func: callable = import_yaml_lib(cfg, "confidence_metrics")
-    confidence_scores: list = confidence_extraction_func(cfg, outputs)
+    extracted_output: OrganisedOutputs = confidence_extraction_func(cfg, outputs, prompts) # a list of lists of confidence scores, each sublist corresponds to a sampling round
+
+    # post process extracted responses and confidences
+    if cfg.get("post_processor") is not None:
+        post_processor: callable = import_yaml_lib(cfg, "post_processor")
+        extracted_output: OrganisedOutputs = post_processor(cfg, outputs, extracted_output, prompts)
 
     # grade response
-    # grader_func: callable = import_yaml_lib(cfg, "grade_response")
-    # grades: list = grader_func(outputs, dataset_manager)
-
+    grader_func: callable = import_yaml_lib(cfg, "grade_response")
+    extracted_output.accuracy_scores = grader_func(cfg, extracted_output, prompts) # a list of lists of accuracy scores, each sublist corresponds to a sampling round
 
     # calculate metrics
-    # for metric in cfg.metrics:
-    #     metric_func = import_yaml_lib(cfg, metric)
+    for metric in cfg.get("metrics", []):
+        metric_func = METRICS_FUNCTIONS[metric]
+        metric_value = metric_func(cfg, extracted_output)
+        print(f"{metric}: {metric_value}")
