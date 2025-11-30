@@ -38,7 +38,7 @@ qa_model:
   repeat: 1
   sampling_params:
     temperature: 1
-    max_tokens: 1024
+    max_tokens: 512
     logprobs: 1
   chat_template_kwargs:
     reasoning_effort: low

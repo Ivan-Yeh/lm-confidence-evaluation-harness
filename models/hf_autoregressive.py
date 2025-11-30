@@ -150,6 +150,7 @@ class HFAutoregressiveLLM(AbstractModel):
 
             model_outputs_list.append(
                 ModelOutputs(
+                    context_texts=prompt_collection.context_texts,
                     output_texts=all_output_texts,
                     output_tokens=all_output_tokens,
                     output_logprobs=all_output_logprobs,

@@ -10,6 +10,7 @@ class PromptCollection:
 
 @dataclass
 class ModelOutputs:
+    context_texts: list[str] = None # a list of strings
     output_texts: list[str] = None # a list of strings
     output_tokens: list[list[str]] = None # a list of strings
     output_logprobs: list[list[float]] = None # a list of floats

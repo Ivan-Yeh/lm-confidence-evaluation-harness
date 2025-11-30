@@ -73,17 +73,18 @@ if __name__ == "__main__":
         raise ValueError(f"Unknown generation type: {cfg.generation_type}")
 
     print(outputs)
-    # # process output
-    # output_processing_func = import_yaml_lib(cfg, "output_processor")
-    # processed_outputs = output_processing_func(outputs)
+    # process output
+    output_processing_func = import_yaml_lib(cfg, "output_processor")
+    outputs = output_processing_func(outputs)
 
 
-    # estimate confidence
-    # confidence_estimation_func = import_yaml_lib(cfg, "confidence_metrics")
-
+    # extract confidence
+    confidence_extraction_func: callable = import_yaml_lib(cfg, "confidence_metrics")
+    confidence_scores: list = confidence_extraction_func(cfg, outputs)
 
     # grade response
-    # grader_func = import_yaml_lib(cfg, "grade_response")
+    # grader_func: callable = import_yaml_lib(cfg, "grade_response")
+    # grades: list = grader_func(outputs, dataset_manager)
 
 
     # calculate metrics

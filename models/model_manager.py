@@ -27,9 +27,9 @@ class ModelManager:
                 raise ValueError(f"Unknown model type: {self.model_cfg.type}")
 
 
-    def run_generation(self, prompt_collection: PromptCollection) -> ModelOutputs:
+    def run_generation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
         return self.model.run_generation(prompt_collection)
     
 
-    def run_continuation(self, prompt_collection: PromptCollection) -> ModelOutputs:
+    def run_continuation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
         return self.model.run_continuation(prompt_collection)

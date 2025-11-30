@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=0 python main.py dataset=mmlu task=mmlu_vnc qa_model.name=openai/gpt-oss-20b qa_model.backend=hf_ar
