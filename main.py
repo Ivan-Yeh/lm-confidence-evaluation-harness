@@ -1,13 +1,45 @@
 import argparse
+import importlib
+import pkgutil
 import sys
 from hydra import compose, initialize_config_dir
 import os
 
 from default_utils.datasets_manager import DatasetsManager
-from default_utils.utils import import_yaml_lib
 from models.model_manager import ModelManager
+from default_utils.utils import import_yaml_lib
 from default_utils.custom_types import OrganisedOutputs, ModelOutputs, PromptCollection
-from metrics import METRICS_FUNCTIONS
+from default_utils.registry import METRICS_FUNCTIONS, GRADER_FUNCTIONS, CONFIDENCE_FUNCTIONS, PROMPT_FORMATTER
+
+def _auto_import_modules(): 
+    import default_utils
+    for package_path in default_utils.__path__:
+        for module_info in pkgutil.iter_modules([package_path]):
+            module_name = module_info.name
+            if module_name.startswith("_"):
+                continue
+            try:
+                importlib.import_module(f"{default_utils.__name__}.{module_name}")
+            except ImportError:
+                pass
+    import confidence_metrics
+    for package_path in confidence_metrics.__path__:
+        for module_info in pkgutil.iter_modules([package_path]):
+            module_name = module_info.name
+            if module_name.startswith("_"):
+                continue
+            try:
+                importlib.import_module(f"{confidence_metrics.__name__}.{module_name}")
+            except ImportError:
+                pass
+    import post_processing
+    for package_path in post_processing.__path__:
+        for module_info in pkgutil.iter_modules([package_path]):
+            module_name = module_info.name
+            if module_name.startswith("_"):
+                continue
+            importlib.import_module(f"{post_processing.__name__}.{module_name}")
+_auto_import_modules()
 
 def parse_args() -> tuple[str, str, list[str]]:
     parser = argparse.ArgumentParser(description='Run tasks with Hydra config')
@@ -58,7 +90,9 @@ if __name__ == "__main__":
     dataset_manager: DatasetsManager = DatasetsManager(cfg)
 
     # format prompts
-    prompts: PromptCollection = import_yaml_lib(cfg, "prompt_formatter")(cfg, dataset_manager)
+    prompts: PromptCollection = PROMPT_FORMATTER.get(cfg.get("prompt_formatter", "multiple_choice"))(cfg, dataset_manager)
+    if prompts is None:
+        prompts = import_yaml_lib(cfg, "prompt_formatter")(cfg, dataset_manager)
 
     # generate qa outputs
     model_manager: ModelManager = ModelManager(master_cfg=cfg, model_config_type="qa_model")
@@ -70,8 +104,10 @@ if __name__ == "__main__":
         raise ValueError(f"Unknown generation type: {cfg.generation_type}")
     
     # extract confidence
-    confidence_extraction_func: callable = import_yaml_lib(cfg, "confidence_metrics")
-    extracted_output: OrganisedOutputs = confidence_extraction_func(cfg, outputs, prompts) # a list of lists of confidence scores, each sublist corresponds to a sampling round
+    confidence_extraction_func: callable = CONFIDENCE_FUNCTIONS.get(cfg.get("confidence_metrics", "length_normalised_log_likelihood"))
+    if confidence_extraction_func is None:
+        confidence_extraction_func = import_yaml_lib(cfg, "confidence_metrics")
+    extracted_output: OrganisedOutputs = confidence_extraction_func(cfg, outputs, prompts)
 
     # post process extracted responses and confidences
     if cfg.get("post_processor") is not None:
@@ -79,11 +115,13 @@ if __name__ == "__main__":
         extracted_output: OrganisedOutputs = post_processor(cfg, outputs, extracted_output, prompts)
 
     # grade response
-    grader_func: callable = import_yaml_lib(cfg, "grade_response")
-    extracted_output.accuracy_scores = grader_func(cfg, extracted_output, prompts) # a list of lists of accuracy scores, each sublist corresponds to a sampling round
+    grader_func: callable = GRADER_FUNCTIONS.get(cfg.get("grader", "exact_match"))
+    if grader_func is None:
+        grader_func = import_yaml_lib(cfg, "grader")
+    extracted_output.accuracy_scores = grader_func(cfg, extracted_output, prompts)
 
     # calculate metrics
-    for metric in cfg.get("metrics", []):
+    for metric in cfg.get("performance_metrics", []):
         metric_func = METRICS_FUNCTIONS[metric]
         metric_value = metric_func(cfg, extracted_output)
         print(f"{metric}: {metric_value}")

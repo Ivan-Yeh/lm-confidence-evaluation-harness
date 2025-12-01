@@ -2,9 +2,11 @@ import pandas as pd
 from jinja2 import Template
 from .datasets_manager import DatasetsManager
 from .custom_types import PromptCollection
+from .registry import register_prompt_formatter
 
 
-def get_multiple_choice_prompts(cfg: dict, dataset_manager: DatasetsManager) -> PromptCollection:
+@register_prompt_formatter(name="multiple_choice")
+def multiple_choice(cfg: dict, dataset_manager: DatasetsManager) -> PromptCollection:
     question_template: Template = Template(cfg.get("question_format", "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\n\n"))
     prompt_template: Template = Template(cfg.get("prompt_format", "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"))
     prompts = []

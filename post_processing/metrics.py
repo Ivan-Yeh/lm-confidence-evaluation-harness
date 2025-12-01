@@ -1,21 +1,14 @@
 from default_utils.custom_types import OrganisedOutputs
+from default_utils.registry import register_metric
 import numpy as np
 from sklearn.metrics import roc_auc_score
-
-
-METRICS_FUNCTIONS = {}
-def register_metric(name: str):
-    def decorator(func):
-        func._metric_name = name
-        METRICS_FUNCTIONS[name] = func
-        return func
-    return decorator
 
 
 @register_metric(name="accuracy_scalar_with_na")
 def accuracy_scalar_with_na(cfg: dict, extracted_output: OrganisedOutputs) -> float:
     accuracies = extracted_output.accuracy_scores[0]
     return float(np.nansum(accuracies) / len(accuracies))
+
 
 @register_metric(name="accuracy_scalar_without_na")
 def accuracy_scalar_without_na(cfg: dict, extracted_output: OrganisedOutputs) -> float:

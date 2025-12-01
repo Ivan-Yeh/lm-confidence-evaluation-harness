@@ -1,5 +1,8 @@
 from default_utils.custom_types import OrganisedOutputs, PromptCollection, ModelOutputs
+from default_utils.registry import register_grader
 
+
+@register_grader(name="exact_match")
 def exact_match(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCollection):
     exact_matches = []
     answer_keys = prompts.answer_keys
@@ -10,5 +13,7 @@ def exact_match(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCo
         exact_matches.append(round_matches)
     return exact_matches
 
-def aux_llm_grader(prediction, reference):
+
+@register_grader(name="llm_grader")
+def llm_grader(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCollection):
     pass

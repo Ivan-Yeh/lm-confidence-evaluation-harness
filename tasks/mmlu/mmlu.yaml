@@ -21,13 +21,13 @@ prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"  # ful
 system_prompt: "You are a helpful assistant that answers multiple choice questions."
 
 # The following are sequential function calls
-prompt_formatter: default_utils.prompt_manager.get_multiple_choice_prompts
+prompt_formatter: multiple_choice 
 generation_type: continuation
-# confidence_metrics: confidence_metrics.self_eval.p_true_by_continuation
-confidence_metrics: confidence_metrics.token_probs.length_normalised_log_likelihood
+# confidence_metrics: p_true_by_continuation
+confidence_metrics: length_normalised_log_likelihood
 post_processor: null
-grade_response: default_utils.grader.exact_match
-metrics: # refer to metrics/__init__.py for available metrics or define your own
+grader: exact_match
+performance_metrics:
   - accuracy_scalar_with_na
   - ece_scalar
   - auroc_scalar
