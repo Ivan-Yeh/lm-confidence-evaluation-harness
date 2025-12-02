@@ -3,9 +3,98 @@ import numpy as np
 from default_utils.registry import register_confidence
 
 
-@register_confidence(name="verbalised_numerical_confidence")
-def verbalised_numerical_confidence(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
-    pass
+@register_confidence(name="verbalised_numerical_confidence_with_llm_extractor")
+def verbalised_numerical_confidence_with_llm_extractor(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
+    # for each vnc response, extract the numerical confidence value from the text
+    def per_round_estimator(outputs: ModelOutputs) -> list[float]:
+        import json
+        import numpy as np
+        from vllm import LLM, SamplingParams
+
+        # Load the model once per round
+        model_id = "openai/gpt-oss-20b"
+        llm = LLM(model=model_id, dtype="bfloat16", max_model_len=4096)
+
+        sampling_params = SamplingParams(
+            max_tokens=512
+        )
+
+        prompts_llm = []
+        for text, context in zip(outputs.output_texts, outputs.context_texts):
+            prompt = f"""
+            You are a strict information extractor. You are given a response to a question.
+            The response text is an answer followed by a confidence score. Extract the answer verbatim, \
+                without using any outside knowledge or summarisation. Extract the score as presented. \
+                    Return a valid JSON object strictly in this format:
+            {{
+                "answer": "<the answer extracted from the text, or null if none.>",
+                "confidence_score": <a number between 0 and 100 estimating confidence, verbalised in the text. Return `None` if not present.>
+            }}
+
+            Question:
+            {context}
+
+            Response text:
+            {text}
+
+            Return only the JSON object as specified above, without any additional text.
+            """
+            prompts_llm.append([
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt.strip()}
+            ])
+
+        # ---- Call the LLM ----
+        outputs_llm = llm.chat(
+            prompts_llm,
+            sampling_params,
+            chat_template_kwargs={"reasoning_effort": "medium"}
+        )
+
+        # ---- Extract JSON ----
+        cleaned = []
+        for output in outputs_llm:
+            text = output.outputs[0].text.strip().rsplit("assistantfinal", 1)[-1]
+            start = text.find("{")
+            end = text.rfind("}")
+            if start != -1 and end != -1:
+                try:
+                    parsed = json.loads(text[start:end+1])
+                    cleaned.append(parsed)
+                    continue
+                except Exception:
+                    pass
+            cleaned.append({})
+
+        # ---- Convert to answer + confidence ----
+        extracted_scores = []
+        extracted_answers = []
+
+        for x in cleaned:
+            if isinstance(x, dict):
+                extracted_answers.append(x.get("answer"))
+
+                score = x.get("confidence_score")
+                if score is None:
+                    extracted_scores.append(np.nan)
+                else:
+                    try:
+                        extracted_scores.append(float(score) / 100.0)
+                    except:
+                        extracted_scores.append(np.nan)
+            else:
+                extracted_answers.append(None)
+                extracted_scores.append(np.nan)
+
+        return extracted_answers, extracted_scores
+
+    # Apply estimator to each ModelOutputs object
+    all_answers_and_scores = [per_round_estimator(o) for o in output_lst]
+    all_answers = [ans for ans, _ in all_answers_and_scores]
+    all_scores = [scores for _, scores in all_answers_and_scores]
+    print(all_answers)
+    return OrganisedOutputs(extracted_answers=all_answers, extracted_confidence_scores=all_scores)
+
 
 
 @register_confidence(name="discrete_verbalised_confidence_by_continuation")

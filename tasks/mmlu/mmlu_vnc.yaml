@@ -1,0 +1,62 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+seed: 42
+dataset_name: mmlu # must match the folder name under tasks/
+dataset_path: cais/mmlu
+subset: "all"
+split: test
+few_shot_split: dev
+few_shot_examples: 0
+limit: 30
+
+
+# multiple choice: "question: str", "choices : list", and "answer_index: int"
+dataset_preprocessor: task_utils.preprocess_dataset
+
+# placeholder variables must match the dataset column names, formatted using Jinja2
+question_format: "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\n\n"   # question formatting template
+prompt_format: "{{few_shot_examples}} Read the question, provide your answer and your confidence in this answer. Note: The confidence indicates how likely you think your answer is true. Use the following format to answer: ```Answer and Confidence (0-100): [ONLY the option letter; not a complete sentence], [Your confidence level, please only include the numerical number in the range of 0-100]%``` Only the answer and confidence, don't give me the explanation. Question:[{{formatted_question}}] Now, please answer this question and provide your confidence level."
+system_prompt: ""
+
+# The following are sequential function calls
+prompt_formatter: multiple_choice 
+generation_type: generative
+confidence_metrics: verbalised_numerical_confidence_with_llm_extractor
+post_processor: null
+grader: llm_grader
+performance_metrics:
+  - accuracy_scalar_with_na
+  - ece_scalar
+  - auroc_scalar
+
+
+qa_model:
+  backend: hf_ar 
+  name: openai/gpt-oss-20b
+  repeat: 1
+  sampling_params:
+    temperature: 0.7
+    max_tokens: 512
+    logprobs: 1
+  chat_template_kwargs:
+    reasoning_effort: low
+
+
+grader_model:
+  backend: hf_ar 
+  name: openai/gpt-oss-20b
+  repeat: 1
+  generation_parameters:
+    temperature: 0.0
+    max_tokens: 1024
+
+
+decisiveness_model:
+  backend: hf_ar 
+  name: openai/gpt-oss-20b
+  repeat: 1
+  generation_parameters:
+    temperature: 0.0
+    max_tokens: 1024
