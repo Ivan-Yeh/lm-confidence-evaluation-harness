@@ -7,7 +7,8 @@ from sklearn.metrics import roc_auc_score
 @register_metric(name="accuracy_scalar_with_na")
 def accuracy_scalar_with_na(cfg: dict, extracted_output: OrganisedOutputs) -> float:
     accuracies = extracted_output.accuracy_scores[0]
-    return float(np.nansum(accuracies) / len(accuracies))
+    accuracies_nonan = [acc if acc is not None else 0.0 for acc in accuracies]
+    return float(np.sum(accuracies_nonan) / len(accuracies))
 
 
 @register_metric(name="accuracy_scalar_without_na")

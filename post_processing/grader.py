@@ -16,26 +16,26 @@ def exact_match(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCo
 
 
 @register_grader(name="llm_grader")
-def llm_grader(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCollection):
+def llm_generative_grader(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCollection):
     model = ModelManager(master_cfg=cfg, model_config_type="grader_model")
     correct_answers = prompts.answer_keys
     questions = prompts.context_texts
     all_scores = []
     for round_outputs in extracted_output.extracted_answers:
-        grading_prompts = PromptCollection(context_texts=[])
+        grading_prompts = PromptCollection(context_texts=[], continuation_texts={})
         round_scores = []
         for question, predicted_answer, correct_answer in zip(questions, round_outputs, correct_answers):
             grading_prompt = f"""
             Your job is to look at a question with a correct answer and a predicted answer, and then assign a grade of either ["CORRECT", "INCORRECT", "NOT_ATTEMPTED"].
             If the predicted answer matches, implies or covers the correct answer, the grade is CORRECT.
             If the predicted answer does not match, imply or cover the correct answer, the grade is INCORRECT.
-            If the predicted answer is empty or punts the question, the grade is NOT_ATTEMPTED.
+            If the predicted answer is empty, none or punts the question, grade the predicted answer as NOT_ATTEMPTED instead of CORRECT or INCORRECT.
             Ignore any explanation present in the predicted answer. Don't apologize or correct yourself if there was a mistake; we are just trying to grade the answer.
             
             ```
             Question: {question}
             Correct answer: {correct_answer}
-            Predicted answer: {predicted_answer}
+            Predicted answer: {"" if predicted_answer is None else predicted_answer}
             ```
 
             Grade the predicted answer of this new question as one of:
@@ -43,15 +43,17 @@ def llm_grader(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCol
             B: INCORRECT
             C: NOT_ATTEMPTED
 
-            Just return the letters "A", "B", or "C", with no text around it.
+            Just return one of the letters "A", "B", or "C", with no text around it.
             """.strip()
             grading_prompts.context_texts.append(grading_prompt)
+            grading_prompts.continuation_texts[grading_prompt] = ["A", "B", "C"]
         
         for output_text in model.run_generation(grading_prompts)[0].output_texts:
-            if "A" in output_text or "CORRECT" in output_text.upper():
-                round_scores.append(1)
-            elif "B" in output_text or "INCORRECT" in output_text.upper():
+            print(output_text)
+            if "B" == output_text.upper().strip() or "INCORRECT" == output_text.upper().strip():
                 round_scores.append(0)
+            elif "A" == output_text.upper().strip() or "CORRECT" == output_text.upper().strip():
+                round_scores.append(1)
             else:
                 round_scores.append(None)
         all_scores.append(round_scores)

@@ -3,7 +3,7 @@ from default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollec
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import torch.nn.functional as F
-
+import gc
 
 class HFAutoregressiveLLM(AbstractModel):
     def __init__(self, cfg):
@@ -32,7 +32,10 @@ class HFAutoregressiveLLM(AbstractModel):
         model_outputs_list = []
         for _ in range(self.repeat):
             # Generate responses using vLLM chat
-            outputs = vllm_model.chat(messages_list, sampling_params=sampling_params, chat_template_kwargs=self.cfg.get("chat_template_kwargs", None))
+            try:
+                outputs = vllm_model.chat(messages_list, sampling_params=sampling_params, chat_template_kwargs=self.cfg.get("chat_template_kwargs", None))
+            except:
+                outputs = vllm_model.generate(prompt_collection.context_texts, sampling_params=sampling_params)
             
             # Extract output texts and tokens
             output_texts = []
@@ -43,7 +46,7 @@ class HFAutoregressiveLLM(AbstractModel):
                 # For each prompt, collect all n completions
                 for completion in output.outputs:
                     if "assistantfinal" in completion.text:
-                        generated_text = completion.text.rsplit("assistantfinal", 1)[1].strip()
+                        generated_text = completion.text.rsplit("assistantfinal", 1)[-1].strip()
                     else:
                         generated_text = completion.text.strip()
                     output_texts.append(generated_text)
@@ -74,17 +77,21 @@ class HFAutoregressiveLLM(AbstractModel):
                     output_logprobs.append(logprobs)
             
             model_outputs_list.append(ModelOutputs(
+                context_texts=prompt_collection.context_texts,
                 output_texts=output_texts,
                 output_tokens=output_tokens,
                 output_logprobs=output_logprobs,
             ))
+            
+        del vllm_model
+        torch.cuda.empty_cache()
         return model_outputs_list
         
     def run_continuation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
         hf_model = AutoModelForCausalLM.from_pretrained(
             self.model_name,
             torch_dtype=torch.bfloat16,
-            device_map={"": 0},
+            device_map="auto",
             trust_remote_code=True,
         )
         hf_model.eval()
@@ -156,4 +163,12 @@ class HFAutoregressiveLLM(AbstractModel):
                 )
             )
 
+        hf_model.to("cpu")
+        del input_ids
+        del outputs
+        del logits
+        del logprobs
+        del hf_model
+        gc.collect()
+        torch.cuda.empty_cache()
         return model_outputs_list

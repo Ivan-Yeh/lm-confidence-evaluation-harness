@@ -1,0 +1,13 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"  # full prompt formatting template: requires {few_shot_examples} and {formatted_question}
+system_prompt: "You are a helpful assistant that answers multiple choice questions."
+
+# The following are sequential function calls
+prompt_formatter: multiple_choice 
+generation_type: continuation
+confidence_metrics: length_normalised_log_likelihood
+post_processor: null
+grader: llm_grader

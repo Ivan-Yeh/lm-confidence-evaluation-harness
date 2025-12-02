@@ -119,7 +119,7 @@ if __name__ == "__main__":
     if grader_func is None:
         grader_func = import_yaml_lib(cfg, "grader")
     extracted_output.accuracy_scores = grader_func(cfg, extracted_output, prompts)
-
+    print(extracted_output.accuracy_scores)
     # calculate metrics
     for metric in cfg.get("performance_metrics", []):
         metric_func = METRICS_FUNCTIONS[metric]
