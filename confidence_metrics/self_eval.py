@@ -7,6 +7,7 @@ import numpy as np
 
 @register_confidence(name="p_true_by_continuation")
 def p_true_by_continuation(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
+    cfg.qa_model.temperature = 1.0 
     model = ModelManager(master_cfg=cfg, model_config_type="qa_model")
     true_continuation: PromptCollection = PromptCollection(context_texts=[], continuation_texts={})
     false_continuation: PromptCollection = PromptCollection(context_texts=[], continuation_texts={})
@@ -16,19 +17,19 @@ def p_true_by_continuation(cfg: dict, output_lst: list[ModelOutputs], prompts: P
     Is the proposed answer:
     A) True
     B) False
+
+    The proposed answer is:
     """.strip()
     def per_round_estimator(outputs: ModelOutputs) -> list[float]:
         for question, proposed_answer in zip(outputs.context_texts, outputs.output_texts):
             eval_prompt = p_true_prompt_template.format(question=question, proposed_answer=proposed_answer)
             true_continuation.context_texts.append(eval_prompt)
-            true_continuation.continuation_texts[eval_prompt] = ["A"]
+            true_continuation.continuation_texts[eval_prompt] = [" True"]
             false_continuation.context_texts.append(eval_prompt)
-            false_continuation.continuation_texts[eval_prompt] = ["B"]
+            false_continuation.continuation_texts[eval_prompt] = [" False"]
         print("Scoring P(True) 'True' continuation token")
-        time.sleep(3) 
         true_results: ModelOutputs = model.run_continuation(true_continuation)[0]
         print("Scoring P(True) 'False' continuation token")
-        time.sleep(3) 
         false_results: ModelOutputs = model.run_continuation(false_continuation)[0]
         extracted_true_probs: list[float] = [np.exp(np.mean(logprobs)) for logprobs in true_results.output_logprobs]
         extracted_false_probs: list[float] = [np.exp(np.mean(logprobs)) for logprobs in false_results.output_logprobs]

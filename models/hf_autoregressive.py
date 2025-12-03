@@ -24,9 +24,9 @@ class HFAutoregressiveLLM(AbstractModel):
             messages.append({"role": "user", "content": context_text})
             messages_list.append(messages)
         
-        sampling_params = SamplingParams(
-            **self.cfg.get("sampling_params", {})
-        )
+        sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0), 
+                                         max_tokens=self.cfg.get("max_tokens", 256),
+                                         logprobs=1,)
         vllm_model = LLM(model=self.model_name)
 
         model_outputs_list = []
@@ -124,10 +124,14 @@ class HFAutoregressiveLLM(AbstractModel):
                     # forward pass
                     with torch.inference_mode():
                         outputs = hf_model(input_ids.to(hf_model.device))
-                        logits = outputs.logits
+                        logits = outputs.logits  # shape: [batch, seq_len, vocab_size]
 
-                    # logprobs over vocab
-                    logprobs = F.log_softmax(logits, dim=-1)
+                    # Apply temperature
+                    temperature = self.cfg.get("temperature", 1.0)
+                    logits_temp = logits / temperature
+
+                    # Compute log-probs
+                    logprobs = torch.nn.functional.log_softmax(logits_temp, dim=-1)
 
                     # compute continuation logprobs
                     cont_logps = []

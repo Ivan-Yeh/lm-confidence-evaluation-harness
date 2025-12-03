@@ -1,0 +1,19 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer: [Return the answer letter only]"  # full prompt formatting template: requires {few_shot_examples} and {formatted_question}
+
+# The following are sequential function calls
+prompt_formatter: multiple_choice 
+generation_type: generation
+confidence_metrics: semantic_uncertainty
+post_processor: null
+grader: llm_grader
+
+
+qa_model:
+  model_name: meta-llama/Meta-Llama-3-8B-Instruct
+  repeat: 10
+  temperature: 1
+  max_tokens: 512

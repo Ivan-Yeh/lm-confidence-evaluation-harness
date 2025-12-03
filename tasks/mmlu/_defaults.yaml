@@ -5,13 +5,14 @@ subset: "all"
 split: test
 few_shot_split: dev
 few_shot_examples: 0
-limit: 100
+limit: 20
 
 # multiple choice: "question: str", "choices : list", and "answer_index: int"
 dataset_preprocessor: task_utils.preprocess_dataset
 
 # placeholder variables must match the dataset column names, formatted using Jinja2
 question_format: "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\n\n"   # question formatting template
+system_prompt: ""
 performance_metrics:
   - accuracy_scalar_with_na
   - ece_scalar
@@ -19,12 +20,11 @@ performance_metrics:
 
 qa_model:
   backend: hf_ar 
-  name: meta-llama/Meta-Llama-3-8B
+  # name: meta-llama/Meta-Llama-3-8B
+  name: openai/gpt-oss-20b
   repeat: 1
-  sampling_params:
-    temperature: 1
-    max_tokens: 2048
-    logprobs: 1
+  temperature: 0.1
+  max_tokens: 512
   chat_template_kwargs:
     reasoning_effort: low
 
@@ -33,9 +33,8 @@ grader_model:
   backend: hf_ar 
   name: openai/gpt-oss-20b
   repeat: 1
-  sampling_params:
-    temperature: 0.0
-    max_tokens: 1024
-    logprobs: 1
+  temperature: 0.0
+  max_tokens: 1024
+  logprobs: 1
   chat_template_kwargs:
     reasoning_effort: low
