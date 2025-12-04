@@ -29,3 +29,11 @@ def register_prompt_formatter(name: str):
         PROMPT_FORMATTER[name] = func
         return func
     return decorator
+
+
+FILTER_FUNCTIONS: dict[str, callable] = dict()
+def register_filter(name: str):
+    def decorator(func):
+        FILTER_FUNCTIONS[name] = func
+        return func
+    return decorator

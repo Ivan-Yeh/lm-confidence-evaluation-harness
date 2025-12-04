@@ -35,7 +35,7 @@ def p_true_by_continuation(cfg: dict, output_lst: list[ModelOutputs], prompts: P
         extracted_false_probs: list[float] = [np.exp(np.mean(logprobs)) for logprobs in false_results.output_logprobs]
         p_trues: list[float] = []
         for p_true, p_false in zip(extracted_true_probs, extracted_false_probs):
-            p_true_norm = p_true / (p_true + p_false)
+            p_true_norm = p_true 
             p_trues.append(p_true_norm)
         return p_trues
     

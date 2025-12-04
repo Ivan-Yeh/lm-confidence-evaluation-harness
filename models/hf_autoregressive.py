@@ -27,7 +27,7 @@ class HFAutoregressiveLLM(AbstractModel):
         sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0), 
                                          max_tokens=self.cfg.get("max_tokens", 256),
                                          logprobs=1,)
-        vllm_model = LLM(model=self.model_name)
+        vllm_model = LLM(model=self.model_name, max_model_len=self.cfg.get("max_model_len", 4096))
 
         model_outputs_list = []
         for _ in range(self.repeat):

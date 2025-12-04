@@ -13,6 +13,7 @@ dataset_preprocessor: task_utils.preprocess_dataset
 # placeholder variables must match the dataset column names, formatted using Jinja2
 question_format: "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\n\n"   # question formatting template
 system_prompt: ""
+prompt_formatter: multiple_choice 
 performance_metrics:
   - accuracy_scalar_with_na
   - ece_scalar
@@ -20,11 +21,12 @@ performance_metrics:
 
 qa_model:
   backend: hf_ar 
-  # name: meta-llama/Meta-Llama-3-8B
-  name: openai/gpt-oss-20b
+  name: meta-llama/Meta-Llama-3-8B-Instruct
+  # name: openai/gpt-oss-20b
   repeat: 1
-  temperature: 0.1
+  temperature: 1
   max_tokens: 512
+  max_model_len: 2048
   chat_template_kwargs:
     reasoning_effort: low
 

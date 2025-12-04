@@ -9,7 +9,7 @@ from default_utils.datasets_manager import DatasetsManager
 from models.model_manager import ModelManager
 from default_utils.utils import import_yaml_lib
 from default_utils.custom_types import OrganisedOutputs, ModelOutputs, PromptCollection
-from default_utils.registry import METRICS_FUNCTIONS, GRADER_FUNCTIONS, CONFIDENCE_FUNCTIONS, PROMPT_FORMATTER
+from default_utils.registry import METRICS_FUNCTIONS, GRADER_FUNCTIONS, CONFIDENCE_FUNCTIONS, PROMPT_FORMATTER, FILTER_FUNCTIONS
 
 def _auto_import_modules(): 
     import default_utils
@@ -103,16 +103,24 @@ if __name__ == "__main__":
     else:
         raise ValueError(f"Unknown generation type: {cfg.generation_type}")
     
+    print(outputs[0].output_texts)
+    # post process raw responses
+    for output_filter in cfg.get("output_filters", []):
+        try:
+            filter_func: callable = FILTER_FUNCTIONS.get(output_filter.get("name"))
+            kwargs = output_filter.get("args", {})
+        except:
+            filter_func: callable = import_yaml_lib(cfg, output_filter.get("name"))
+        kwargs = output_filter.get("args", {})
+        outputs: list[ModelOutputs] = filter_func(cfg, outputs, prompts, **kwargs)
+        print(outputs[0])
+    
     # extract confidence
     confidence_extraction_func: callable = CONFIDENCE_FUNCTIONS.get(cfg.get("confidence_metrics", "length_normalised_log_likelihood"))
     if confidence_extraction_func is None:
         confidence_extraction_func = import_yaml_lib(cfg, "confidence_metrics")
     extracted_output: OrganisedOutputs = confidence_extraction_func(cfg, outputs, prompts)
 
-    # post process extracted responses and confidences
-    if cfg.get("post_processor") is not None:
-        post_processor: callable = import_yaml_lib(cfg, "post_processor")
-        extracted_output: OrganisedOutputs = post_processor(cfg, outputs, extracted_output, prompts)
 
     # grade response
     grader_func: callable = GRADER_FUNCTIONS.get(cfg.get("grader", "exact_match"))

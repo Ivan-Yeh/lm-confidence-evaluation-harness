@@ -7,10 +7,17 @@ prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer: [Return
 # The following are sequential function calls
 prompt_formatter: multiple_choice 
 generation_type: generation
+output_filters:
+  - name: multiple_choice_regex_extractor
+    args:
+      regexes:
+        - (?i)\bAnswer[:\s]*[\(\[]?\s*([A-D])\s*[\)\]]?
+        - (?i)\b([A-D])\s*is\s*the\s*answer\b
+        - (?i)\bcorrect\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
+        - (?i)\bbest\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
+        - (?i)\s*([A-D])
 confidence_metrics: semantic_uncertainty
-post_processor: null
-grader: llm_grader
-
+grader: exact_match
 
 qa_model:
   model_name: meta-llama/Meta-Llama-3-8B-Instruct

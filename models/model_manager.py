@@ -8,6 +8,7 @@ class ModelManager:
     def __init__(self, master_cfg: dict, model_config_type="qa_model"):
         self.model_cfg: dict = master_cfg[model_config_type]
         self.model: AbstractModel
+        
         match self.model_cfg.get("backend", None):
             case "hf_ar":
                 self.model = HFAutoregressiveLLM(self.model_cfg)
@@ -25,6 +26,8 @@ class ModelManager:
                 raise ValueError(f"Model type not specified in config for {model_config_type}")
             case _:
                 raise ValueError(f"Unknown model type: {self.model_cfg.type}")
+
+        self.tokenizer = self.model.tokenizer
 
 
     def run_generation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:

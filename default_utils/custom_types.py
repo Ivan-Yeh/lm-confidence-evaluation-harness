@@ -16,7 +16,7 @@ class ModelOutputs:
     output_texts: list[str] = field(default_factory=list) # a list of strings
     output_tokens: list[list[str]] = field(default_factory=list) # a list of strings
     output_logprobs: list[list[float]] = field(default_factory=list) # a list of floats
-    token_logprobs: list[dict[str, float]] = field(default_factory=list) # a list token-logprob mappings
+    # token_logprobs: list[dict[str, float]] = field(default_factory=list) # a list token-logprob mappings
 
 
 @dataclass
@@ -30,6 +30,8 @@ class OrganisedOutputs:
 
 
 class AbstractModel(ABC):
+    tokenizer: object = None
+    
     @abstractmethod
     def run_generation(self, prompts: PromptCollection) -> "ModelOutputs":
         """Generate outputs given prompts (e.g., free-form generation)."""

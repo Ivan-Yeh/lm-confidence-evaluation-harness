@@ -10,7 +10,12 @@ def exact_match(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCo
     for round_outputs in extracted_output.extracted_answers:
         round_matches = []
         for pred, ref in zip(round_outputs, answer_keys):
-            round_matches.append(1 if pred.strip().lower() == ref.strip().lower() else 0)
+            if pred is None:
+                round_matches.append(None)
+            elif pred.strip().lower() == ref.strip().lower():
+                round_matches.append(1)
+            else:
+                round_matches.append(0)
         exact_matches.append(round_matches)
     return exact_matches
 
@@ -54,6 +59,8 @@ def llm_generative_grader(cfg: dict, extracted_output: OrganisedOutputs, prompts
                 round_scores.append(0)
             elif "A" == output_text.upper().strip() or "CORRECT" == output_text.upper().strip():
                 round_scores.append(1)
+            elif "C" == output_text.upper().strip() or "NOT_ATTEMPTED" == output_text.upper().strip():
+                round_scores.append("")
             else:
                 round_scores.append(None)
         all_scores.append(round_scores)
