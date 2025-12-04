@@ -5,7 +5,7 @@ subset: "all"
 split: test
 few_shot_split: dev
 few_shot_examples: 0
-limit: 20
+limit: 100
 
 # multiple choice: "question: str", "choices : list", and "answer_index: int"
 dataset_preprocessor: task_utils.preprocess_dataset
@@ -15,14 +15,13 @@ question_format: "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC.
 system_prompt: ""
 prompt_formatter: multiple_choice 
 performance_metrics:
-  - accuracy_scalar_with_na
+  - accuracy_scalar_with_abstention
   - ece_scalar
   - auroc_scalar
 
 qa_model:
   backend: hf_ar 
-  name: meta-llama/Meta-Llama-3-8B-Instruct
-  # name: openai/gpt-oss-20b
+  name: openai/gpt-oss-20b
   repeat: 1
   temperature: 1
   max_tokens: 512

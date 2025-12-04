@@ -96,67 +96,69 @@ class HFAutoregressiveLLM(AbstractModel):
         )
         hf_model.eval()
 
+        tokenizer = self.tokenizer
         model_outputs_list = []
 
         for _ in range(self.repeat):
+
             all_output_texts = []
             all_output_tokens = []
             all_output_logprobs = []
 
             for context in tqdm(prompt_collection.context_texts, desc="Scoring continuations"):
                 continuations = prompt_collection.continuation_texts[context]
+
+                # Encode the context once
+                ctx_ids = tokenizer(context, add_special_tokens=False).input_ids
+
                 candidates = []
 
-                # tokenize context once
-                ctx_ids = self.tokenizer(context, add_special_tokens=False).input_ids
-                len_ctx = len(ctx_ids)
-
+                # ---- Score each continuation C = [c1, c2, ..., ck] ----
                 for continuation in continuations:
+                    cont_ids = tokenizer(continuation, add_special_tokens=False).input_ids
 
-                    # prepare full prompt
-                    full_prompt = context + " " + continuation
-                    full_ids = self.tokenizer(full_prompt, add_special_tokens=False).input_ids
-                    cont_ids = full_ids[len_ctx:]   # continuation ids only
+                    # rolling input: start from context
+                    rolling_ids = ctx_ids.copy()
 
-                    # tensor (CPU → GPU inside forward)
-                    input_ids = torch.tensor([full_ids], dtype=torch.long)
-
-                    # forward pass
-                    with torch.inference_mode():
-                        outputs = hf_model(input_ids.to(hf_model.device))
-                        logits = outputs.logits  # shape: [batch, seq_len, vocab_size]
-
-                    # Apply temperature
-                    temperature = self.cfg.get("temperature", 1.0)
-                    logits_temp = logits / temperature
-
-                    # Compute log-probs
-                    logprobs = torch.nn.functional.log_softmax(logits_temp, dim=-1)
-
-                    # compute continuation logprobs
                     cont_logps = []
-                    for i, token_id in enumerate(cont_ids):
-                        # continuation token position = context_length + i
-                        pos = len_ctx + i - 1
-                        lp = logprobs[0, pos, token_id].item()
+
+                    for token_id in cont_ids:
+
+                        # Encode current prefix
+                        input_ids = torch.tensor([rolling_ids], dtype=torch.long).to(hf_model.device)
+
+                        # Run model
+                        with torch.inference_mode():
+                            outputs = hf_model(input_ids)
+                            logits = outputs.logits   # [1, seq_len, vocab]
+
+                        # Predict next token (use last position)
+                        next_logits = logits[:, -1, :]
+                        logprobs = torch.nn.functional.log_softmax(next_logits, dim=-1)
+
+                        # logprob of actual next continuation token
+                        lp = logprobs[0, token_id].item()
                         cont_logps.append(lp)
 
-                    tokens_decoded = self.tokenizer.decode(cont_ids)
+                        # Append this token and move to next
+                        rolling_ids.append(token_id)
+
+                    # Sum over continuation
                     logprob_sum = sum(cont_logps)
 
                     candidates.append({
-                        'text': continuation,
-                        'tokens': tokens_decoded,
-                        'logprobs': cont_logps,
-                        'sum': logprob_sum,
+                        "text": continuation,
+                        "tokens": tokenizer.decode(cont_ids),
+                        "logprobs": cont_logps,
+                        "sum": logprob_sum,
                     })
 
-                # choose best
-                best = max(candidates, key=lambda x: x['sum'])
+                # ---- Choose best continuation by sum logprob ----
+                best = max(candidates, key=lambda x: x["sum"])
 
-                all_output_texts.append(best['text'])
-                all_output_tokens.append(best['tokens'])
-                all_output_logprobs.append(best['logprobs'])
+                all_output_texts.append(best["text"])
+                all_output_tokens.append(best["tokens"])
+                all_output_logprobs.append(best["logprobs"])
 
             model_outputs_list.append(
                 ModelOutputs(

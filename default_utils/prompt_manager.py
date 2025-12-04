@@ -27,7 +27,7 @@ def multiple_choice(cfg: dict, dataset_manager: DatasetsManager) -> PromptCollec
         base_prompt = prompt_template.render(few_shot_examples=few_shot_text.strip(), formatted_question=formatted_question).strip()
         continuations = []
         for i in range(len(row['choices'])):
-            continuations.append(chr(65 + i))  # Append choice letters A, B, C, ...
+            continuations.append(f" {chr(65 + i)}")  # Append choice letters A, B, C, ...
         prompts.append(base_prompt)
         continuation_texts[base_prompt] = continuations
     return PromptCollection(questions=formatted_questions, answer_keys=[chr(65 + idx) for idx in dataset_manager.get_dataset()['answer_index'].tolist()], system_prompt=cfg.get("system_prompt", ""), context_texts=prompts, continuation_texts=continuation_texts)

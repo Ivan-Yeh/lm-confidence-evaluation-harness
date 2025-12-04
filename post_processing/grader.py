@@ -33,9 +33,9 @@ def llm_generative_grader(cfg: dict, extracted_output: OrganisedOutputs, prompts
             grading_prompt = f"""
             Your job is to look at a question with a correct answer and a predicted answer, and then assign a grade of either ["CORRECT", "INCORRECT", "NOT_ATTEMPTED"].
             If the predicted answer matches, implies or covers the correct answer, the grade is CORRECT.
-            If the predicted answer does not match, imply or cover the correct answer, the grade is INCORRECT.
-            If the predicted answer is empty, none or punts the question, grade the predicted answer as NOT_ATTEMPTED instead of CORRECT or INCORRECT.
-            Ignore any explanation present in the predicted answer. Don't apologize or correct yourself if there was a mistake; we are just trying to grade the answer.
+            If the predicted answer does not match, imply or cover the correct answer, the grade is INCORRECT. Do NOT grade it as INCORRECT if the predicted answer abstain from answering (e.g. "I don't know the answer..." or "I have no idea...").
+            If the predicted answer is empty, none or abstention (e.g. "I don't know the answer..." or "I have no idea..."), grade the predicted answer as NOT_ATTEMPTED instead of CORRECT or INCORRECT. If the predicted answer makes an attempt, do not grade it as NOT_ATTEMPTED.
+            Ignore any explanation or linguistic cues present in the predicted answer. Don't apologize or correct yourself if there was a mistake; we are just trying to grade the answer.
             
             ```
             Question: {question}
@@ -54,7 +54,6 @@ def llm_generative_grader(cfg: dict, extracted_output: OrganisedOutputs, prompts
             grading_prompts.continuation_texts[grading_prompt] = ["A", "B", "C"]
         
         for output_text in model.run_generation(grading_prompts)[0].output_texts:
-            print(output_text)
             if "B" == output_text.upper().strip() or "INCORRECT" == output_text.upper().strip():
                 round_scores.append(0)
             elif "A" == output_text.upper().strip() or "CORRECT" == output_text.upper().strip():

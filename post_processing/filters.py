@@ -1,6 +1,8 @@
 from default_utils.custom_types import ModelOutputs, PromptCollection
 from default_utils.registry import register_filter
+from models.model_manager import ModelManager
 import re
+import ast
 
 
 def output_substring_extractor(regexes: list[str], model_outputs: list[ModelOutputs]) -> list[ModelOutputs]:
@@ -20,6 +22,10 @@ def output_substring_extractor(regexes: list[str], model_outputs: list[ModelOutp
 
         for i, tok in enumerate(decoded_tokens):
             tok_len = len(tok)
+
+            if tok_len == 1:
+                return decoded_tokens, token_logprobs
+
             if token_start is None and running + tok_len > start_char:
                 token_start = i
             if token_end is None and running + tok_len >= end_char:
@@ -76,3 +82,68 @@ def multiple_choice_regex_extractor(cfg: dict, model_outputs: list[ModelOutputs]
     potential_answer_regex = kwargs.get("regexes", [])
     print(potential_answer_regex)
     return output_substring_extractor(potential_answer_regex, model_outputs)
+
+
+
+@register_filter(name="linguistic_confidence_augmentation")
+def linguistic_confidence_augmentation(cfg: dict, model_outputs: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> list[ModelOutputs]:
+    cfg.linguistic_confidence_judge_model.temperature = 1.5
+    aug_model_manager = ModelManager(master_cfg=cfg, model_config_type="linguistic_confidence_judge_model")
+    all_cont_prompts = []
+    for output in model_outputs:
+        template = """
+        You are given an answer to a question. Your task is to augment the answer by adding linguistic cues that express the confidence level of the answer.
+        Please generate 5 different versions of the answer, each with a different level of confidence expressed linguistically, ranging from very low confidence to very high confidence.
+        Use phrases like "I think", "probably", "definitely", "I'm certain", etc. to convey the confidence level.
+
+        Here are some examples of how to express different levels of confidence. Please do not copy these examples verbatim, but use them as inspiration for your augmentations:
+        - Completely uncertain: "I have no idea what the answer is."
+        - Very Low Confidence: "I'm not sure, but I think the answer might be..."
+        - Low Confidence: "The answer may be..."
+        - Medium Confidence: "I believe the answer is..."
+        - High Confidence: "I'm quite certain that the answer is..."
+        - Very High Confidence: "I'm sure that the answer is..."
+
+        Please augment the following answer accordingly and return ONLY a JSON object with the confidence levels as keys and the corresponding augmented answers as values.
+        Answer: "{answer}"
+
+        Return format:
+        {{
+            "completely_uncertain": "...",
+            "very_low_confidence": "...",
+            "low_confidence": "...",
+            "medium_confidence": "...",
+            "high_confidence": "...",
+            "very_high_confidence": "..."
+        }}
+        """.strip()
+        aug_prompt = PromptCollection(context_texts=[template.format(answer=ans) for ans in output.output_texts])
+        aug_outputs: ModelOutputs = aug_model_manager.run_generation(aug_prompt)[0]
+        
+        lc_prompt_template = """
+        Answer the following question using a succinct (at most one sentence) and full answer. 
+        If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
+        Question: {formatted_question}
+        Answer: 
+        """.strip()
+
+        for i, aug in enumerate(aug_outputs.output_texts):
+            try:
+                aug_dict = ast.literal_eval(aug)
+                continuations = list(aug_dict.values())
+            except:
+                # hard code continuations if parsing fails
+                hard_coded_aug_template = ["I have no idea what the answer is.",
+                                           "I'm not sure, but I think the answer might be: ",
+                                           "The answer may be: ",
+                                           "I believe the answer is: ",
+                                           "I'm quite certain that the answer is: ",
+                                           "I'm sure that the answer is: ",]
+                continuations = [temp + output.output_texts[i] for temp in hard_coded_aug_template] # fallback to original answer
+            prompts.context_texts[i] = lc_prompt_template.format(formatted_question=prompts.questions[i])
+            prompts.continuation_texts[prompts.context_texts[i]] = continuations
+        # Re-score continuations with the main model
+        all_cont_prompts.append(prompts)
+
+    qa_model = ModelManager(master_cfg=cfg, model_config_type="qa_model")
+    return [qa_model.run_continuation(p)[0] for p in all_cont_prompts]

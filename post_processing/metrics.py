@@ -4,36 +4,39 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 
 
-@register_metric(name="accuracy_scalar_with_na")
-def accuracy_scalar_with_na(cfg: dict, extracted_output: OrganisedOutputs) -> float:
+@register_metric(name="accuracy_scalar_with_abstention")
+def accuracy_scalar_with_abstention(cfg: dict, extracted_output: OrganisedOutputs) -> float:
+    """
+    Treat abstentions as incorrect and exclude "None" in accuracy scores.
+    """
     accuracies = extracted_output.accuracy_scores[0]
-    accuracies_nonan = [acc if acc is not None else 0.0 for acc in accuracies]
-    return float(np.sum(accuracies_nonan) / len(accuracies))
-
-
-@register_metric(name="accuracy_scalar_without_na")
-def accuracy_scalar_without_na(cfg: dict, extracted_output: OrganisedOutputs) -> float:
-    accuracies = extracted_output.accuracy_scores[0]
-    return float(np.nanmean(accuracies))
+    accuracies_filtered = [acc if acc is not None else None for acc in accuracies]
+    accuracies_filtered = [0.0 if acc == "" else acc for acc in accuracies_filtered]
+    accuracies_filtered = [acc for acc in accuracies_filtered if acc is not None]
+    if len(accuracies_filtered) == 0:
+        return 0.0
+    return float(np.sum(accuracies_filtered) / len(accuracies_filtered))
 
 
 @register_metric(name="ece_scalar")
 def ece_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> float:
     n_bins = cfg.get("ece_n_bins", 10)
-    accuracies = np.array(extracted_output.accuracy_scores[0], dtype=float)
-    confidences = np.array(extracted_output.extracted_confidences[0], dtype=float)
-
-    # --- Fix accuracy: NA → 0 ---
-    accuracies = np.nan_to_num(accuracies, nan=0.0)
-
-    # --- Skip NA confidence by masking them out ---
-    valid_mask = ~np.isnan(confidences)
-    accuracies = accuracies[valid_mask]
-    confidences = confidences[valid_mask]
-
-    # No valid confidence values → undefined ECE
-    if len(confidences) == 0:
+    accuracies_raw = extracted_output.accuracy_scores[0]
+    confidences_raw = extracted_output.extracted_confidences[0]
+    
+    # Treat "" as 0.0, exclude None
+    accuracies = [0.0 if acc == "" else acc for acc in accuracies_raw]
+    confidences = [conf for conf in confidences_raw]
+    
+    # Filter out None values from both lists
+    valid_pairs = [(acc, conf) for acc, conf in zip(accuracies, confidences) 
+                   if acc is not None and conf is not None]
+    
+    if len(valid_pairs) == 0:
         return float("nan")
+    
+    accuracies = np.array([pair[0] for pair in valid_pairs], dtype=float)
+    confidences = np.array([pair[1] for pair in valid_pairs], dtype=float)
     bins = np.linspace(0, 1, n_bins + 1)
     ece = 0.0
 
@@ -56,19 +59,24 @@ def auroc_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> float:
     Computes AUROC (Area Under the Receiver Operating Characteristic curve)
     from the extracted accuracies and confidence scores.
     """
-    # Convert to numpy arrays
-    accuracies = np.array(extracted_output.accuracy_scores[0], dtype=float)
-    confidences = np.array(extracted_output.extracted_confidences[0], dtype=float)
-
-    # Treat NA accuracies as 0 (missed/incorrect)
-    accuracies = np.nan_to_num(accuracies, nan=0.0)
-
-    # Skip NA confidence scores
-    valid_mask = ~np.isnan(confidences)
-    accuracies = accuracies[valid_mask]
-    confidences = confidences[valid_mask]
-
-    # If no valid data, return nan
+    accuracies_raw = extracted_output.accuracy_scores[0]
+    confidences_raw = extracted_output.extracted_confidences[0]
+    
+    # Treat "" as 0.0, exclude None
+    accuracies = [0.0 if acc == "" else acc for acc in accuracies_raw]
+    confidences = [conf for conf in confidences_raw]
+    
+    # Filter out None values from both lists
+    valid_pairs = [(acc, conf) for acc, conf in zip(accuracies, confidences) 
+                   if acc is not None and conf is not None]
+    
+    if len(valid_pairs) == 0:
+        return float("nan")
+    
+    accuracies = np.array([pair[0] for pair in valid_pairs], dtype=float)
+    confidences = np.array([pair[1] for pair in valid_pairs], dtype=float)
+    
+    # If no valid data or only one class, return nan
     if len(confidences) == 0 or len(np.unique(accuracies)) < 2:
         return float("nan")
     # Compute AUROC

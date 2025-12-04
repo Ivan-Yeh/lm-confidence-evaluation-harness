@@ -2,11 +2,11 @@ defaults:
   - _defaults.yaml
   - _self_
 
- # full prompt formatting template: requires {few_shot_examples} and {formatted_question}
+#  full prompt formatting template: requires {few_shot_examples} and {formatted_question}
 prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer: [Return the answer letter only]" # for generation
-# prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"  for continuation
+# prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"  #for continuation
 
-generation_type: generation
+generation_type: continuation
 output_filters:
   - name: multiple_choice_regex_extractor
     args:
@@ -17,5 +17,4 @@ output_filters:
         - (?i)\bbest\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
         - (?i)\s*([A-D])
 confidence_metrics: length_normalised_log_likelihood
-post_processor: null
 grader: exact_match
