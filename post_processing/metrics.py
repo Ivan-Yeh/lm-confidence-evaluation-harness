@@ -24,9 +24,17 @@ def ece_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> float:
     accuracies_raw = extracted_output.accuracy_scores[0]
     confidences_raw = extracted_output.extracted_confidences[0]
     
-    # Treat "" as 0.0, exclude None
-    accuracies = [0.0 if acc == "" else acc for acc in accuracies_raw]
-    confidences = [conf for conf in confidences_raw]
+    # Treat "" as 0.0, exclude None, and ensure numbers only
+    def to_number(val):
+        if val is None or val == "" or isinstance(val, list):
+            return None
+        try:
+            return float(val)
+        except (ValueError, TypeError):
+            return None
+    
+    accuracies = [to_number(acc) for acc in accuracies_raw]
+    confidences = [to_number(conf) for conf in confidences_raw]
     
     # Filter out None values from both lists
     valid_pairs = [(acc, conf) for acc, conf in zip(accuracies, confidences) 
@@ -62,9 +70,17 @@ def auroc_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> float:
     accuracies_raw = extracted_output.accuracy_scores[0]
     confidences_raw = extracted_output.extracted_confidences[0]
     
-    # Treat "" as 0.0, exclude None
-    accuracies = [0.0 if acc == "" else acc for acc in accuracies_raw]
-    confidences = [conf for conf in confidences_raw]
+    # Ensure all values are numbers, exclude None and lists
+    def to_number(val):
+        if val is None or val == "" or isinstance(val, list):
+            return None
+        try:
+            return float(val)
+        except (ValueError, TypeError):
+            return None
+    
+    accuracies = [to_number(acc) for acc in accuracies_raw]
+    confidences = [to_number(conf) for conf in confidences_raw]
     
     # Filter out None values from both lists
     valid_pairs = [(acc, conf) for acc, conf in zip(accuracies, confidences) 

@@ -14,8 +14,8 @@ grader: llm_grader
 linguistic_confidence_judge_model:
   backend: hf_ar 
   name: openai/gpt-oss-20b
-  repeat: 1
-  temperature: 1
+  repeat: 10
+  temperature: 1.2
   max_tokens: 1024
   logprobs: 1
   chat_template_kwargs:

@@ -4,6 +4,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import torch.nn.functional as F
 import gc
+import numpy as np
 
 class HFAutoregressiveLLM(AbstractModel):
     def __init__(self, cfg):
@@ -144,18 +145,17 @@ class HFAutoregressiveLLM(AbstractModel):
                         rolling_ids.append(token_id)
 
                     # Sum over continuation
-                    logprob_sum = sum(cont_logps)
+                    logprob_mean = np.mean(cont_logps)
 
                     candidates.append({
                         "text": continuation,
                         "tokens": tokenizer.decode(cont_ids),
                         "logprobs": cont_logps,
-                        "sum": logprob_sum,
+                        "mean": logprob_mean,
                     })
 
                 # ---- Choose best continuation by sum logprob ----
-                best = max(candidates, key=lambda x: x["sum"])
-
+                best = max(candidates, key=lambda x: x["mean"])
                 all_output_texts.append(best["text"])
                 all_output_tokens.append(best["tokens"])
                 all_output_logprobs.append(best["logprobs"])

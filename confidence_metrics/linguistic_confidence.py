@@ -2,6 +2,7 @@ from default_utils.registry import register_confidence
 from default_utils.custom_types import ModelOutputs, PromptCollection, OrganisedOutputs
 from models.model_manager import ModelManager
 import re
+import numpy as np
 
 
 @register_confidence(name="scalar_linguistic_confidence")
@@ -9,6 +10,15 @@ def scalar_linguistic_confidence(cfg: dict, output_lst: list[ModelOutputs], prom
     # use llm judge to rate how decisive the model's answer is
     model_manager: ModelManager = ModelManager(master_cfg=cfg, model_config_type="linguistic_confidence_judge_model")
     def per_round_estimator(output: ModelOutputs):
+        def extract_score(text: str) -> float:
+            match = re.search(r'(\d+(?:\.\d+)?)', text)
+            if match:
+                score = float(match.group(1))
+                score = min(max(score, 0.0), 100.0) / 100.0  # Normalize to [0, 1]
+            else:
+                score = np.nan
+            return score
+        
         DIRECT_PROMPT = """
         Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence (without using any external or prior knowledge): 
         {sentence}
@@ -16,18 +26,14 @@ def scalar_linguistic_confidence(cfg: dict, output_lst: list[ModelOutputs], prom
         Confidence Score: [Return only a number between 0 and 100]
         """.strip()
         prompt_collection = PromptCollection(context_texts=[DIRECT_PROMPT.format(sentence=response) for response in output.output_texts])
-        judge_outputs: ModelOutputs = model_manager.run_generation(prompt_collection)[0]
-        scores = []
-        for text in judge_outputs.output_texts:
-            # Extract confidence score using regex
-            match = re.search(r'(\d+(?:\.\d+)?)', text)
-            if match:
-                score = float(match.group(1))
-                score = min(max(score, 0.0), 100.0)
-            else:
-                score = 0.0
-            scores.append(score / 100.0)  # normalise to [0, 1]
-        return scores
+        judge_outputs: list[ModelOutputs] = model_manager.run_generation(prompt_collection)
+        confidences: list[list[float]] = [[extract_score(text) for text in out.output_texts] for out in judge_outputs]
+        # Transpose confidences: from [num_judge_outputs][num_texts] to [num_texts][num_judge_outputs]
+        confidences = list(map(list, zip(*confidences)))
+        # Average scores from different judge outputs
+        confidences = [float(np.nanmean(scores)) for scores in confidences]
+        return confidences
+        
     
     all_confidences = []
     all_answers = []

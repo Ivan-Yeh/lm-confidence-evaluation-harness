@@ -87,21 +87,18 @@ def multiple_choice_regex_extractor(cfg: dict, model_outputs: list[ModelOutputs]
 
 @register_filter(name="linguistic_confidence_augmentation")
 def linguistic_confidence_augmentation(cfg: dict, model_outputs: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> list[ModelOutputs]:
-    cfg.linguistic_confidence_judge_model.temperature = 1.5
-    aug_model_manager = ModelManager(master_cfg=cfg, model_config_type="linguistic_confidence_judge_model")
+    aug_model_manager = ModelManager(master_cfg=cfg, model_config_type="linguistic_confidence_augmentation_model")
     all_cont_prompts = []
     for output in model_outputs:
         template = """
         You are given an answer to a question. Your task is to augment the answer by adding linguistic cues that express the confidence level of the answer.
-        Please generate 5 different versions of the answer, each with a different level of confidence expressed linguistically, ranging from very low confidence to very high confidence.
-        Use phrases like "I think", "probably", "definitely", "I'm certain", etc. to convey the confidence level.
+        Please generate 4 different versions of the answer, each with a different level of confidence expressed linguistically, ranging from very complete uncertainty to very high confidence.
+        Use phrases like "I think", "probably", "definitely", "I'm certain", "may", etc. to convey the confidence level.
 
         Here are some examples of how to express different levels of confidence. Please do not copy these examples verbatim, but use them as inspiration for your augmentations:
         - Completely uncertain: "I have no idea what the answer is."
         - Very Low Confidence: "I'm not sure, but I think the answer might be..."
-        - Low Confidence: "The answer may be..."
         - Medium Confidence: "I believe the answer is..."
-        - High Confidence: "I'm quite certain that the answer is..."
         - Very High Confidence: "I'm sure that the answer is..."
 
         Please augment the following answer accordingly and return ONLY a JSON object with the confidence levels as keys and the corresponding augmented answers as values.
@@ -109,12 +106,10 @@ def linguistic_confidence_augmentation(cfg: dict, model_outputs: list[ModelOutpu
 
         Return format:
         {{
-            "completely_uncertain": "...",
-            "very_low_confidence": "...",
-            "low_confidence": "...",
-            "medium_confidence": "...",
-            "high_confidence": "...",
-            "very_high_confidence": "..."
+            "1": "...",
+            "2": "...",
+            "3": "...",
+            "4": "...",
         }}
         """.strip()
         aug_prompt = PromptCollection(context_texts=[template.format(answer=ans) for ans in output.output_texts])
@@ -131,13 +126,12 @@ def linguistic_confidence_augmentation(cfg: dict, model_outputs: list[ModelOutpu
             try:
                 aug_dict = ast.literal_eval(aug)
                 continuations = list(aug_dict.values())
+                print(continuations)
             except:
                 # hard code continuations if parsing fails
-                hard_coded_aug_template = ["I have no idea what the answer is.",
+                hard_coded_aug_template = ["I don't know the answer.",
                                            "I'm not sure, but I think the answer might be: ",
-                                           "The answer may be: ",
                                            "I believe the answer is: ",
-                                           "I'm quite certain that the answer is: ",
                                            "I'm sure that the answer is: ",]
                 continuations = [temp + output.output_texts[i] for temp in hard_coded_aug_template] # fallback to original answer
             prompts.context_texts[i] = lc_prompt_template.format(formatted_question=prompts.questions[i])
