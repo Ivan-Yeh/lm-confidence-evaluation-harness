@@ -117,41 +117,37 @@ class HFAutoregressiveLLM(AbstractModel):
                 # ---- Score each continuation C = [c1, c2, ..., ck] ----
                 for continuation in continuations:
                     cont_ids = tokenizer(continuation, add_special_tokens=False).input_ids
-
-                    # rolling input: start from context
-                    rolling_ids = ctx_ids.copy()
+                    rolling_ids = list(ctx_ids)         # ensure pure python list
 
                     cont_logps = []
 
                     for token_id in cont_ids:
+                        token_id = int(token_id)
 
-                        # Encode current prefix
-                        input_ids = torch.tensor([rolling_ids], dtype=torch.long).to(hf_model.device)
+                        # Always create a clean tensor [1, L]
+                        input_ids = torch.tensor(
+                            rolling_ids,
+                            dtype=torch.long,
+                            device=hf_model.device
+                        ).unsqueeze(0)
 
-                        # Run model
                         with torch.inference_mode():
                             outputs = hf_model(input_ids)
-                            logits = outputs.logits   # [1, seq_len, vocab]
+                            logits = outputs.logits           # [1, seq_len, vocab]
 
-                        # Predict next token (use last position)
-                        next_logits = logits[:, -1, :]
+                        next_logits = logits[:, -1, :]        # [1, vocab]
                         logprobs = torch.nn.functional.log_softmax(next_logits, dim=-1)
 
-                        # logprob of actual next continuation token
                         lp = logprobs[0, token_id].item()
                         cont_logps.append(lp)
 
-                        # Append this token and move to next
-                        rolling_ids.append(token_id)
-
-                    # Sum over continuation
-                    logprob_mean = np.mean(cont_logps)
+                        rolling_ids = rolling_ids + [token_id]
 
                     candidates.append({
                         "text": continuation,
                         "tokens": tokenizer.decode(cont_ids),
                         "logprobs": cont_logps,
-                        "mean": logprob_mean,
+                        "mean": np.mean(cont_logps),
                     })
 
                 # ---- Choose best continuation by sum logprob ----

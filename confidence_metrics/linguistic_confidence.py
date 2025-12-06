@@ -20,7 +20,12 @@ def scalar_linguistic_confidence(cfg: dict, output_lst: list[ModelOutputs], prom
             return score
         
         DIRECT_PROMPT = """
-        Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence (without using any external or prior knowledge): 
+        Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence (without using any external or prior knowledge). \
+            Please pay attention to the hedging language used and the overall assertiveness of the statement. \
+                If the sentence contains random guesses or abstention, the score should be towards 0. If the sentence is stated with strong certainty or no hedging, the score should be towards 100. \
+                    If the sentence does not contain any linguistic cues or is a succinct, decisive short answer, the score should be towards 100, too.
+
+        Here is the sentence:
         {sentence}
 
         Confidence Score: [Return only a number between 0 and 100]
