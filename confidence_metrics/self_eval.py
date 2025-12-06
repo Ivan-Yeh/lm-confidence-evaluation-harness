@@ -1,4 +1,3 @@
-import time
 from default_utils.custom_types import ModelOutputs, PromptCollection, OrganisedOutputs
 from models.model_manager import ModelManager
 from default_utils.registry import register_confidence
@@ -83,3 +82,109 @@ def p_true_by_continuation(cfg: dict, output_lst: list[ModelOutputs], prompts: P
         extracted_answers=[outputs.output_texts for outputs in output_lst],
         extracted_confidences=[per_round_estimator(outputs) for outputs in output_lst]
     )
+
+
+
+@register_confidence(name="p_true_by_monte_carlo_generation")
+def p_true_by_monte_carlo_generation(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
+    p_true_prompt_template = """
+    Question: Who was the third president of the United States?
+    Here are some brainstormed ideas: James Monroe\n Thomas Jefferson\n Jefferson\nThomas Jefferson\n George Washington
+    Possible Answer: James Monroe
+    Is the possible answer:
+    (A) True
+    (B) False
+    The possible answer is: (B)
+
+    Question: Calculate 33 + 4
+    Here are some brainstormed ideas: 37\n 37\n 40\n 36\n 37
+    Possible Answer: 37
+    Is the possible answer:
+    (A) True
+    (B) False
+    The possible answer is: (A)
+
+    Question: Fill in the blank in the sentence \"I went to the grocery and then to the pharmacy. I was disappointed that they didn't have any vegetarian sausage at the _____\."
+    Here are some brainstormed ideas: grocery\n store\n grocery\n refrigerator\n grocery
+    Possible Answer: grocery
+    Is the possible answer:
+    (A) True
+    (B) False
+    The possible answer is: (A)
+
+    Question: Name a celebrated civil rights leader.
+    Here are some brainstormed ideas: Martin Luther King\n Ghandhi\n Martin Luther
+    King\n Barack Obama\n Martin Luther King
+    Possible Answer: Martin Luther King
+    25Is the possible answer:
+    (A) True
+    (B) False
+    The possible answer is: (A)
+
+    Question: Calculate 33 * 849
+    Here are some brainstormed ideas: 28,347\n 1,490\n 27,488\n 3,409\n 34,561
+    Possible Answer: 28347
+    Is the possible answer:
+    (A) True
+    (B) False
+    The possible answer is: (B)
+
+    Question: Fill in the blank in the sentence \"I shot the _____ and it went swish. We walked away the winners of that battle!\"
+    Here are some brainstormed ideas: gun\n bullet\n arrow\n basketball\n rifle
+    Possible Answer: gun
+    Is the possible answer:
+    (A) True
+    (B) False
+    The possible answer is: (B)
+
+    Question: {question}
+    Possible Answer: {model_answer}
+    Is the possible answer:
+    (A) True
+    (B) False
+    The possible answer is: [Return only (A) or (B)]
+    """.strip()
+    p_true_cfg = cfg.copy()
+    p_true_cfg.qa_model.repeat = 15
+    model = ModelManager(master_cfg=p_true_cfg, model_config_type="qa_model")
+    def per_round_estimator(outputs: ModelOutputs) -> list[float]:
+        # Build prompts fresh per round to avoid leaking state across evaluations
+        p_true_prompt_collection: PromptCollection = PromptCollection(context_texts=[])
+        for question, model_answer in zip(outputs.context_texts, outputs.output_texts):
+            eval_prompt = p_true_prompt_template.format(question=question, model_answer=model_answer)
+            p_true_prompt_collection.context_texts.append(eval_prompt)
+
+        print("Running P(True) by Monte Carlo generation") 
+        p_true_results: list[ModelOutputs] = model.run_generation(p_true_prompt_collection)
+
+        # Each ModelOutputs in p_true_results holds responses for the same set of
+        # questions; accumulate counts per question across all rounds.
+        num_questions = len(outputs.context_texts)
+        counts_a = [0] * num_questions
+        counts_b = [0] * num_questions
+
+        for result in p_true_results:
+            for idx, output in enumerate(result.output_texts):
+                upper = output.upper()
+                if any(token in upper for token in ["(A)", "A", "TRUE"]):
+                    counts_a[idx] += 1
+                elif any(token in upper for token in ["(B)", "B", "FALSE"]):
+                    counts_b[idx] += 1
+
+        extracted_true_probs: list[float] = []
+        for a_count, b_count in zip(counts_a, counts_b):
+            try:
+                total = a_count + b_count
+                p_true = a_count / total if total > 0 else 0.0
+                extracted_true_probs.append(p_true)
+            except:
+                extracted_true_probs.append(0.0)
+        return extracted_true_probs
+    
+    return OrganisedOutputs(
+        extracted_answers=[outputs.output_texts for outputs in output_lst],
+        extracted_confidences=[per_round_estimator(outputs) for outputs in output_lst]
+    )
+
+
+
