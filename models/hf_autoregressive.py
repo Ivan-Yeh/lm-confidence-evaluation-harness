@@ -5,6 +5,8 @@ import torch
 import torch.nn.functional as F
 import gc
 import numpy as np
+import pickle
+import os
 
 class HFAutoregressiveLLM(AbstractModel):
     def __init__(self, cfg):
@@ -16,6 +18,15 @@ class HFAutoregressiveLLM(AbstractModel):
     
     def run_generation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
         from vllm import LLM, SamplingParams
+        
+        # Check if cache exists
+        if self.cfg.get("cache"):
+            cache_path = self.cfg.get("cache")
+            cache_file = os.path.join(cache_path, "run_generation_outputs.pkl")
+            if os.path.exists(cache_file):
+                with open(cache_file, "rb") as f:
+                    return pickle.load(f)
+        
         # Build chat messages from prompt collection
         messages_list = []
         for context_text in prompt_collection.context_texts:
@@ -86,9 +97,25 @@ class HFAutoregressiveLLM(AbstractModel):
             
         del vllm_model
         torch.cuda.empty_cache()
+        
+        # Pickle outputs if cache path is specified
+        if self.cfg.get("cache"):
+            cache_path = self.cfg.get("cache")
+            os.makedirs(cache_path, exist_ok=True)
+            with open(os.path.join(cache_path, "run_generation_outputs.pkl"), "wb") as f:
+                pickle.dump(model_outputs_list, f)
+        
         return model_outputs_list
         
     def run_continuation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
+        # Check if cache exists
+        if self.cfg.get("cache"):
+            cache_path = self.cfg.get("cache")
+            cache_file = os.path.join(cache_path, "run_continuation_outputs.pkl")
+            if os.path.exists(cache_file):
+                with open(cache_file, "rb") as f:
+                    return pickle.load(f)
+        
         hf_model = AutoModelForCausalLM.from_pretrained(
             self.model_name,
             torch_dtype=torch.bfloat16,
@@ -173,4 +200,12 @@ class HFAutoregressiveLLM(AbstractModel):
         del hf_model
         gc.collect()
         torch.cuda.empty_cache()
+        
+        # Pickle outputs if cache path is specified
+        if self.cfg.get("cache"):
+            cache_path = self.cfg.get("cache")
+            os.makedirs(cache_path, exist_ok=True)
+            with open(os.path.join(cache_path, "run_continuation_outputs.pkl"), "wb") as f:
+                pickle.dump(model_outputs_list, f)
+        
         return model_outputs_list
