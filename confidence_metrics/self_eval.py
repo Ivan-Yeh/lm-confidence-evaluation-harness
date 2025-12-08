@@ -45,8 +45,6 @@ def p_true_by_monte_carlo_generation(cfg: dict, output_lst: list[ModelOutputs], 
     Return only (A) or (B). The possible answer is:
     """.strip()
     p_true_cfg = cfg.copy()
-    p_true_cfg.qa_model.repeat = 15
-    p_true_cfg.qa_model.temperature = 1.0
     model = ModelManager(master_cfg=p_true_cfg, model_config_type="p_true_mc_model")
     def per_round_estimator(outputs: ModelOutputs) -> list[float]:
         # Build prompts fresh per round to avoid leaking state across evaluations
