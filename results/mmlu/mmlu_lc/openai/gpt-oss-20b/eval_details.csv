@@ -13,7 +13,7 @@ A. unethically by accepting dual roles.
 B. ethically as long as she did not have a prior relationship with the plaintiff.
 C. ethically as long as she clarifies her roles with all parties.
 D. ethically as long as she obtains a waiver from the court.
-Answer:",C,C. ethically as long as she clarifies her roles with all parties.,0.76,1
+Answer:",C,C. ethically as long as she clarifies her roles with all parties.,0.578,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: In what ways does the perspective on terrorism influence the response a government will take?
@@ -28,7 +28,7 @@ A. Within the disease prescription, reform packages become part of the governmen
 B. Contemporary responses to terrorism have been taken within the context of the war on terror analogy, in which the norms of retaliation and punishment prevail. Implicit within this view is the justification for pre-emptive action taken against training facilities, headquarters, sources of funding, and even the assassination of key individuals.
 C. Whilst the warfare analogy presumes deterrence at times, deterrence is more central to a justice system. The extent of pre-emption available in a normal criminal context is the detention of suspects or judicial harassment.
 D. All of these options. Responses to terrorist attacks vary either explicitly or implicitly, if warfare is seen as warfare, crime, or disease.
-Answer:",D,"All of these options—government responses vary depending on whether terrorists are viewed as a disease, a war criminal threat, or a normal criminal problem.",0.631,1
+Answer:",D,"All of these options—government responses vary depending on whether terrorists are viewed as disease, crime, or a war‑like threat, each framing shaping different strategies such as reforms, legal deterrence, or pre‑emptive military action.",0.835,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: George was charged with the murder of a well- known criminal. The victim was found shot to death in his car. The only witness to the shooting was the victim's pet parrot, which was found hovering over the victim's body repeating over and over, ""George don't. . . George don't. ""To prove the identity of the victim's killer, the prosecution has a witness testify that about the time of the murder, he was in the area and heard the victim's parrot calling George's name. The best objection to the testimony is that it is
@@ -43,7 +43,7 @@ A. hearsay.
 B. irrelevant.
 C. opinion testimony.
 D. self-serving.
-Answer:",B,The best objection is that it is **A. hearsay**.,0.9570000000000001,0
+Answer:",B,"The best objection is that the testimony is irrelevant, as it does not help establish the identity of the killer.",0.9299999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Can countries rely on their domestic law as an excuse to violate their obligations under international law?
@@ -58,7 +58,7 @@ A. Domestic law always prevails over international law
 B. Only customary international law prevails over domestic law
 C. Obligations under international law prevail over domestic law
 D. Constitutional obligations always prevail over obligations under international law
-Answer:",C,Answer: C. Obligations under international law prevail over domestic law.,0.9639999999999999,1
+Answer:",C,"C.  Obligations under international law prevail over domestic law, though the exact effect can vary depending on a state’s legal system and how it incorporates international obligations domestically.",0.653,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A 30-year-old nulliparous female presents to the office with the complaint of mood changes. She says that for the past several months she has been anxious, hyperactive, and unable to sleep 3 to 4 days prior to the onset of menses. She further reports that on the day her menses begins she becomes acutely depressed, anorectic, irritable, and lethargic. She has no psychiatric history. Physical examination findings are normal. She and her husband have been trying to conceive for over 2 years. History reveals a tuboplasty approximately 1 year ago to correct a closed fallopian tube. The most likely diagnosis is
@@ -73,7 +73,7 @@ A. adjustment disorder with depressed mood
 B. bipolar I disorder, mixed
 C. cyclothymic personality
 D. generalized anxiety disorder
-Answer:",A,"I’m not sure how the best diagnosis maps onto the options given; the presentation most closely resembles premenstrual dysphoric disorder, which isn’t listed.",0.31999999999999995,0
+Answer:",A,"The presentation is most consistent with premenstrual dysphoric disorder, which is not explicitly listed in the options; the closest match among the given choices is likely **A. adjustment disorder with depressed mood** although this diagnosis does not fully capture the cyclical premenstrual nature of the symptoms.",0.549,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: At what angle to the horizontal should an ideal projectile be launched so that its horizontal displacement (the range) is equal to its maximum vertical displacement?
@@ -88,7 +88,7 @@ A. sin–1 (1/g)
 B. cos–1 (1/g)
 C. 45°
 D. tan–1 4
-Answer:",D,The projectile must be launched at the angle \(\theta = \tan^{-1}4\) (option D).,0.9560000000000001,1
+Answer:",D,θ = tan⁻¹ 4 (Option D).,0.953,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Poliovirus can most easily become more virulent by which of the following processes?
@@ -103,7 +103,7 @@ A. Mutation of the RNA genome at only a few positions
 B. Recombining with another enterovirus
 C. Altering its protein coat
 D. Multiple nucleotide deletions and substitutions
-Answer:",A,B. Recombining with another enterovirus.,0.8460000000000001,0
+Answer:",A,B. Recombining with another enterovirus.,0.9149999999999998,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The legal basis for the escalation of United States involvement in the Vietnam War was the
@@ -118,7 +118,7 @@ A. declaration of war by Congress
 B. passage of the Gulf of Tonkin Resolution by Congress
 C. United Nations resolution condemning the North Vietnamese invasion of South Vietnam
 D. mutual defense provisions of the North Atlantic Treaty Organization (NATO)
-Answer:",B,The legal basis for the escalation of United States involvement in the Vietnam War was the passage of the Gulf of Tonkin Resolution by Congress (B).,0.961,1
+Answer:",B,The legal basis for the escalation of United States involvement in the Vietnam War was the passage of the Gulf of Tonkin Resolution by Congress.,0.943,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A 15 year-old minor who looks older than his years purchased a car from a private seller. The minor paid $2000 down and agreed to pay the remaining $4000 in installments over the next two years. The minor had to have the car for work because he had no other means of support. The minor later crashed the car in an accident. He disaffirmed the contract, returned the damaged car, and demanded his down payment back. Does the seller have a right to obtain any consideration in this matter?
@@ -133,7 +133,7 @@ A. No the seller must return the down payment because the minor has declared his
 B. The seller cannot keep the down payment and cannot obtain any other benefit from the transaction.
 C. The seller can sue the minor for misrepresentation and fraud in not revealing his age prior to buying the car.
 D. The seller can obtain only the reasonable value of the use of the car in a restitution action.
-Answer:",D,D. The seller can obtain only the reasonable value of the use of the car in a restitution action.,0.867,1
+Answer:",D,D. The seller can obtain only the reasonable value of the use of the car in a restitution action.,0.9,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: When oxygen becomes unavailable, this process regenerates NAD+, allowing respiration to continue.
@@ -148,7 +148,7 @@ A. Glycolysis
 B. Chemiosmosis
 C. Fermentation
 D. Calvin cycle
-Answer:",C,C. Fermentation.,0.8699999999999999,1
+Answer:",C,C. Fermentation.,0.655,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: International trade will almost always benefit both countries, so why do countries try to protect their own firms from exposure to the world market?
@@ -163,7 +163,7 @@ A. Irrationality on the part of the leadership
 B. Costs of free trade are concentrated, but benefits are dispersed
 C. Regime type
 D. International conflict prevents trade
-Answer:",B,"The most widely cited economic explanation is B: “Costs of free trade are concentrated, but benefits are dispersed,” which leads governments to use protection to safeguard local producers facing asymmetric losses.",0.9499999999999998,1
+Answer:",B,"The most widely cited economic explanation is B – the costs of free trade tend to be concentrated (e.g., on specific firms or workers) while the benefits are more dispersed, leading to protectionist pressures.",0.9269999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Statement 1| CIFAR-10 classification performance for convolution neural networks can exceed 95%. Statement 2| Ensembles of neural networks do not improve classification accuracy since the representations they learn are highly correlated.
@@ -178,7 +178,7 @@ A. True, True
 B. False, False
 C. True, False
 D. False, True
-Answer:",C,"C. True, False",0.532,1
+Answer:",C,"C. True, False",0.5479999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Why might a patient need a tracheostomy?
@@ -193,7 +193,7 @@ A. To repair vocal cords after paralysis.
 B. To aid swallowing.
 C. As an aid to weaning patients from a ventilator.
 D. Prior to neck surgery.
-Answer:",C,Answer: C. A tracheostomy is often performed to facilitate weaning patients from a ventilator.,0.9549999999999998,1
+Answer:",C,C. A tracheostomy may be performed to facilitate weaning patients from a ventilator by providing a more secure and comfortable airway.,0.7390000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A baseball fan purchased two tickets for a World Series baseball game. The fan contacted his best friend and invited him to go to the game. The friend, who was a fanatic baseball fan, eagerly agreed. The fan told the friend that the game started at 7:00 p. m. and that he would pick him up at about 5:00 p. m. so they could get there early to watch batting practice. They were driving to the game together when the fan sped up to cross an intersection while the traffic signal was changing from amber to red. As he reached the intersection, the fan was traveling at 50 m. p. h. although the posted speed limit was 25 m. p. h. Simultaneously, a car entered the intersection on red and collided with the fan's vehicle. The friend suffered a broken pelvis in the collision. This jurisdiction has adopted the following ""modified"" comparative negligence statute:""A negligent plaintiff is entitled to obtain a recovery provided plaintiff's negligence is not equal to or greater than that of the defendant's; otherwise no recovery is permitted. ""Suppose the friend brings suit against the driver of the car that entered the intersection on the red light to recover damages for his injury. Ajury returned a special verdict with the following findings: (1) The fan was 55 percent negligent in speeding; (2) The driver was 45 percent negligent in driving through the red light; and (3) The friend suffered $100,000 in damages. As a result, the court should enter a judgment for the friend in the amount of
@@ -208,7 +208,7 @@ A. $100,000. 00
 B. $55,000. 00
 C. $45,000. 00
 D. nothing, because the fan was more negligentthan the driver.
-Answer:",A,"A. $100,000.00",0.9789999999999999,1
+Answer:",A,"The court should enter a judgment for the friend in the amount of **$55,000.00** (Option B).",0.9110000000000001,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The best definition of an urban area is
@@ -223,7 +223,7 @@ A. the central city and its developed areas.
 B. the central city and its surrounding suburbs.
 C. the central city and its hinterlands.
 D. the central city and the adjacent counties.
-Answer:",B,B. the central city and its surrounding suburbs.,0.628,1
+Answer:",B,B. the central city and its surrounding suburbs.,0.337,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The focus on issues, the intended audience extending beyond shareholders and the voluntary nature of ___________ distinguish it from _________.
@@ -238,7 +238,7 @@ A. Financial accounting, Environmental management initiatives
 B. Financial accounting, Social accounting.
 C. Social accounting, Financial accounting.
 D. Annual report publication, Social accounting
-Answer:",C,"C. Social accounting, Financial accounting.",0.759,1
+Answer:",C,Answer: C. Social accounting distinguish itself from Financial accounting.,0.9419999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: How much work is required to charge a 10 µF capacitor to a potential difference of 100 V ?
@@ -253,7 +253,7 @@ A. 0.005 J
 B. 0.01 J
 C. 0.05 J
 D. 0.1 J
-Answer:",C,"The work required is \(0.05\,\text{J}\) — answer **C**.",0.9559999999999998,1
+Answer:",C,C. 0.05 J,0.8800000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following options completes the following statement? ""The right atrioventricular valve…""
@@ -268,7 +268,7 @@ A. is a semilunar valve
 B. is prevented from everting by papillary muscles.
 C. is open during systole.
 D. prevents blood returning from the pulmonary trunk as the heart relaxes.
-Answer:",B,B. is prevented from everting by papillary muscles.,0.9549999999999998,1
+Answer:",B,The correct completion is **B. is prevented from everting by papillary muscles.**,0.8629999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The polymerase chain reaction or PCR is a technique that
@@ -283,7 +283,7 @@ A. was used to demonstrate DNA as the genetic material
 B. is used to determine the content of minerals in a soil sample
 C. uses short DNA primers and a thermostable DNA polymerase to replicate specific DNA sequences in vitro.
 D. measures the ribosome transfer rate during translation
-Answer:",C,The correct answer is C: PCR uses short DNA primers and a thermostable DNA polymerase to replicate specific DNA sequences in vitro.,0.9669999999999999,1
+Answer:",C,The correct answer is C: PCR uses short DNA primers and a thermostable DNA polymerase to replicate specific DNA sequences in vitro.,0.9599999999999997,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I had to shoot the panther because it annoyed my son. Scenario 2 | I poured a bowl of cereal for my young son.
@@ -298,7 +298,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",B,"B. Wrong, Not wrong",0.9199999999999999,1
+Answer:",B,"B. Wrong, Not wrong",0.7420000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: High entropy means that the partitions in classification are
@@ -313,9 +313,7 @@ A. pure
 B. not pure
 C. useful
 D. useless
-Answer:",B,"B. not pure
-
-(Note: high entropy indicates a lack of purity in the class distribution.)",0.6080000000000001,1
+Answer:",B,High entropy indicates that the partitions in classification are **B. not pure**.,0.9099999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: This question refers to the following information.
@@ -336,7 +334,7 @@ A. the Civil Rights Act of 1964
 B. Medicare and Medicaid
 C. the establishment of the Department of Housing and Urban Development
 D. the balanced budget mandate
-Answer:",D,D. the balanced budget mandate.,0.7900000000000001,1
+Answer:",D,D. the balanced budget mandate.,0.61,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Identify the antecedent of the following conditional proposition: The university raises tuition if, and only if, both the governor approves of it and the board of trustees recommends it.
@@ -351,7 +349,7 @@ A. The university raises tuition.
 B. The governor approves of it.
 C. The board of trustees recommends it.
 D. None of the above
-Answer:",D,Answer: A. The university raises tuition.,0.9359999999999999,0
+Answer:",D,Answer: D. None of the above.,0.944,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: This question refers to the following information.
@@ -372,7 +370,7 @@ A. Continuing white resistance slowed efforts at desegregation, sparking a serie
 B. The Supreme Court decision Brown v. the Board of Education led to increased enrollment in colleges and universities.
 C. During the 1960s, increasing numbers of high school graduates rejected the notion that a college education was desirable.
 D. In the twentieth century, jobs in advanced technical and medical industries generally require postgraduate degrees.
-Answer:",A,"Answer: A. Continuing white resistance slowed efforts at desegregation, sparking a series of social conflicts throughout the South.",0.945,1
+Answer:",A,"Answer: A. Continuing white resistance slowed efforts at desegregation, sparking a series of social conflicts throughout the South.",0.9469999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: This question refers to the following information.
@@ -395,7 +393,7 @@ A. the clergy's monopoly on academic scholarship in eighteenth-century Britain
 B. the hatred of all things Roman by British scholars in the eighteenth century
 C. the spread of religious skepticism among the educated elite of Britain in the eighteenth century
 D. the lack of sources available to the eighteenth-century scholar for the study of ancient Roman civilization
-Answer:",C,C. the spread of religious skepticism among the educated elite of Britain in the eighteenth century.,0.8240000000000001,1
+Answer:",C,C. the spread of religious skepticism among the educated elite of Britain in the eighteenth century.,0.44699999999999995,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following would increase the rate at which a gas diffuses between the alveoli of the lung and the blood within a pulmonary capillary?
@@ -410,7 +408,7 @@ A. Decreasing the partial pressure gradient of the gas
 B. Decreasing the solubility of the gas in water
 C. Increasing the total surface area available for diffusion
 D. Decreasing the rate of blood flow through the pulmonary capillary
-Answer:",C,The rate would increase by **C. Increasing the total surface area available for diffusion**.,0.736,1
+Answer:",C,The rate would increase by **C. increasing the total surface area available for diffusion** (greater area allows more gas molecules to cross per unit time).,0.9349999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: How are antibody producing cells stimulated?
@@ -425,7 +423,7 @@ A. Interacting with a virus short peptide
 B. Interacting with a T helper cell.
 C. Interacting with a plasma cell
 D. Interacting with a virus infected cell
-Answer:",B,B. Antibody‑producing B cells are stimulated by interaction with a T helper cell.,0.9369999999999999,1
+Answer:",B,Answer: B. Antibody‑producing B cells are stimulated by interacting with a helper T cell.,0.9410000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Anorexia nervosa is a life-threatening illness that can lead to permanent physiological changes (such as brittle bones) and even death. Which of the following individuals would be the most likely to develop this illness?
@@ -440,7 +438,7 @@ A. Maria, a 16-year-old Caucasian female, who is an A student and talented music
 B. Leticia, a 15-year-old African American female, who is an A student and exceptional athlete, plus an avid reader
 C. Rosa, a 26-year old Hispanic female, who has just received her law degree, is struggling with debt from school, and having difficulty finding employment
 D. Virginia, a 14-year-old Caucasian female, who is a C student, is sexually promiscuous, and is experimenting with drugs
-Answer:",A,"Answer: A. Maria, a 16‑year‑old high‑achieving Caucasian female who feels her life is out of control, is most likely to develop anorexia nervosa.",0.95,1
+Answer:",A,Answer: Maria.,0.9649999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Pat bounces a basketball 25 times in 30 seconds. At that rate, approximately how many times will Pat bounce the ball in 150 seconds?
@@ -455,7 +453,7 @@ A. 120
 B. 125
 C. 144
 D. 145
-Answer:",B,B. 125 (by scaling the 25 bounces in 30 s to 150 s: 150 × 25⁄30 ≈ 125).,0.953,1
+Answer:",B,B. 125,0.9,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The origins of Chinese civilization can be traced to:
@@ -470,7 +468,7 @@ A. the site of An-yang near the Huang ho River.
 B. chiefdoms and states in numerous regions throughout China.
 C. the beginning of the Qin Dynasty.
 D. external influences originating from the Indus Valley.
-Answer:",B,The origins of Chinese civilization can be traced to chiefdoms and states in numerous regions throughout China (Option B).,0.8950000000000001,1
+Answer:",B,The origins of Chinese civilization can be traced to the site of An-yang near the Huang Ho River (option A).,0.884,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of these is another name for a golf course?
@@ -485,7 +483,7 @@ A. Pitch
 B. Links
 C. Steps
 D. Suite
-Answer:",B,B. Links is another name for a golf course.,0.9390000000000001,1
+Answer:",B,B. Links is another name for a golf course.,0.9629999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I shot an arrow through the bulleye. Scenario 2 | When I saw my sister's name in the men's bathroom stall, I added her phone number.
@@ -500,7 +498,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",C,"Answer: D (Not wrong, Not wrong)",0.975,0
+Answer:",C,"C. Not wrong, Wrong",0.325,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: You notice a lesion on the labial alveolar mucosa of the lower right lateral incisor tooth of one of your patients and decide to take a biopsy to send for oral pathology report Which nerve would require local anaesthesia in order to carry out a pain-free biopsy?
@@ -515,7 +513,7 @@ A. The incisive nerve
 B. The mental nerve
 C. The buccal nerve
 D. The lingual nerve
-Answer:",B,The pain‑free biopsy would require anaesthesia of the mental nerve (option B).,0.8819999999999999,1
+Answer:",B,B. The mental nerve (the main sensory supply to the labial alveolar mucosa of the lower incisors).,0.675,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: At birth, the least developed part of the brain is the
@@ -530,7 +528,7 @@ A. visual system
 B. cortex
 C. brain stem
 D. cerebellum
-Answer:",B,B. cortex,0.724,1
+Answer:",B,B. cortex,0.5349999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A company has a choice of three investment schemes. Option I gives a sure $25,000 return on investment. Option II gives a 50% chance of returning $50,000 and a 50% chance of returning $10,000. Option III gives a 5% chance of returning $100,000 and a 95% chance of returning nothing. Which option should the company choose?
@@ -545,7 +543,7 @@ A. Option II if it wants to maximize expected return
 B. Option I if it needs at least $20,000 to pay off an overdue loan
 C. Option III if it needs at least $80,000 to pay off an overdue loan
 D. All of the above answers are correct.
-Answer:",D,Answer: A. Option II if it wants to maximize expected return.,0.943,0
+Answer:",D,Answer: D. All of the above answers are correct.,0.9649999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Baier argues that genuine moral rules:
@@ -560,7 +558,7 @@ A. must be for the good of human beings.
 B. make take into account the interests of all sentient beings.
 C. must take into account the interests of all living beings.
 D. are primarily directed toward promoting self-interest.
-Answer:",A,A. Baier argues that genuine moral rules must be for the good of human beings.,0.9349999999999999,1
+Answer:",A,"The best‑currently understood view is that Baier claims genuine moral rules must be directed toward the good of **human beings**, though some scholars suggest a broader claim about all *sentient* beings; I remain uncertain whether his original position extends beyond human interests.",0.46499999999999997,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A resident of a state was the owner of a large tract of virgin forest. The resident conveyed the tract ""to the people of the state in fee simple; provided, however, that if any portion of said tract shall ever be used or developed for any commercial purpose or otherwise converted from its natural state (with exception for recreational, scientific, or educational purposes), then the grantor or his successors in interest may reenter as of the grantor's former estate. ""Under state law, conveyances of real property to ""the people"" of the state are deemed to vest title in the state regarded as a legal entity, and custody over such property resides in an appointed official known as the director of environmental resources. The director granted a logging company the privilege to cut timber on a remote portion of the tract, together with incidental easements of way. The section that the logging company was to clear would be used for the development of a state recreational area. After the privilege was granted, the logging company proceeded to clear the timber, which he later sold for $10,000. When the resident learned that the logging company was cutting the timber and selling it, he notified the director to desist further exploitation of the land. In an ejectment action instituted by the resident against the state to recover the tract, what result would be expected?
@@ -575,7 +573,7 @@ A. The resident would succeed, because the logging company's selling of the timb
 B. The resident would succeed, because the logging company's selling of the timber would constitute an automatic termination of the state's fee interest.
 C. The resident would not succeed, because the director approved the clearing of the timber in order to develop the area for recreational purposes.
 D. The resident would not succeed, because the reservation of the resident's right to terminate would be violative of the rule against perpetuities.
-Answer:",C,"A. The resident would succeed, because the logging company's selling of the timber would entitle the resident to re‑enter and terminate the grant to the state.",0.945,0
+Answer:",C,"A. The resident would succeed, because the logging company's selling of the timber would entitle the resident to re‑enter and terminate the grant to the state.",0.9219999999999999,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: What is the price of a five-year bond (face value $100) that pays no coupons, if its yield is 4%?
@@ -590,7 +588,7 @@ A. $100
 B. $85
 C. $82
 D. $75
-Answer:",C,C. $82,0.841,1
+Answer:",C,"C. $82 (approximately, as 100 / 1.04⁵ ≈ 82.2).",0.7540000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The case study of Phineas Gage's brain injury was significant for which of the following reasons?
@@ -605,7 +603,7 @@ A. Gage's accident was one of the first to be treated with drugs that alter the 
 B. It was one of the first well-documented examples of a specific brain area being associated with a set of physical and emotional changes.
 C. This accident provided psychiatrists with one of the first opportunities to treat a brain-damaged patient with psychotherapeutic techniques.
 D. The CAT scan was used for the first time in the Phineas Gage case to document the extent of brain injury.
-Answer:",B,The significance lies in B: it was one of the first well‑documented examples linking a specific brain area to particular physical and emotional changes.,0.942,1
+Answer:",B,The significance of Phineas Gage’s case lies in that it was one of the first well‑documented demonstrations that damage to a specific brain region (the frontal lobes) can produce distinct physical and emotional changes.,0.953,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: This question refers to the following information.
@@ -626,7 +624,7 @@ A. The bombing of Pearl Harbor
 B. The sinking of the U.S.S Maine
 C. The bombing of the U.S.S. Liberty
 D. The Boxer Rebellion
-Answer:",A,A. The bombing of Pearl Harbor,0.8799999999999999,1
+Answer:",A,A. The bombing of Pearl Harbor,0.8859999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Calculate the ratio of the solar radiation flux on Mercury's surface for perihelion (0.304 AU) versus aphelion (0.456 AU).
@@ -641,7 +639,7 @@ A. 4:1
 B. 1:2
 C. 6:5
 D. 9:4
-Answer:",D,D. 9:4,0.96,1
+Answer:",D,D. 9:4,0.7350000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A 13-month-old child is brought to the emergency department because of urticaria, swelling of the lips, and difficulty breathing immediately after eating an egg. A potential risk for hypersensitivity reaction is posed by vaccination against which of the following illnesses?
@@ -656,7 +654,7 @@ A. Hepatitis
 B. Influenza
 C. Pertussis
 D. Poliomyelitis
-Answer:",B,B. Influenza﻿,0.9549999999999998,1
+Answer:",B,"The child’s reaction suggests an egg‑protein allergy, which is a potential risk for vaccination with the **hepatitis B vaccine** (option A).",0.768,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A 71-year-old woman is brought to the emergency department by her daughter for evaluation of her mental status. The daughter says, ""I visited Mom today for the first time in 6 months; her memory has worsened, her bills are unpaid, and her house is unusually messy."" The patient says, ""I'm perfectly healthy."" Medical history is significant for hypertension diagnosed more than 25 years ago, and two small strokes occurring 3 years and 7 months ago. The daughter gives you three empty medicine bottles from her mother's home: metoprolol, hydrochlorothiazide, and aspirin. The patient is 165 cm (5 ft 5 in) tall and weighs 59 kg (130 lb); BMI is 22 kg/m2 . Vital signs are temperature 36.4°C (97.6°F), pulse 76/min, respirations 16/min, and blood pressure 196/112 mm Hg. Pulse oximetry on room air shows an oxygen saturation of 93%. Muscle strength in her left hand is 1/5. Strength in the right extremities is 4/5. The patient is oriented only to self; she does not know the day of the week or today's date. She recalls 0 of 3 words at 5 minutes, and she is unable to name 2 objects, correctly draw interlocking pentagons, or count backwards by serial sevens. Complete blood count, renal function studies, liver function studies, and urinalysis are all within the reference ranges. ECG shows no abnormalities. Which of the following is the most likely underlying cause of the patient's symptoms?
@@ -671,7 +669,7 @@ A. Amyotrophic lateral sclerosis
 B. Cortical basal ganglionic degeneration
 C. Neurosyphilis
 D. Vascular dementia
-Answer:",D,"D. Vascular dementia, likely precipitated by the hypertensive emergency and prior cerebrovascular disease.",0.49799999999999994,1
+Answer:",D,"D. Vascular dementia is the most likely underlying cause, as the patient's acute synopses of cognitive decline and focal left‑hand weakness are best explained by new or evolving cerebrovascular events superimposed on a chronic vascular dementia background.",0.9479999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I know what Carla's dealing with at home with her father, so I'm going to overlook her bad attitude. Scenario 2 | I decided to start a fire in the furnace.
@@ -686,7 +684,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",D,Answer: C.,0.9629999999999999,0
+Answer:",D,"B. Wrong, Not wrong",0.8390000000000001,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A person who is actively rejecting the dominant culture and holds rigid, positive beliefs about the minority culture is most likely in what stage of racial/cultural identity development according to Atkinson, Morten, and Sue?
@@ -701,7 +699,7 @@ A. Conformity
 B. Dissonance
 C. Resistance and immersion
 D. Introspection
-Answer:",C,The description fits the **Resistance and immersion** stage (option C).,0.946,1
+Answer:",C,Answer: C. Resistance and immersion,0.9389999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: When using visual methods in a research project what should you take into consideration alongside the legal guidelines?
@@ -716,7 +714,7 @@ A. What constitutes a public space
 B. Protecting individuals from potential harm
 C. Any risk of invasion of privacy
 D. All of the above.
-Answer:",D,"You should consider all of the above – namely what constitutes a public space, protecting individuals from potential harm, and any risk of invasion of privacy, in addition to legal guidelines.",0.8100000000000002,1
+Answer:",D,"You should consider all of those factors—public‑space status, potential harm to individuals, and privacy risks—alongside the legal guidelines.",0.662,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: What do you call three consecutive strikes in bowling?
@@ -731,7 +729,7 @@ A. yahtzee
 B. mulligan
 C. turkey
 D. ace
-Answer:",C,C. turkey,0.86,1
+Answer:",C,C. turkey,0.47800000000000004,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I chopped down the trees intended for lumber. Scenario 2 | While visiting the Louvre, I touched many of the paintings.
@@ -746,7 +744,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",C,"Answer: D. Not wrong, Not wrong",0.954,0
+Answer:",C,"C. Not wrong, Wrong",0.36,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which vitamin is a major lipid-soluble antioxidant in cell membranes?
@@ -761,7 +759,7 @@ A. Vitamin A
 B. Vitamin D
 C. Vitamin E
 D. Vitamin K
-Answer:",C,C. Vitamin E.,0.9649999999999999,1
+Answer:",C,C. Vitamin E.,0.885,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: When a fusion reaction converts a pair of hydrogen isotopes to an alpha particle and a neutron most of the energy released is in the form of
@@ -776,7 +774,7 @@ A. gamma radiation.
 B. kinetic energy of the alpha particle.
 C. kinetic energy of the neutron.
 D. All of these about equally.
-Answer:",C,C. kinetic energy of the neutron.,0.845,1
+Answer:",C,C. kinetic energy of the neutron.,0.398,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following is NOT an important environmental factor influencing a country's agriculture?
@@ -791,7 +789,7 @@ A. Number of frost-free days per year
 B. Availability of sufficient rainfall
 C. Reliability of sufficient rainfall
 D. Amount of fertilizer produced in the country
-Answer:",D,D. Amount of fertilizer produced in the country.,0.9490000000000001,1
+Answer:",D,Answer: D. Amount of fertilizer produced in the country.,0.8899999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Hare claims that once two people agree on the meaning of the term “ought”:
@@ -806,7 +804,7 @@ A. they will share all the same moral opinions.
 B. they will disagree morally only if they disagree about the facts of the case.
 C. they will disagree morally only if they have different inclinations.
 D. none of the above.
-Answer:",D,B. (They will disagree morally only if they disagree about the facts of the case.),0.9269999999999999,0
+Answer:",D,B. They will disagree morally only if they disagree about the facts of the case.,0.9109999999999999,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: This question refers to the following information.
@@ -835,7 +833,7 @@ A. King Louis XVI
 B. Robespierre
 C. Jean Lafitte
 D. Lafayette
-Answer:",B,B. Robespierre should be the answer.,0.9309999999999998,1
+Answer:",B,The French Revolution allowed **Robespierre** (option B) to assume great power.,0.945,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: What character did Woody replace on the TV show 'Cheers'?
@@ -850,7 +848,7 @@ A. Coach
 B. Diane
 C. Norm
 D. Frasier
-Answer:",A,"The character Woody replaced on the TV show 'Cheers' was Diane, making the correct choice B.",0.9549999999999998,0
+Answer:",A,"I’m not certain, but it seems Woody Harrelson came in to replace the role of **Diane** (option B).",0.30299999999999994,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A student pushes a puck across a table, moving it from position x = 0 to position x = 0.2 m. After he lets go, the puck continues to travel across the table, coming to rest at position x = 1.2 m. When the puck is at position x = 1.0 m, which of the following is a correct assertion about the net force on the puck?
@@ -865,7 +863,7 @@ A. The net force is in the negative direction, because the puck is moving in the
 B. The net force is down, because the puck is near the Earth, where gravitational acceleration is 10 m/s^2 downward.
 C. The net force is in the positive direction, because the student’s push caused the puck to speed up in the positive direction.
 D. The net force is zero, because the student’s push in the positive direction must equal the force of friction in the negative direction.
-Answer:",A,"A. The net force is in the negative direction, because the puck is moving in the positive direction but slowing down.",0.96,1
+Answer:",A,"A. The net force is in the negative direction, because the puck is moving in the positive direction but slowing down.",0.9369999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: In what ways is contractionary fiscal policy in the United States likely to affect domestic interest rates and the international value of the dollar?
@@ -880,7 +878,7 @@ A. Interest rates increase and the dollar depreciates.
 B. Interest rates decrease and the dollar appreciates.
 C. Interest rates increase and the dollar appreciates.
 D. Interest rates decrease and the dollar depreciates.
-Answer:",D,"C. Contractionary fiscal policy will tend to push domestic interest rates higher and, through the higher yields, the dollar is likely to appreciate.",0.7510000000000001,0
+Answer:",D,"**C.** Contractionary fiscal policy tends to lift domestic interest rates and, all else equal, strengthen the U.S. dollar, although the precise outcome can vary if other factors offset this effect.",0.65,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Lowest critical frequency is due to zero and it may be present at the origin or nearer to the origin, then the type of network is
@@ -895,7 +893,7 @@ A. LC circuit.
 B. RC circuit.
 C. RLC circuit.
 D. RL Circuit.
-Answer:",D,The lowest critical frequency that originates from a zero located at or near the origin characterizes a **RC circuit (option B)**.,0.9559999999999998,0
+Answer:",D,"The network is most likely an RL circuit, though this conclusion is uncertain because the description could also correspond to an RLC arrangement in some configurations.",0.46699999999999997,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The capitalist class of the mid-twentieth century were said to join the upper class because they:
@@ -910,7 +908,7 @@ A. participated in the same leisure pursuits and events of the 'social calendar'
 B. emulated the lifestyle and cultural values of the traditional aristocracy
 C. owned companies and financial assets that generated wealth through corporations
 D. had direct, personal ownerships of land and businesses as physical assets
-Answer:",C,C. because they owned companies and financial assets that generated wealth through corporations.,0.9159999999999998,1
+Answer:",C,C – because they owned companies and financial assets that generated wealth through corporations.,0.915,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: How many diagonals are in a regular octagon?
@@ -925,7 +923,7 @@ A. 8
 B. 16
 C. 17
 D. 20
-Answer:",D,D. 20,0.974,1
+Answer:",D,D. 20,0.915,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following tools is the first choice for cleaning the mouth?
@@ -940,7 +938,7 @@ A. Small, soft toothbrush.
 B. Gloved finger wrapped in gauze.
 C. Forceps wrapped in gauze.
 D. Foam stick.
-Answer:",A,"A. Small, soft toothbrush.",0.8549999999999999,1
+Answer:",A,"Answer: A. Small, soft toothbrush.",0.9629999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following pairs of scientists pioneered the ecological discipline known as island biogeography?
@@ -955,7 +953,7 @@ A. Robert MacArthur and E. O. Wilson
 B. James Watson and Francis Crick
 C. Matthias Schleiden and Theodor Schwann
 D. Alfred Hershey and Martha Chase
-Answer:",A,A. Robert MacArthur and E. O. Wilson pioneered island biogeography.,0.968,1
+Answer:",A,A. Robert MacArthur and E. O. Wilson pioneered island biogeography.,0.962,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: When disposable income increases by $X
@@ -970,7 +968,7 @@ A. consumption increases by more than $X .
 B. saving increases by less than $X .
 C. saving increases by exactly $X .
 D. saving remains constant.
-Answer:",B,**Answer: B. Saving increases by less than $X$.**,0.78,1
+Answer:",B,B. saving increases by less than $X.,0.513,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following best explains why enzymes are effective in facilitating chemical reactions?
@@ -985,7 +983,7 @@ A. They raise the temperature of the reaction mixture, thereby speeding up the c
 B. They alter the equilibrium constant of a reaction (K_eq) so that more reactant can be converted to product.
 C. They increase the maximal rate of the chemical reaction (V_max).
 D. They lower the activation energy, thereby speeding up the conversion of reactants to products.
-Answer:",D,"D. They lower the activation energy, thereby speeding up the conversion of reactants to products.",0.9159999999999998,1
+Answer:",D,"D. They lower the activation energy, thereby speeding up the conversion of reactants to products.",0.9509999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: There are three main types of buying situations in an organization, referred to by Robinson, Faris, and Wind (1967) as _____________.
@@ -1000,7 +998,7 @@ A. Repeat purchases.
 B. Buyphases.
 C. Buyclasses.
 D. Tenders.
-Answer:",C,Answer: C. Buyclasses.,0.967,1
+Answer:",C,Answer: C. Buyclasses.,0.9419999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Marquis argues that abortion is morally wrong by
@@ -1015,7 +1013,7 @@ A. showing that a fetus is a person with full moral rights, including the right 
 B. appealing to the fact that a fetus is biologically human and arguing that it is presumptively morally wrong to kill biologically human beings.
 C. showing that a fetus is sentient and that it is morally wrong to harm and kill sentient creatures.
 D. none of the above
-Answer:",D,D. none of the above,0.8,1
+Answer:",D,D. none of the above.,0.629,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I backed the truck up into the lake. Scenario 2 | During gun practice I shot a hole in the strawman's ear.
@@ -1030,7 +1028,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",B,"**Answer:** B. Wrong, Not wrong",0.97,1
+Answer:",B,"Answer: B. Wrong, Not wrong",0.9399999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: According to Socrates, a clear sign that a person has _____ is her exclusive pursuit of social status, wealth, power, and pleasure.
@@ -1045,7 +1043,7 @@ A. philosophical ambition
 B. worldly wisdom
 C. exceptional desires
 D. an unhealthy soul
-Answer:",D,Answer: D. an unhealthy soul.,0.96,1
+Answer:",D,D. an unhealthy soul,0.735,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I moved my family into the underground storm shelter to hide them from child protective services. Scenario 2 | I passed my exam
@@ -1060,7 +1058,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",B,"Answer: **B. Wrong, Not wrong**",0.96,1
+Answer:",B,Answer: **B**,0.9079999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Suppose X is a discrete random variable on the set of positive integers such that for each positive integer n, the probability that X = n is 1/2^n. If Y is a random variable with the same probability distribution and X and Y are independent, what is the probability that the value of at least one of the variables X and Y is greater than 3 ?
@@ -1075,7 +1073,7 @@ A. 1/64
 B. 15/64
 C. 1/4
 D. 3/8
-Answer:",B,B. 15/64,0.9649999999999999,1
+Answer:",B,The probability that at least one of \(X\) or \(Y\) exceeds \(3\) is \(15/64\) (option B).,0.9359999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Theresa had a bag of 72 marbles. She put the marbles into 9 equal groups. Which number sentence shows how to find the number of marbles Theresa put into each group?
@@ -1090,7 +1088,7 @@ A. 72 ÷ 9 = 8
 B. 72 – 9 = 63
 C. 9 + 72 = 81
 D. 9 ÷ 72 = 0.125
-Answer:",A,Answer: A. 72 ÷ 9 = 8.,0.962,1
+Answer:",A,A. 72 ÷ 9 = 8,0.9559999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which area is home to the tradition of making stone tools from chipped pebbles, called Hoabinhian?
@@ -1105,7 +1103,7 @@ A. Australia
 B. North America
 C. Europe
 D. Asia
-Answer:",D,The Hoabinhian stone‑tool tradition is found in Asia.,0.9610000000000001,1
+Answer:",D,The Hoabinhian tradition of making stone tools from chipped pebbles originated in Asia.,0.958,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A 76-year-old man comes to the office because of early awakening at night. He has no difficulty falling asleep but routinely wakes up between 2:00 and 3:00 AM. The patient is a retired postal worker, and he has always been physically active. He has diabetes mellitus controlled by diet. The patient drinks one cup of coffee in the morning with breakfast and usually walks for exercise in the morning. Before retiring at night he has one alcoholic beverage. He has no history of depression, nightmares, or snoring and he takes no over-the-counter medications. His wife of 45 years is also in good health. Vital signs are temperature 37.1°C (98.8°F), pulse 96/min and regular, respirations 18/min, and blood pressure 135/90 mm Hg. Physical examination shows a well-nourished, well-developed man. He is not obese. Examination of the head and neck is normal; there are no bruits or jugular venous distention. Chest is clear, and heart is normal with S1 and S2. Abdomen is soft and nontender with active bowel sounds and no organomegaly. Rectal examination discloses no abnormalities. Which of the following is the most appropriate management of this patient's insomnia?
@@ -1120,7 +1118,7 @@ A. Advise the patient to discontinue his bedtime drink of alcohol
 B. Advise the patient to read and snack in bed to relax
 C. Prescribe a vigorous pre-bedtime exercise regimen
 D. Prescribe sertraline
-Answer:",A,A. Advise the patient to discontinue his bedtime drink of alcohol.,0.925,1
+Answer:",A,A. Advise the patient to discontinue his bedtime drink of alcohol.,0.9649999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A 38-year-old person is afraid to travel on public transportation. A program of treatment that relies on graduated exposure to traveling by bus, with actual real-life behavioral activities increased across trials, is called
@@ -1135,7 +1133,7 @@ A. flooding
 B. modeling
 C. reinforced practice
 D. implosion
-Answer:",C,"I’m not entirely sure, but the described approach resembles a graded‑exposure protocol, which is not clearly listed among the options; if forced to choose, I would lean toward **C. reinforced practice**, though this may not be the textbook term for systematic desensitization.",0.33499999999999996,1
+Answer:",C,"The described technique—gradual, real‑life exposure to the feared stimulus—is best known as graded or systematic desensitization; since none of the options names that directly, the closest match in common terminology would be **C. reinforced practice**, though I’m not entirely certain this is what the exam was looking for.",0.513,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The time it takes for a pendulum swinging to and fro refers to its
@@ -1150,7 +1148,7 @@ A. frequency
 B. period
 C. wavelength
 D. amplitude
-Answer:",B,The time it takes for a pendulum to swing back and forth is its **period**.,0.9259999999999999,1
+Answer:",B,The time it takes for a pendulum to swing back and forth once is called its **period** (option B).,0.9269999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I gave the student a good grade because he earned it. Scenario 2 | When the Nazis came to my door, I lied and said I didn't know where Ann Frank was.
@@ -1165,7 +1163,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",D,"Answer: D. Not wrong, Not wrong",0.9599999999999997,1
+Answer:",D,"D. Not wrong, Not wrong",0.9389999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The government promotes preferential treatment for members of groups that have historically suffered from discrimination by means of
@@ -1180,7 +1178,7 @@ A. the New Federalism
 B. affirmative action programs
 C. Social Security benefits
 D. bills of attainder
-Answer:",B,B. affirmative action programs.,0.8,1
+Answer:",B,B. affirmative action programs.,0.5920000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: According to COSO, an effective approach to monitoring internal control involves each of the following steps, except
@@ -1195,7 +1193,7 @@ A. Establishing a foundation for monitoring.
 B. Increasing the reliability of financial reporting and compliance with applicable laws and regulations.
 C. Designing and executing monitoring procedures that are prioritized based on risks to achieve organizational objectives.
 D. Assessing and reporting the results, including following up on corrective action where necessary.
-Answer:",B,The step that is not part of COSO’s effective monitoring approach is B.,0.954,1
+Answer:",B,B. Increasing the reliability of financial reporting and compliance with applicable laws and regulations.,0.8560000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For Kohlberg, morality:
@@ -1210,7 +1208,7 @@ A. Develops independent of outside influence
 B. Cannot be rationalized in every instance
 C. Is independent from emotion
 D. Shows a logical progression from egocentric thought to broad moral principles
-Answer:",D,Answer: D. It shows a logical progression from egocentric thought to broad moral principles.,0.95,1
+Answer:",D,D. Shows a logical progression from egocentric thought to broad moral principles.,0.9349999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Select the best translation into predicate logic: Ms. Jackson lent me some sugar, but neither Janet nor Latoya did.
@@ -1225,7 +1223,7 @@ A. Lm ∨ ~(Jl ∨ Ll)
 B. Lm • ~(Lj • Ll)
 C. Lm • ~(Lj ∨ Ll)
 D. Lm ∨ ~(Lj • Ll)
-Answer:",C,C. Lm • ~(Lj ∨ Ll),0.97,1
+Answer:",C,The correct translation is **C.** Lm ∧ ¬(Lj ∨ Ll).,0.961,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: On average, men perform better than women on all the following tasks with the exception of:
@@ -1240,7 +1238,7 @@ A. Simultaneous processing
 B. Mental rotation
 C. Target-directed motor skills
 D. Mathematical problem solving
-Answer:",A,"The exception is A. On average, men do not outperform women on simultaneous processing; in fact, women tend to do better on that task.",0.8699999999999999,1
+Answer:",A,"On average, men perform better than women on all the listed tasks except **A. simultaneous processing**.",0.8109999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Older adults are most likely to be involved in a traffic accident when they are
@@ -1255,7 +1253,7 @@ A. On foot
 B. Driving in a new location
 C. A passenger in a younger person's car
 D. Alone
-Answer:",A,Older adults are most likely to be involved in a traffic accident when they are driving in a new location.,0.9369999999999999,0
+Answer:",A,Older adults are most likely to be involved in a traffic accident when they are **B. driving in a new location**.,0.8230000000000001,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following describes the straw person fallacy?
@@ -1270,7 +1268,7 @@ A. arguing someone should do something only because it will make him or her bett
 B. saying an opposing arguer has taken a position that you can easily defeat, when he or she has not taken that position, then going on to defeat that position and claim to have done significant damage to that arguer's overall argument
 C. attacking the character or background of an opposing arguer instead of responding to that person's arguments with good evidence and sound reasoni
 D. responding to an argument with an expression of derision instead of a counter argument
-Answer:",B,"B. saying an opposing arguer has taken a position that you can easily defeat, when he or she has not taken that position, then going on to defeat that position and claim to have done significant damage to that arguer's overall argument.",0.742,1
+Answer:",B,"B. saying an opposing arguer has taken a position that you can easily defeat, when he or she has not taken that position, then going on to defeat that position and claim to have done significant damage to that arguer’s overall argument.",0.6070000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I refilled the wine by choice Scenario 2 | I opened the gas tank and filled it with water.
@@ -1285,7 +1283,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",C,"C. Not wrong, Wrong",0.7270000000000001,1
+Answer:",C,"C. Not wrong, Wrong",0.31199999999999994,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The Framers of the Constitution sought to insulate the Senate from public opinion by
@@ -1300,7 +1298,7 @@ A. restricting Senate membership to those who previously served in the House of 
 B. delegating the responsibility for electing senators to the state legislatures
 C. requiring all spending bills to originate in the House of Representatives
 D. empowering the Senate to provide advice and consent to the executive branch
-Answer:",B,B. They delegated the responsibility for electing senators to the state legislatures.,0.951,1
+Answer:",B,B. They delegated the responsibility for electing senators to the state legislatures.,0.975,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: What city's airport uses the code ORD?
@@ -1315,7 +1313,7 @@ A. Chicago
 B. Orlando
 C. New York City
 D. Portland
-Answer:",A,Answer: A. Chicago,0.9650000000000001,1
+Answer:",A,Answer: A. Chicago,0.953,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: If an auditor includes an emphasis-of-matter paragraph to draw users' attention to a matter relevant to the users' understanding of the financial statements of a nonissuer, then the auditor should
@@ -1330,7 +1328,7 @@ A. Indicate in the audit report that the emphasis-of-matter paragraph is require
 B. Notify the appropriate regulatory authority if the auditor's opinion was modified on the basis of the matter.
 C. Modify the introductory paragraph to direct the reader to the emphasis-of-matter paragraph.
 D. Include the paragraph immediately after the opinion paragraph in the audit report.
-Answer:",D,D. Include the paragraph immediately after the opinion paragraph in the audit report.,0.9399999999999998,1
+Answer:",D,D. Include the paragraph immediately after the opinion paragraph in the audit report.,0.9559999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following numbers is between 2,329,500 and 2,598,100?
@@ -1345,7 +1343,7 @@ A. 2,249,550
 B. 2,589,200
 C. 2,329,333
 D. 2,327,900
-Answer:",B,"B. 2,589,200 is the number that lies between 2,329,500 and 2,598,100.",0.9489999999999998,1
+Answer:",B,"B. 2,589,200.",0.8960000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A satellite in Earth orbit is above Earth’s
@@ -1360,7 +1358,7 @@ A. atmosphere
 B. gravitational field
 C. Both
 D. Neither
-Answer:",A,A. The satellite is above Earth’s atmosphere (but still within its gravitational field).,0.9269999999999999,1
+Answer:",A,A satellite in Earth orbit is above Earth's atmosphere **and** remains within Earth's gravitational field – **C** both.,0.9470000000000001,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: An object moving along a line has velocity v(t) = t cos(t) - ln (t + 2), where 0 <= t <= 10. How many times does the object reverse direction?
@@ -1375,7 +1373,7 @@ A. none
 B. one
 C. two
 D. three
-Answer:",C,"The velocity changes sign twice on the interval [0,10], so the object reverses direction **C. two** times.",0.9569999999999999,1
+Answer:",C,Answer: A. None.,0.875,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which factor in the last quarter century greatly destabilized Eastern Europe and led to ethnic conflict?
@@ -1390,7 +1388,7 @@ A. The introduction of new languages
 B. The end of the Cold War
 C. The invasion by the Soviets
 D. The acceptance of many Eastern European countries into the EU
-Answer:",B,Answer: B. The end of the Cold War.,0.968,1
+Answer:",B,Answer: B. The end of the Cold War.,0.9710000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Statement 1| The derivative of the sigmoid $\sigma(x)=(1+e^{-x})^{-1}$ with respect to $x$ is equal to $\text{Var}(B)$ where $B\sim \text{Bern}(\sigma(x))$ is a Bernoulli random variable. Statement 2| Setting the bias parameters in each layer of neural network to 0 changes the bias-variance trade-off such that the model's variance increases and the model's bias decreases
@@ -1405,7 +1403,7 @@ A. True, True
 B. False, False
 C. True, False
 D. False, True
-Answer:",C,"C. True, False",0.7969999999999999,1
+Answer:",C,"C. True, False",0.42799999999999994,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A big fish swims upon and swallows a small fish that is at rest. Right after lunch, the fattened big fish has a change in
@@ -1420,7 +1418,7 @@ A. speed
 B. momentum
 C. Both
 D. Neither
-Answer:",A,C. Both – the big fish’s speed and momentum both change after it swallows the small fish.,0.945,0
+Answer:",A,C. Both – the big fish’s speed and momentum both change after ingesting the small fish.,0.9390000000000001,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Buffy and Willow were discussing their sexual fantasies. Buffy revealed that she sometimes fantasizes about sex with other women even though she normally finds herself attracted to men. She also fantasizes about group sex. Which of the following statements can be inferred from Buffy's fantasies?
@@ -1435,7 +1433,7 @@ A. Buffy's fantasies suggest that she must be a latent homosexual or bisexual.
 B. Buffy's fantasies are indicative of a paraphilia.
 C. Buffy's fantasies indicate that she is not getting enough sex to keep her satisfied.
 D. Buffy's fantasies are fairly typical and tell us little about her sexual tendencies.
-Answer:",D,D. Buffy’s fantasies are fairly typical and tell us little about her sexual tendencies.,0.6900000000000001,1
+Answer:",D,D. Buffy's fantasies are fairly typical and tell us little about her sexual tendencies.,0.7350000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Warner's study of the city of Natchez in the American Deep South showed that the 'colour line' there was:
@@ -1450,7 +1448,7 @@ A. no longer a powerful influence upon race relations
 B. a way of marking out the land so that black people had less space for housing
 C. a new policy that had been introduced to assimilate black and white groups
 D. a sharp division between black and white castes, underpinned by beliefs about white superiority
-Answer:",D,"Warner’s study concluded that the colour line in Natchez was a sharp division between black and white castes, underpinned by beliefs about white superiority (D).",0.9319999999999998,1
+Answer:",D,"Warner’s study concluded that the colour line in Natchez represented a sharp division between black and white castes, underpinned by beliefs about white superiority (answer D)​.",0.9629999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A professor owned a building in a city. The building had a commercial space on the first floor, with two apartments above it; one on the second, and another on the third floor. Several years ago, a teacher, in a signed writing, entered a three-year lease agreement with the professor. The teacher agreed to pay $800 monthly rent for the third-floor apartment in the professor's building. The original three-year term had long since expired, but the teacher has continued to pay his rent, and the professor continued to accept it. The professor rented the first floor to a restaurateur, who opened a sushi restaurant there. Within months, there was a citywide hookworm epidemic that was traced to the consumption of raw fish. The city council, in an attempt to protect the public from the parasites, passed an ordinance prohibiting all sushi restaurants from operating in the city. The restaurateur was forced out of business. She locked the doors and left a sign in the window: ""Closed until further notice. ""Within weeks, rats were attracted to the odor from the fish that was left in the restaurant, and the building became infested with them. The teacher could not tolerate the rats and served notice on the professor that he was moving to another city and has not been heard from since. The teacher's best defense is that the professor, by permitting the restaurateur to store the fish in the closed restaurant, caused a
@@ -1465,7 +1463,7 @@ A. partial constructive eviction.
 B. partial actual eviction.
 C. constructive eviction.
 D. breach of implied covenant of habitability.
-Answer:",C,C. constructive eviction.,0.765,1
+Answer:",C,The teacher’s best defense is that the professor’s failure to prevent the fish‐storage‑induced rat infestation caused a constructive eviction.,0.9479999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Pumice is a volcanic rock that floats in water. The density of pumice compared with that of water is
@@ -1480,7 +1478,7 @@ A. less.
 B. equal.
 C. greater.
 D. none because it sinks.
-Answer:",A,A. less.,0.842,1
+Answer:",A,Answer: A. less.,0.9359999999999997,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A presidential plurality victory occurs when
@@ -1495,7 +1493,7 @@ A. the winning candidate receives less than 50 percent of the popular vote
 B. candidates receive an equal number of electoral votes and the popular vote determines the winner
 C. the Senate declares the formal winner
 D. the winning candidate receives more than 50% of the popular vote
-Answer:",A,"A presidential plurality victory occurs when the winning candidate receives more votes than any other candidate, even if that total is less than 50% of the popular vote (option A).",0.9599999999999997,1
+Answer:",A,A presidential plurality victory occurs when the winning candidate receives more votes than any other candidate but less than 50 % of the popular vote (option A).,0.944,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: How do you prevent SQL injection?
@@ -1510,7 +1508,7 @@ A. Escape queries
 B. Interrupt requests
 C. Merge tables
 D. All of the above
-Answer:",A,Answer: A. Escape queries.,0.968,1
+Answer:",A,"A. Escape queries (i.e., use parameterized queries or prepared statements).",0.882,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I laugh at the student that stutters. Scenario 2 | I called the cops on a stranger for walking past me
@@ -1525,7 +1523,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",A,"A. Wrong, Wrong",0.8599999999999998,1
+Answer:",A,"A. Wrong, Wrong",0.8459999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I gave discounts to the elderly. Scenario 2 | The neighbor's dog kept barking so I stuffed a sock in its mouth.
@@ -1540,7 +1538,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",C,"C. Not wrong, Wrong",0.778,1
+Answer:",C,"C. Not wrong, Wrong",0.603,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: As of 2019, about what percentage of French people say God plays an important role in their life?
@@ -1555,7 +1553,7 @@ A. 11%
 B. 31%
 C. 51%
 D. 71%
-Answer:",B,Answer: B. 31%,0.975,1
+Answer:",B,Answer: B. 31%,0.9800000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following is a Wireless traffic Sniffing tool?
@@ -1570,9 +1568,7 @@ A. Maltego
 B. BurpSuit
 C. Nessus
 D. Wireshark
-Answer:",D,"D. Wireshark
-
-The network protocol analyzer Wireshark can capture and analyze wireless traffic, making it a wireless traffic sniffing tool.",0.9509999999999998,1
+Answer:",D,D. Wireshark.,0.9570000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: When light undergoes interference, it can sometimes
@@ -1587,7 +1583,7 @@ A. build up to more than the sum of amplitudes
 B. cancel completely
 C. Both of these
 D. Neither of these
-Answer:",B,C. Both of these,0.96,0
+Answer:",B,C. Both of these,0.851,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Early theories of mass communication suggested that audiences were passive recipients of media messages and thus vulnerable to manipulation. Which of the following best describes current thinking?
@@ -1602,7 +1598,7 @@ A. Audiences are more vulnerable and passive than ever before.
 B. Television viewing, in particular, creates increased activity in the right hemisphere of the brain.
 C. Active receivers are not uniformly affected by mass communication messages.
 D. Technology has led to increasingly passive recipients at the ends of message transmission systems.
-Answer:",C,C. Active receivers are not uniformly affected by mass communication messages.,0.776,1
+Answer:",C,C. Active receivers are not uniformly affected by mass communication messages.,0.8469999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: On West's account, women who engage in undesired sex because of actual or felt dependence on their partner may experience injury to their sense of autonomy because
@@ -1617,7 +1613,7 @@ A. they have neglected to take whatever steps would lead to their self-sustenanc
 B. they are dominated by their partners insofar as they are not free to do as they please.
 C. they are actually coerced into having sex.
 D. none of the above.
-Answer:",A,B. they are dominated by their partners insofar as they are not free to do as they please.,0.7030000000000001,0
+Answer:",A,B. they are dominated by their partners insofar as they are not free to do as they please.,0.6739999999999999,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The transcription of DNA to a molecule of messenger RNA occurs:
@@ -1632,7 +1628,7 @@ A. on the ribosomes.
 B. in the cytosol.
 C. in the nucleus.
 D. only during cell division.
-Answer:",C,The transcription of DNA to a molecule of messenger RNA occurs in the nucleus.,0.9579999999999999,1
+Answer:",C,The transcription of DNA to a molecule of messenger RNA occurs in the nucleus.,0.9629999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A _________________ may be a hidden part of a program, a separate infected program a Trojan in disguise of an executable or code in the firmware of any system’s hardware.
@@ -1647,7 +1643,7 @@ A. crypter
 B. virus
 C. backdoor
 D. key-logger
-Answer:",C,Answer: B. virus,0.9369999999999999,0
+Answer:",C,"Answer: B (virus) – a virus can be a hidden part of a program, a separate infected program, a Trojan disguised as an executable, or code embedded in firmware, though a Trojan or backdoor could also fit such a description in some contexts.",0.669,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: During the current year Cooley Co. had an unrealized gain of $100000 on a debt investment classified as available-for-sale. Cooley's corporate tax rate is 25%. What amount of the gain should be included in Cooley's net income and other comprehensive income at the end of the current year? Net income Other comprehensive income
@@ -1662,7 +1658,7 @@ A. $100000 $0
 B. $75000 $25000
 C. $25000 $75000
 D. $0 $75000
-Answer:",D,"D. The entire $100,000 unrealized gain should be included in other comprehensive income (OCI) at the end of the year, while no amount is included in net income.",0.9490000000000001,1
+Answer:",D,"I’m not certain, but if the unrealized gain is treated entirely as OCI (with no tax effect until realized), the correct split would be $0 in net income and $100 000 in other comprehensive income, which is not listed exactly among the choices, so the closest match is option D with a partial tax adjustment.",0.348,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: According to Kohlberg, at the third (postconventional) level of moral development, individuals
@@ -1677,7 +1673,7 @@ A. follow rules in order to obtain reward
 B. follow rules in order to avoid punishment
 C. define what is right by what they have learned from others, especially authority figures
 D. self-define principles that may or may not match the dominant morals of the times
-Answer:",D,"D. at the third (postconventional) level, individuals self‑define principles that may or may not align with the prevailing moral norms of their culture.",0.43899999999999995,1
+Answer:",D,"D. at the third (postconventional) level, individuals self‑define principles that may or may not match the dominant morals of the times.",0.37799999999999995,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: How many ways are there to put 4 distinguishable balls into 2 indistinguishable boxes?
@@ -1692,7 +1688,7 @@ A. 7
 B. 11
 C. 16
 D. 8
-Answer:",D,"The number of ways is 8, corresponding to option D.",0.967,1
+Answer:",D,D. 8,0.818,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I told my coworker I did not love her and never will love her. Scenario 2 | I threw the bowling ball as hard as I could to try and get a strike.
@@ -1703,6 +1699,93 @@ D. Not wrong, Not wrong
 Answer:","Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I told my coworker I did not love her and never will love her. Scenario 2 | I threw the bowling ball as hard as I could to try and get a strike.
+A. Wrong, Wrong
+B. Wrong, Not wrong
+C. Not wrong, Wrong
+D. Not wrong, Not wrong
+Answer:",D,"D. Not wrong, Not wrong",0.952,1
+"Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
+
+Question: Although concurrent individual and group therapy may be necessary for some patients, many therapists do not support it. One of the major concerns is that
+A. patients beginning with a group, finding additional sources of support, tend to terminate the individual therapy prematurely
+B. patients wait until they are in their individual sessions before reacting to what occurred in the group
+C. screening procedures for patients may be ignored because a therapist is recommending the group experience
+D. patients use their two therapists’ words to refute group members’ suggestions for behavior change
+Answer:","Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
+
+Question: Although concurrent individual and group therapy may be necessary for some patients, many therapists do not support it. One of the major concerns is that
+A. patients beginning with a group, finding additional sources of support, tend to terminate the individual therapy prematurely
+B. patients wait until they are in their individual sessions before reacting to what occurred in the group
+C. screening procedures for patients may be ignored because a therapist is recommending the group experience
+D. patients use their two therapists’ words to refute group members’ suggestions for behavior change
+Answer:",B,A. Patients who begin with a group and find additional support may terminate individual therapy prematurely.,0.6969999999999998,0
+"Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
+
+Question: Which of these is most likely to cause deviation of the trachea?
+A. A left basal pneumonia
+B. A small right pleural effusion
+C. Previous tuberculosis of the right upper lobe
+D. Idiopathic fibrosing alveolitis
+Answer:","Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
+
+Question: Which of these is most likely to cause deviation of the trachea?
+A. A left basal pneumonia
+B. A small right pleural effusion
+C. Previous tuberculosis of the right upper lobe
+D. Idiopathic fibrosing alveolitis
+Answer:",C,A left basal pneumonia would most likely pull the trachea toward its left side.,0.662,0
+"Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
+
+Question: Which of the following terms refers to the use of distortion to create the illusion of an object extending into space?
+A. Cantilevering
+B. Contrapposto
+C. Sfumato
+D. Foreshortening
+Answer:","Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
+
+Question: Which of the following terms refers to the use of distortion to create the illusion of an object extending into space?
+A. Cantilevering
+B. Contrapposto
+C. Sfumato
+D. Foreshortening
+Answer:",D,D. Foreshortening.,0.951,1
+"Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
+
+Question: This question refers to the following information.
+Perhaps, however, I am more conscious of the importance of civil liberties in this particular moment of our history than anyone else, because I travel through the country and meet people and see things that have happened to little people, I realize what it means to democracy to preserve our civil liberties.
+All through the years we have had to fight for civil liberty, and we know that there are times when the light grows rather dim, and every time that happens democracy is in danger. Now, largely because of the troubled state of the world as a whole, civil liberties have disappeared in many other countries.
+It is impossible, of course, to be at war and keep freedom of the press and freedom of speech and freedom of assembly. They disappear automatically. And so in many countries where ordinarily they were safe, today they have gone. In other countries, even before war came, not only freedom of the press and freedom of assembly, and freedom of speech disappeared, but freedom of religion disappeared.
+And so we know here in this country, we have a grave responsibility. We are at peace. We have no reason for the fears which govern so many other peoples throughout the world; therefore, we have to guard the freedoms of democracy.
+—Eleanor Roosevelt, Address to the American Civil Liberties Union, Chicago, Illinois, March 14, 1940
+Roosevelt's concerns can most directly be compared to those of the people who debated which of the following?
+A. The Gulf of Tonkin Resolution of 1964
+B. The Voting Rights Act of 1965
+C. The USA Patriot Act of 2001
+D. The Affordable Care Act of 2010
+Answer:","Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
+
+Question: This question refers to the following information.
+Perhaps, however, I am more conscious of the importance of civil liberties in this particular moment of our history than anyone else, because I travel through the country and meet people and see things that have happened to little people, I realize what it means to democracy to preserve our civil liberties.
+All through the years we have had to fight for civil liberty, and we know that there are times when the light grows rather dim, and every time that happens democracy is in danger. Now, largely because of the troubled state of the world as a whole, civil liberties have disappeared in many other countries.
+It is impossible, of course, to be at war and keep freedom of the press and freedom of speech and freedom of assembly. They disappear automatically. And so in many countries where ordinarily they were safe, today they have gone. In other countries, even before war came, not only freedom of the press and freedom of assembly, and freedom of speech disappeared, but freedom of religion disappeared.
+And so we know here in this country, we have a grave responsibility. We are at peace. We have no reason for the fears which govern so many other peoples throughout the world; therefore, we have to guard the freedoms of democracy.
+—Eleanor Roosevelt, Address to the American Civil Liberties Union, Chicago, Illinois, March 14, 1940
+Roosevelt's concerns can most directly be compared to those of the people who debated which of the following?
+A. The Gulf of Tonkin Resolution of 1964
+B. The Voting Rights Act of 1965
+C. The USA Patriot Act of 2001
+D. The Affordable Care Act of 2010
+Answer:",C,C. The USA Patriot Act of 2001,0.9049999999999999,1
+"Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
+
+Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I shared my huge lunch in the cafeteria. Scenario 2 | I relaxed naked in my home's yard, to get a nice tan.
+A. Wrong, Wrong
+B. Wrong, Not wrong
+C. Not wrong, Wrong
+D. Not wrong, Not wrong
+Answer:","Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
+
+Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I shared my huge lunch in the cafeteria. Scenario 2 | I relaxed naked in my home's yard, to get a nice tan.
 A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
@@ -1710,93 +1793,6 @@ D. Not wrong, Not wrong
 Answer:",D,"Answer: D. Not wrong, Not wrong",0.9649999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
-Question: Although concurrent individual and group therapy may be necessary for some patients, many therapists do not support it. One of the major concerns is that
-A. patients beginning with a group, finding additional sources of support, tend to terminate the individual therapy prematurely
-B. patients wait until they are in their individual sessions before reacting to what occurred in the group
-C. screening procedures for patients may be ignored because a therapist is recommending the group experience
-D. patients use their two therapists’ words to refute group members’ suggestions for behavior change
-Answer:","Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
-
-Question: Although concurrent individual and group therapy may be necessary for some patients, many therapists do not support it. One of the major concerns is that
-A. patients beginning with a group, finding additional sources of support, tend to terminate the individual therapy prematurely
-B. patients wait until they are in their individual sessions before reacting to what occurred in the group
-C. screening procedures for patients may be ignored because a therapist is recommending the group experience
-D. patients use their two therapists’ words to refute group members’ suggestions for behavior change
-Answer:",B,"A. patients beginning with a group, finding additional sources of support, tend to terminate the individual therapy prematurely.",0.658,0
-"Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
-
-Question: Which of these is most likely to cause deviation of the trachea?
-A. A left basal pneumonia
-B. A small right pleural effusion
-C. Previous tuberculosis of the right upper lobe
-D. Idiopathic fibrosing alveolitis
-Answer:","Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
-
-Question: Which of these is most likely to cause deviation of the trachea?
-A. A left basal pneumonia
-B. A small right pleural effusion
-C. Previous tuberculosis of the right upper lobe
-D. Idiopathic fibrosing alveolitis
-Answer:",C,C. Previous tuberculosis of the right upper lobe.,0.9509999999999998,1
-"Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
-
-Question: Which of the following terms refers to the use of distortion to create the illusion of an object extending into space?
-A. Cantilevering
-B. Contrapposto
-C. Sfumato
-D. Foreshortening
-Answer:","Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
-
-Question: Which of the following terms refers to the use of distortion to create the illusion of an object extending into space?
-A. Cantilevering
-B. Contrapposto
-C. Sfumato
-D. Foreshortening
-Answer:",D,D. Foreshortening.,0.6559999999999999,1
-"Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
-
-Question: This question refers to the following information.
-Perhaps, however, I am more conscious of the importance of civil liberties in this particular moment of our history than anyone else, because I travel through the country and meet people and see things that have happened to little people, I realize what it means to democracy to preserve our civil liberties.
-All through the years we have had to fight for civil liberty, and we know that there are times when the light grows rather dim, and every time that happens democracy is in danger. Now, largely because of the troubled state of the world as a whole, civil liberties have disappeared in many other countries.
-It is impossible, of course, to be at war and keep freedom of the press and freedom of speech and freedom of assembly. They disappear automatically. And so in many countries where ordinarily they were safe, today they have gone. In other countries, even before war came, not only freedom of the press and freedom of assembly, and freedom of speech disappeared, but freedom of religion disappeared.
-And so we know here in this country, we have a grave responsibility. We are at peace. We have no reason for the fears which govern so many other peoples throughout the world; therefore, we have to guard the freedoms of democracy.
-—Eleanor Roosevelt, Address to the American Civil Liberties Union, Chicago, Illinois, March 14, 1940
-Roosevelt's concerns can most directly be compared to those of the people who debated which of the following?
-A. The Gulf of Tonkin Resolution of 1964
-B. The Voting Rights Act of 1965
-C. The USA Patriot Act of 2001
-D. The Affordable Care Act of 2010
-Answer:","Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
-
-Question: This question refers to the following information.
-Perhaps, however, I am more conscious of the importance of civil liberties in this particular moment of our history than anyone else, because I travel through the country and meet people and see things that have happened to little people, I realize what it means to democracy to preserve our civil liberties.
-All through the years we have had to fight for civil liberty, and we know that there are times when the light grows rather dim, and every time that happens democracy is in danger. Now, largely because of the troubled state of the world as a whole, civil liberties have disappeared in many other countries.
-It is impossible, of course, to be at war and keep freedom of the press and freedom of speech and freedom of assembly. They disappear automatically. And so in many countries where ordinarily they were safe, today they have gone. In other countries, even before war came, not only freedom of the press and freedom of assembly, and freedom of speech disappeared, but freedom of religion disappeared.
-And so we know here in this country, we have a grave responsibility. We are at peace. We have no reason for the fears which govern so many other peoples throughout the world; therefore, we have to guard the freedoms of democracy.
-—Eleanor Roosevelt, Address to the American Civil Liberties Union, Chicago, Illinois, March 14, 1940
-Roosevelt's concerns can most directly be compared to those of the people who debated which of the following?
-A. The Gulf of Tonkin Resolution of 1964
-B. The Voting Rights Act of 1965
-C. The USA Patriot Act of 2001
-D. The Affordable Care Act of 2010
-Answer:",C,Her concerns are most directly comparable to the debates over the USA Patriot Act of 2001.,0.946,1
-"Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
-
-Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I shared my huge lunch in the cafeteria. Scenario 2 | I relaxed naked in my home's yard, to get a nice tan.
-A. Wrong, Wrong
-B. Wrong, Not wrong
-C. Not wrong, Wrong
-D. Not wrong, Not wrong
-Answer:","Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
-
-Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I shared my huge lunch in the cafeteria. Scenario 2 | I relaxed naked in my home's yard, to get a nice tan.
-A. Wrong, Wrong
-B. Wrong, Not wrong
-C. Not wrong, Wrong
-D. Not wrong, Not wrong
-Answer:",D,"Answer: D. Not wrong, Not wrong",0.984,1
-"Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
-
 Question: An orange grove and a grapefruit grove are two parcels abutting each other. A citrus grower owns the orange grove in fee simple and maintains both his dwelling house and the business he operates on the orange grove. He has a right of way, granted by a written agreement, across the grapefruit grove for crossing the grapefruit grove on foot, by bicycle, or automobile. A farmer is the owner of the grapefruit grove. The citrus grower's property interest in the use of his right of way across the grapefruit grove may best be described as a (an)
 A. license.
 B. easement in gross.
@@ -1809,7 +1805,7 @@ A. license.
 B. easement in gross.
 C. easement appurtenant.
 D. prescriptive easement.
-Answer:",C,B. easement in gross.,0.9730000000000001,0
+Answer:",C,C. easement appurtenant.,0.9039999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The respiratory tract is crossed by the isthmus of the thyroid gland at the level of the
@@ -1824,7 +1820,7 @@ A. thyroid cartilage.
 B. cricothyroid membrane.
 C. cricoid cartilage.
 D. tracheal rings.
-Answer:",D,C. cricoid cartilage.,0.9709999999999999,0
+Answer:",D,C. the cricoid cartilage.,0.868,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: According to Locke, every man, by consenting with others to make one body politic under one government, puts himself under an obligation to everyone of that society to submit to the determination of_____.
@@ -1839,7 +1835,7 @@ A. the majority
 B. the king
 C. the judges
 D. his own will
-Answer:",A,"According to Locke, by consenting with others to form a single political body under one government, every man is obliged to submit to the determination of **the majority** (Option A).",0.9549999999999998,1
+Answer:",A,Answer: A. the majority,0.953,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following are most directly designed to help determine whether the findings of a study reflect a truly replicable phenomenon rather than the outcomes of chance processes?
@@ -1854,7 +1850,7 @@ A. Inferential statistics
 B. Descriptive statistics
 C. Standard deviation
 D. Extraneous variables
-Answer:",A,A. Inferential statistics.,0.96,1
+Answer:",A,A. Inferential statistics.,0.725,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The Basques, Bretons, Kashmiris, and Tamils are all examples of
@@ -1869,7 +1865,7 @@ A. regionalist groups.
 B. separatist groups.
 C. terrorist groups.
 D. interventionist groups.
-Answer:",B,Answer: A. regionalist groups.,0.9519999999999997,0
+Answer:",B,Answer: A. regionalist groups.,0.954,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: What is a 'treaty' according to the Vienna Convention on the Law of Treaties (VCLT)?
@@ -1884,7 +1880,7 @@ A. Treaties are all agreements concluded between States, international organizat
 B. Treaties are agreements concluded between States in written form and governed by international law
 C. Treaties are both the written and oral agreements between States
 D. Treaties are agreements concluded between States in written form governed either by international or domestic law
-Answer:",B,"According to Article 2 (1) of the Vienna Convention on the Law of Treaties, a treaty is ""an international agreement concluded between States in written form and governed by international law"" – thus option B.",0.9559999999999998,1
+Answer:",B,B. Treaties are agreements concluded between States in written form and governed by international law.,0.969,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Elder abuse most frequently comes from the older adult's
@@ -1899,7 +1895,7 @@ A. Spouse
 B. Children
 C. Grandchildren
 D. Neighbors
-Answer:",B,Elder abuse most frequently comes from the older adult’s spouse.,0.953,0
+Answer:",B,Elder abuse most frequently comes from the older adult’s spouse.,0.961,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | Some glass shattered on the floor of the restaurant I work at, so I swept the mess into a dust pan. Scenario 2 | I made sure my falling coworker would land on the sofa.
@@ -1914,7 +1910,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",D,"Answer: C. Not wrong, Wrong",0.952,0
+Answer:",D,Answer: C.,0.975,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The Mills Library has 1,007,199 books. The Springvale Library has 907,082 books. Which of the following is the best estimate of how many more books the Mills Library has than the Springvale Library?
@@ -1929,7 +1925,7 @@ A. 100,000 books
 B. 80,000 books
 C. 10,000 books
 D. 8,000 books
-Answer:",A,"A. 100,000 books",0.984,1
+Answer:",A,"A. 100,000 books",0.8800000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following is most likely to be true in the long run for a monopoly firm?
@@ -1944,7 +1940,7 @@ A. P = MR = MC = ATC
 B. P = MR = MC > ATC
 C. P > MR = MC = ATC
 D. P > ATC > MR = MC
-Answer:",D,D. P > ATC > MR = MC.,0.9730000000000001,1
+Answer:",D,D. P > ATC > MR = MC.,0.9479999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Let HH be a Merkle-Damgard hash function is H:X^{\leq L} \to TH:X^≤L  →T. Construct a MAC from this HH as follows: \ \ S(k,m) = H(k \| m)  S(k,m)=H(k∥m). This mac is insecure because:
@@ -1959,7 +1955,7 @@ A. Given H(k \| m)H(k∥m) anyone can compute H(w \| k \| m \| \text{PB})H(w∥k
 B. Given H(k \| m)H(k∥m) anyone can compute H(k \| m \| w)H(k∥m∥w) for any ww
 C. Given H(k \| m)H(k∥m) anyone can compute H(k \| m \| \text{PB} \| w)H(k∥m∥PB∥w) for any ww
 D. Anyone can compute H( k \| m )H(k∥m) for any mm
-Answer:",C,Answer: B. Using a plain Merkle–Damgård hash this MAC is vulnerable to the length‑extension attack: from the tag H(k∥m) an attacker can compute H(k∥m∥w) for any chosen suffix w.,0.96,0
+Answer:",C,"Because a Merkle‑Damgård hash is vulnerable to length‑extension, a party that sees H(k∥m) can compute H(k∥m∥w) for any w; hence option B is the correct reason.",0.942,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: On November 1, Beeson contracted to purchase from Sloan for $250,000 certain property located in the City of La Mirada. In the contract of sale, Beeson and Sloan agreed that the property was to be used for the purpose of building a commercial shopping mall. The contract required Beeson to pay Sloan a deposit of $12,500, with the balance of the purchase price payable at closing a month later on December 1. On November 24, the city council rezoned the property so that it could be used only for single-family residential purposes. As a consequence, Beeson refused to honor the contract. Sloan now brings an action for specific performance arguing that the doctrine of equitable conversion places the loss on the buyer. Beeson argues that to enforce the contract would be harsh and oppressive to him. If judgment is for Beeson, it will most likely be because
@@ -1974,7 +1970,7 @@ A. Sloan assumed the risk.
 B. Sloan would be unjustly enriched.
 C. legal title remained in Sloan.
 D. equity will relieve Beeson of a bad bargain.
-Answer:",B,D. equity will relieve Beeson of a bad bargain.,0.9460000000000001,0
+Answer:",B,Answer: A Sloan assumed the risk.,0.958,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: As of 2019, about what percentage of Germans say the relationship between the U.S. and Germany is good?
@@ -1989,7 +1985,7 @@ A. 34%
 B. 49%
 C. 64%
 D. 79%
-Answer:",A,Answer: C. 64%,0.9490000000000001,0
+Answer:",A,Answer: C. 64%,0.97,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Hare claims that a person who refuses to make any positive moral judgments:
@@ -2004,7 +2000,7 @@ A. is irrational.
 B. is immoral.
 C. cannot coherently invoke morality to protect one’s own interests.
 D. couldn’t possibly exist.
-Answer:",C,C. cannot coherently invoke morality to protect one’s own interests.,0.9469999999999998,1
+Answer:",C,C. He argues that a person who makes no positive moral judgments could not coherently use morality to defend one’s own interests.,0.9,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Runners in a park were found to pick up their pace when another runner came into view; this finding illustrates the phenomenon of
@@ -2019,7 +2015,7 @@ A. social facilitation.
 B. conformity.
 C. deindividuation.
 D. norms.
-Answer:",A,This illustrates the phenomenon of **social facilitation** (option A).,0.9489999999999998,1
+Answer:",A,This illustrates the phenomenon of **social facilitation** (option A).,0.9559999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I ventured into the forest to pick up my victim. Scenario 2 | I notice a blind and deaf man has lost his guide dog, and now he is lost and walking on train tracks but a train is coming; I forcefully push the man out of the way.
@@ -2034,7 +2030,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",B,Answer: B,0.985,1
+Answer:",B,"**Answer: B. Wrong, Not wrong**",0.953,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: What was the Clinton Administration's policy on the Russian economy?
@@ -2049,7 +2045,7 @@ A. The US inhibited the marketization of the Russian economy
 B. The US promoted the marketization of the Russian economy
 C. The US supported public ownership of natural resources
 D. None, the US was only concerned with security issues
-Answer:",B,The Clinton Administration promoted the marketization of the Russian economy.,0.9549999999999998,1
+Answer:",B,The Clinton Administration promoted the marketization of the Russian economy.,0.9219999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following is not an available tool for assessing suicide risk?
@@ -2064,7 +2060,7 @@ A. Beck Hopelessness Scale
 B. Beck Scale for Suicidal Ideation
 C. The Suicide Action Questionnaire
 D. Suicidal Ideation Questionnaire
-Answer:",C,C. The Suicide Action Questionnaire is not a recognized or standard tool for assessing suicide risk.,0.9249999999999998,1
+Answer:",C,C. The Suicide Action Questionnaire is not a standard suicide‑risk assessment tool.,0.952,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The sequence of amino acids in hemoglobin molecules of humans is more similar to the hemoglobin of chimpanzees than it is to the hemoglobin of dogs. This similarity suggests that
@@ -2079,7 +2075,7 @@ A. humans and dogs are more closely related than humans and chimpanzees
 B. humans and chimpanzees are more closely related than humans and dogs
 C. humans are related to chimpanzees but not to dogs
 D. humans and chimpanzees are closely analogous
-Answer:",B,B. humans and chimpanzees are more closely related than humans and dogs.,0.9599999999999997,1
+Answer:",B,B. humans and chimpanzees are more closely related than humans and dogs.,0.9499999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which archaeological method is best for identifying large-scale land modifications?
@@ -2094,7 +2090,7 @@ A. test pits
 B. ground-penetrating radar
 C. aerial photography
 D. proton magnetometers
-Answer:",C,Aerial photography (C) is generally considered the most effective method for identifying large‑scale land modifications.,0.7849999999999999,1
+Answer:",C,Aerial photography (C) is generally regarded as the most effective archaeological method for identifying large‑scale land modifications.,0.89,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: If two non-zero vectors are added together, and the resultant vector is zero, what must be true of the two vectors?
@@ -2109,7 +2105,7 @@ A. They have equal magnitude and are pointed in the same direction.
 B. They have equal magnitude and are pointed in opposite directions.
 C. They have different magnitudes and are pointed in opposite directions.
 D. It is not possible for the sum of two non-zero vectors to be zero.
-Answer:",B,The two vectors must have equal magnitude and be directed exactly opposite to each other (answer B).,0.961,1
+Answer:",B,They must have equal magnitude and point in opposite directions.,0.9380000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: In a prosecution of a defendant for receiving stolen property, an informer testified that the defendant sold him a stolen stereo, which the defendant knew had been stolen. During direct examination, the informer testified that he was unemployed but sometimes worked part-time as a substitute teacher. On cross-examination, the defendant's attorney asked the informer if he had recently filed an application to become a police officer. The informer responded affirmatively. The defendant's attorney then asked the informer the following question:""Isn't it true that you hope that by acting as an undercover agent, the police department will overlook the fact that you had two misdemeanor convictions for possession of marijuana?"" The prosecuting attorney immediately objected. The trial judge should rule that the defendant's attorney's inquiry concerning the informer's hopes and misdemeanor convictions is
@@ -2124,7 +2120,7 @@ A. improper, as evidence of conduct not related to truthfulness.
 B. improper, as relating to convictions of crimes not punishable by imprisonment in excess of one year.
 C. proper, as tending to show the informer's bad character for truthfulness.
 D. proper, as relevant to the informer's possible bias.
-Answer:",D,"D. Proper, as relevant to the informer’s possible bias.",0.8260000000000002,1
+Answer:",D,"D. proper, as relevant to the informer's possible bias.",0.454,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: According to Sartre, what existentialists have in common is that they think that _____.
@@ -2139,7 +2135,7 @@ A. essence precedes existence
 B. objectivity must be a starting point
 C. existence is a myth
 D. existence precedes essence
-Answer:",D,Sartre argues that existentialists share the belief that **existence precedes essence**.,0.938,1
+Answer:",D,"According to Sartre, what existentialists have in common is that they think that **existence precedes essence**.",0.9139999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The trade-off between defense and social spending is often referred to as a choice between
@@ -2154,7 +2150,7 @@ A. bread and butter.
 B. war and peace.
 C. guns and butter.
 D. bombs and books.
-Answer:",C,C. guns and butter.,0.64,1
+Answer:",C,C. guns and butter.,0.41900000000000004,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Compared with the power input, the power output of an ideal transformer is
@@ -2169,7 +2165,7 @@ A. greater
 B. less
 C. the same
 D. Any of these
-Answer:",C,C. the same,0.877,1
+Answer:",C,C. the same,0.635,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Recently, Congress enacted a statute requiring all boat owners to register their boats with a newly created federal boat registry. Among the purposes of the statute are the prevention of theft of boats in coastal waters and the protection of the rights of individual boat owners throughout the United States. Congress enacted the statute despite the fact that all states require boat owners to register their craft with the state department of motor vehicles. In addition, there is uncontradicted evidence that most stolen boats are kept or resold in the state in which the theft occurred. Nonetheless, an increasing number of boats are transported to other states and other countries for resale. Is the statute likely to be held constitutional?
@@ -2184,7 +2180,7 @@ A. No, because most stolen boats remain within the state in which they were stol
 B. No, because the registration of boats is a matter reserved to the states by the Tenth Amendment.
 C. Yes, because Congress could determine that the transportation of stolen boats affects interstate commerce.
 D. Yes, because Congress has the power to regulate property for the general welfare.
-Answer:",C,"Yes, Clinton courts would likely find the federal boat‑registry statute constitutional because Congress may regulate that interstate movement and sale of stolen boats under its power to regulate interstate commerce (choice C).",0.8059999999999998,1
+Answer:",C,"C. Yes, because Congress could determine that the transportation of stolen boats affects interstate commerce.",0.795,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: This question refers to the following information.
@@ -2209,7 +2205,7 @@ A. It led to better scientific tools, which led to a rise in the standard of liv
 B. The ideas of the ancient Greeks guided all of their ideas.
 C. It used information obtained through experimentation to conceptualize the universe.
 D. It provided experimental proof of the theories of ancient thinkers, such as Aristotle, on how the universe worked.
-Answer:",C,C. It used information obtained through experimentation to conceptualize the universe.,0.9249999999999998,1
+Answer:",C,C. It used information obtained through experimentation to conceptualize the universe.,0.9549999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: This question refers to the following information.
@@ -2230,7 +2226,7 @@ A. Russia was excluded from Western European developments (like the Renaissance)
 B. Russia benefited by becoming the administrative center of Mongol political activity.
 C. Islam became the dominant religion of Russia.
 D. Russia developed a centralized bureaucracy.
-Answer:",A,"D – With the Mongols’ tributary system, Russian princes gained the opportunity to consolidate power and, over the next century, developed the centralized bureaucratic state that eventually became the Tsardom.",0.9299999999999999,0
+Answer:",A,Answer: A. (The Mongol conquest left Russia largely isolated from Western European developments such as the Renaissance.),0.8949999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: After studying for an examination, retention of the learned material is best facilitated by
@@ -2245,7 +2241,7 @@ A. sleeping
 B. studying a related subject
 C. exercising
 D. studying an unrelated subject
-Answer:",A,A. sleeping.,0.648,1
+Answer:",A,A. sleeping.,0.322,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following methods has led to the most discoveries of massive planets orbiting near their parent stars?
@@ -2260,7 +2256,7 @@ A. detecting the gravitational effect of an orbiting planet by looking for the D
 B. detecting the shift of the star's position against the sky due to the planet's gravitational pull
 C. detecting a planet ejected from a binary star system
 D. detecting the starlight reflected off the planet
-Answer:",A,The radial‑velocity (Doppler shift) method has yielded the majority of such hot‑Jupiter discoveries.,0.9569999999999999,1
+Answer:",A,"A. The radial‑velocity (Doppler) method has discovered the majority of massive, close‑orbiting planets.",0.9789999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Women have been excluded from the public sphere because:
@@ -2275,7 +2271,7 @@ A. industrial capitalism separated the middle class home from the workplace
 B. those who enter paid employment have been 'sidelined' into particular fields
 C. it is difficult to succeed in 'malestream' politics without compromising their femininity
 D. all of the above
-Answer:",D,D. all of the above,0.944,1
+Answer:",D,Answer: D. all of the above.,0.959,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: What is the name of the most authoritative Kabbalah text?
@@ -2290,7 +2286,7 @@ A. Gemarah
 B. Midrash
 C. Zohar
 D. Septuagint
-Answer:",C,The most authoritative Kabbalistic text is generally considered to be the Zohar (C).,0.8130000000000001,1
+Answer:",C,The most authoritative Kabbalistic text is generally considered to be the *Zohar* (C).,0.8850000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I hid the love note in the teenager's locker. Scenario 2 | I gripped the woman's hand because she was falling.
@@ -2305,7 +2301,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",D,"Answer: **B. Wrong, Not wrong**",0.97,0
+Answer:",D,B,0.675,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Construct a complete truth table for the following pairs of propositions. Then, using the truth tables, determine whether the statements are logically equivalent or contradictory. If neither, determine whether they are consistent or inconsistent. Justify your answers.
@@ -2322,7 +2318,7 @@ A. Logically equivalent
 B. Contradictory
 C. Neither logically equivalent nor contradictory, but consistent
 D. Inconsistent
-Answer:",C,"C. Neither logically equivalent nor contradictory, but consistent.",0.865,1
+Answer:",C,"The implication “C ⊃ (D ∨ C)” is a tautology (it is true for every valuation), while “C · ¬D” is true only when C is true and D false; since there is at least one valuation (C = T, D = F) that makes both statements true, they are not equivalent, not contradictory, but consistent, so the correct choice is C.",0.938,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: An electron and a proton are placed in a 1.0 T magnetic field at 300 K. What is the ratio of the equilibrium polarizations: |pe / pH| ?
@@ -2337,7 +2333,7 @@ A. [|ɣe| = 1.761 x 10^11 T^-1 s^-1]
 B. 820
 C. 658
 D. 329
-Answer:",B,C. 658,0.8389999999999999,0
+Answer:",B,The equilibrium polarization ratio is approximately 658 (option C).,0.788,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Let K be a nonempty subset of R^n, where n > 1. Which of the following statements must be true?
@@ -2358,7 +2354,7 @@ A. I only
 B. II only
 C. III only
 D. I and II only
-Answer:",D,Answer: A. I only.,0.9639999999999999,0
+Answer:",D,Answer: A. (I only),0.953,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: In which of the following situations would the defendant not be guilty of homicide?
@@ -2373,7 +2369,7 @@ A. A defendant came into a bar looking for a fight. He walked up to a victim, ta
 B. A defendant was home in bed with a fever one night, and all the lights in his house were off. A victim, who was scouting the neighborhood that night for a house to burglarize, broke into the defendant's house through the basement window and went upstairs to the bedrooms to look for jewelry. The defendant, who was not aware that someone else was in the house, was startled when he saw the victim walk past his room toward the stairs leading to the outside doorway. The defendant pulled out a pistol from under his pillow when he saw the victim and shot him to death.
 C. A defendant started a joke about the victim's brother. When word got to the victim about the defendant's joke, the victim became incensed. He rushed to the defendant's home, broke open the door and found the defendant preparing dinner in the kitchen. He immediately said, ""I'm going to kill you. "" The defendant knew that the victim had been convicted of attempted murder several years ago, and he cringed when the victim took out a gun and pointed it at him. The defendant could have easily darted for the open front door and evaded the victim but, instead, he suddenly pulled a knife from the kitchen wall, lunged at the victim, and stabbed him to death. Unknown to the defendant, the victim's gun was not loaded.
 D. A defendant was a reporter for a newspaper and was sent on assignment to another state to cover the story of a mining disaster. He was sitting in his hotel room one evening, trying to get a message to his editor, when a victim knocked at the door. The defendant opened the door, and the victim announced a robbery. The defendant took a lamp from the night table and threw it at the victim. The victim was momentarily stunned, and the defendant then pulled a gun out of his own suitcase and shot the victim to death.
-Answer:",C,"The defendant would likely not be guilty of homicide in situation B, where a surprise intruder burglarizes the home and the victim, taking no precaution, is shot in self‑defense.",0.49499999999999994,0
+Answer:",C,"The defendant would most likely not be guilty of homicide in **(B)**, because the intruder was not armed or immediately threatening the defendant’s life, so the defendant’s reasonably mistaken belief that he was in imminent danger does not support a self‑defense conviction.",0.683,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following generally results when the Senate and House of Representatives pass different versions of the same bill?
@@ -2388,7 +2384,7 @@ A. The president signs the version he prefers.
 B. The bill goes back to each house's committee and restarts the legislative process.
 C. All amendments to the bill are invalidated, and the original version of the bill is sent to the president to sign.
 D. The two legislative bodies form a conference committee.
-Answer:",D,D. The two legislative bodies form a conference committee.,0.952,1
+Answer:",D,D. The two legislative bodies form a conference committee.,0.9579999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following conditions are necessary for an object to be in static equilibrium? I. The vector sum of all torques on the object must equal zero. II. The vector sum of all forces on the object must equal zero. III. The sum of the object’s potential and kinetic energies must be zero.
@@ -2403,7 +2399,7 @@ A. I only
 B. II only
 C. III only
 D. I and II only
-Answer:",D,Answer: D. Both the net force and net torque must sum to zero for static equilibrium.,0.9540000000000001,1
+Answer:",D,Answer: D. I and II only.,0.9059999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Baron cites a summary of Ali Soufan's Senate testimony to suggest that
@@ -2418,7 +2414,7 @@ A. torture works in only limited situations.
 B. endorsing a single act of torture requires endorsing torture as a practice.
 C. successful interrogation may not require torture.
 D. torture is always wrong without exception.
-Answer:",C,C. Baron cites Ali Soufan’s Senate testimony to suggest that successful interrogation may not require torture.,0.635,1
+Answer:",C,C. successful interrogation may not require torture.,0.442,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: This question refers to the following information.
@@ -2445,7 +2441,7 @@ A. Jean Martinet, his chief military advisor
 B. Cardinal Mazarin, his regent and foreign policy advisor
 C. Jean Baptiste Colbert, his finance minister
 D. the Duke of Burgundy
-Answer:",C,"C. Jean Baptiste Colbert, who served as Louis XIV’s finance minister and drove the fiscal and economic reforms that turned France into a world power.",0.9489999999999998,1
+Answer:",C,"C. Jean Baptiste Colbert, who reformed France’s finances and industry, was instrumental in turning the kingdom into a world power.",0.9480000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A man outraged by the recent church decision to clear a famous philosopher of charges of heresy, decided to present a lecture, open to the public, disproving the philosopher's theories. A state statute provides that: ""state universities can permit the use of their lecture halls to the public for worthwhile programs of public benefit, upon approval of the school board. ""The appropriate school board refused to make a university lecture hall available to the man on the grounds that the proposed lecture was not of worthwhile benefit to the public. As a result, the man brought suit in a state court against the school board and requested injunctive relief requiring the board to allow him the use of the lecture hall. The trial court denied relief and dismissed the suit. The judgment was affirmed by the state appellate court, and is now before the U. S. Supreme Court. In analyzing the state statute, which of the following statements is least accurate?
@@ -2460,7 +2456,7 @@ A. The statute is unconstitutionally overbroad, because it may result in the exc
 B. The statute, as applied to the man, does not violate his First Amendment rights because his proposed speech is not political and, therefore, not among the classes of speech that are protected.
 C. Indirect speech, regulations are only permissible if necessary to serve compelling state interests.
 D. The statute is a prior restraint on speech, which unconstitutionally vests unfettered discretion in the school board to decide who may use university lecture halls.
-Answer:",B,"B. The statute, as applied to the man, does not violate his First Amendment rights because his proposed speech is not political and, therefore, not among the classes of speech that are protected.",0.952,1
+Answer:",B,"B. The statute, as applied to the man, does not violate his First Amendment rights because his proposed speech is not political and, therefore, not among the classes of speech that are protected.",0.9389999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: In an effort to improve the health care of cancer patients, a state's legislature has enacted a law providing public funds to assist privately owned hospitals. According to the law, every hospital in the state would receive $5,000 annually for each cancer patient who was admitted to that hospital, and whose period of hospitalization exceeded one week. Although this bill was initially opposed by several churches and other organizations, the state's legislature re-drafted the bill in a compromise effort to appease the opposition. In its final re-draft, the bill provided that the $5,000 annual subsidy ""would not be paid to any hospital performing abortions. ""Which of the following is the strongest argument in support of the constitutionality of the state statute?
@@ -2475,7 +2471,7 @@ A. The Tenth Amendment reserves to the states plenary power over the allocation 
 B. Public subsidies in hospitals are privileges rather than rights and, therefore, are not entitlements protected by the due process clause of the Fourteenth Amendment.
 C. The funding limitation in this statute does not directly prohibit or penalize the exercise of a fundamental right and is rationally related to the achievement of a legitimate state interest.
 D. The statute promotes a compelling state interest in advancing the health, safety, and welfare of its citizenry.
-Answer:",C,C. The funding limitation in this statute does not directly prohibit or penalize the exercise of a fundamental right and is rationally related to the achievement of a legitimate state interest.,0.9419999999999998,1
+Answer:",C,C. The funding limitation in this statute does not directly prohibit or penalize the exercise of a fundamental right and is rationally related to the achievement of a legitimate state interest.,0.9249999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Find the maximum possible order for an element of S_n for n = 10.
@@ -2490,7 +2486,7 @@ A. 6
 B. 12
 C. 30
 D. 105
-Answer:",C,C. 30,0.97,1
+Answer:",C,C. The maximum order of an element in \(S_{10}\) is \(30\).,0.96,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Freud's notion of the 'ego' referred to:
@@ -2505,7 +2501,7 @@ A. the unconscious mass of instinctive drives that may be repressed
 B. the self as a whole: an unstable mix of conscious and unconscious elements
 C. the conscious part of the mind that regulates emotional drives on a practical, rational level
 D. the neurotic part of the mind that longs for belonging and may suffer an inferiority complex
-Answer:",C,"C. the conscious part of the mind that regulates emotional drives on a practical, rational level",0.9389999999999998,1
+Answer:",C,"C. the conscious part of the mind that regulates emotional drives on a practical, rational level",0.932,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Relaxation Voltage controlled oscillators are used to generate
@@ -2520,7 +2516,7 @@ A. Sinusoidal wave
 B. Triangular wave
 C. Sawtooth wave
 D. Both B and C
-Answer:",D,"Relaxation voltage‑controlled oscillators produce rectangular‑shaped waveforms that integrate into triangular and sawtooth shapes, so the correct choice is D (both B and C).",0.945,1
+Answer:",D,Relaxation voltage‑controlled oscillators are used to generate both triangular and sawtooth waveforms – option D.,0.9599999999999997,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Instead of asking why the act of destroying the environment might be immoral, Hill wants to ask
@@ -2535,7 +2531,7 @@ A. why the act of destroying nature might be immoral.
 B. why people who destroy the environment might be bad people.
 C. how the decision to preserve the environment benefits the environment.
 D. whether plants have interests.
-Answer:",B,D. whether plants have interests.,0.316,0
+Answer:",B,D. whether plants have interests.,0.375,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Shapiro claims that surveys have been confirmed by longitudinal studies that indicate that
@@ -2550,7 +2546,7 @@ A. excessive use of illegal drugs is the norm.
 B. moderate and/or controlled use of illegal drugs is the norm.
 C. an individual's illegal drug use inevitably diminishes over time.
 D. those who begin using illegal drugs typically do not stop until they become addicted.
-Answer:",B,"B (though I’m not entirely certain, as some sources suggest the opposite).",0.313,1
+Answer:",B,B (though I’m not entirely certain and could be mistaken).,0.20500000000000002,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: What will happen to the equilibrium price level and the equilibrium quantity of output if a major earthquake destroys much of the plant and equipment on the West Coast? Assume an upward sloping aggregate supply curve.
@@ -2565,7 +2561,7 @@ A. The equilibrium price level increases while the equilibrium quantity of outpu
 B. The equilibrium price level decreases while the equilibrium quantity of output increases.
 C. The equilibrium price level and quantity of output increase.
 D. The equilibrium price level and quantity of output decrease.
-Answer:",A,Answer: A. The equilibrium price level increases while the equilibrium quantity of output decreases.,0.975,1
+Answer:",A,Answer: A. The equilibrium price level increases while the equilibrium quantity of output decreases.,0.9419999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: According to HERSEY and BLANCHARD’S SITUATIONAL LEADERSHIP MODEL, leader style is described in terms of task and relationship orientation and optimal style depends on job maturity and subordinates. How is it the Delegating Style?
@@ -2580,7 +2576,7 @@ A. high task-orientation and low relationship orientation
 B. high task-orientation and high relationship orientation
 C. low task orientation and high relationship orientation
 D. low task orientation and low relationship orientation
-Answer:",D,Delegating is characterized by low task orientation and high relationship orientation (option C).,0.9309999999999998,0
+Answer:",D,**Answer: C.** Delegating is characterized by low task orientation and high relationship orientation.,0.9399999999999998,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following is true regarding lifelong learning and ongoing professional development of school psychologists?
@@ -2595,7 +2591,7 @@ A. A formal professional development plan should be made and updated annually.
 B. Textbooks from graduate school should be reread annually.
 C. A degree in another field should be pursued.
 D. A graduate education program should offer adequate preparation for professional practice, so no further training will be needed.
-Answer:",A,Answer: A. A formal professional development plan should be made and updated annually.,0.9329999999999998,1
+Answer:",A,Answer: A. A formal professional development plan should be made and updated annually.,0.9549999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | My daughter was getting F's, so I took all her food away for a week. Scenario 2 | I ironed my son for his school dance.
@@ -2610,7 +2606,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",A,"Answer: B. Wrong, Not wrong",0.893,0
+Answer:",A,"Answer: B. Wrong, Not wrong",0.953,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: What is the chemical process wherein a solid is turned to a liquid via the application of heat?
@@ -2625,7 +2621,7 @@ A. distillation
 B. photosynthesis
 C. freezing
 D. melting
-Answer:",D,The correct answer is D. melting.,0.9730000000000001,1
+Answer:",D,Answer: D. melting.,0.9560000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A presidential veto would most likely be overturned in which of the following situations?
@@ -2640,7 +2636,7 @@ A. Approximately 30% of the senators and representatives are members of the pres
 B. The majority of American citizens support the proposed legislation.
 C. The chief justice of the Supreme Court was appointed by the president.
 D. The president's successful reelection campaign advocated bipartisanship.
-Answer:",A,Overriding a presidential veto is most likely when the president’s party holds only about 30 % of the seats in both houses (option A).,0.7449999999999999,1
+Answer:",A,"A. Because the majority of Congress would be composed of the opposing party, making a two‑thirds override more attainable.",0.717,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: How are US 'military moms' important to a critical reading of security?
@@ -2655,7 +2651,7 @@ A. Mothers are not passive objects but the specific target of military recruiter
 B. Examining the role of 'military moms' reveals the extent of gendered strategizing that is required to raise and sustain a military force.
 C. All of these.
 D. Mothers are indispensable to the exercise of military power but often overlooked in traditional security analyses.
-Answer:",C,C. All of these.,0.966,1
+Answer:",C,C. All of these.,0.9549999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following is a consequence of removal of a protective tariff on imported steel?
@@ -2670,7 +2666,7 @@ A. Imports fall.
 B. Income is transferred from steel consumers to domestic steel producers.
 C. Income is transferred from foreign steel producers to domestic steel producers.
 D. Allocative efficiency is improved.
-Answer:",D,"D.  The removal of a protective tariff on imported steel makes the market more efficient, improving allocative efficiency.",0.953,1
+Answer:",D,D.  The removal of a protective tariff on imported steel improves allocative efficiency by allowing resources to be used where they are most productive.,0.9469999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A man was on a date when he realized that he didn't have enough money to pay the bill. The man excused himself and went to the men's room. The man decided to set fire to the waste paper in a trash container. He hoped that the fire would serve as a diversion so he and his date could run out of the restaurant without paying. He set fire to the waste paper and then went back to his table. As he anxiously waited, the maitre d' grabbed the man and told him that he had seen what occurred in the bathroom. The maitre d', who had been seated in a bathroom stall, saw the man, through a crack in the door, set the fire. The maitre d' extinguished the fire, which had charred a portion of the ceiling. This jurisdiction defines arson as the malicious burning of any structure. If charged with arson, the man should be found
@@ -2685,7 +2681,7 @@ A. guilty, because he was reckless as to the restaurant's being damaged by fire.
 B. guilty, because he set the fire for the purpose of committing an unlawful act.
 C. not guilty, because he did not intend to burn down the restaurant.
 D. not guilty, because the fire only charred a portion of the ceiling.
-Answer:",A,"B. guilty, because he set the fire for the purpose of committing an unlawful act.",0.9579999999999999,0
+Answer:",A,"B. guilty, because he set the fire for the purpose of committing an unlawful act.",0.943,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Interferons are very special defence mechanisms which operate by:
@@ -2700,7 +2696,7 @@ A. Binding to viruses
 B. Binding to neighbouring cells
 C. Producing a long lasting state of resistance
 D. Inhibiting virus induced enzymes
-Answer:",B,"The correct answer is C – interferons induce a long‑lasting state of antiviral resistance in cells, though their exact mechanisms involve multiple pathways.",0.9209999999999999,0
+Answer:",B,The correct answer is **C. Producing a long‑lasting state of resistance** (interferons stimulate cells to enter an antiviral state rather than directly binding viruses or neighboring cells).,0.9679999999999997,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: World-affirming religions:
@@ -2715,7 +2711,7 @@ A. embrace conventional cultural values but offer new means of achieving them
 B. react against the loss of any meaningful religious content in the teachings of churches
 C. adopt an attitude of mild disapproval towards mainstream social values
 D. reject both the goals and means of conventional society and provide utopian alternatives
-Answer:",A,A. embrace conventional cultural values but offer new means of achieving them.,0.9350000000000002,1
+Answer:",A,A. embrace conventional cultural values but offer new means of achieving them.,0.9189999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Kant's moral theory is a version of
@@ -2730,7 +2726,7 @@ A. consequentialism.
 B. virtue ethics.
 C. utilitarianism.
 D. none of the above
-Answer:",D,Answer: D. none of the above.,0.961,1
+Answer:",D,Answer: D. none of the above.,0.9390000000000001,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: What culture used hide boats and spread across the Arctic, from Alaska to Greenland beginning about 700 years ago, in a third wave of migration from the Old World into the New?
@@ -2745,7 +2741,7 @@ A. Paleo-Eskimos
 B. Dorset
 C. Thule
 D. Clovis
-Answer:",C,The culture that used hide boats and spread across the Arctic from Alaska to Greenland about 700 years ago in a third Old‑World wave of migration was the Thule.,0.9559999999999998,1
+Answer:",C,The culture was the **Thule** (option C).,0.9549999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Mars has an atmosphere that is almost entirely carbon dioxide.Why isn't there a strong greenhouse effect keeping the planet warm?
@@ -2760,7 +2756,7 @@ A. the atmosphere on Mars is too thin to trap a significant amount of heat
 B. There actually is a strong greenhouse effect and Mars would be 35oC colder than it is now without it.
 C. Mars does not have enough internal heat to drive the greenhouse effect
 D. the greenhouse effect requires an ozone layer which Mars does not have
-Answer:",A,"Because the Martian atmosphere is so thin, it cannot trap a significant amount of heat, so the greenhouse effect is weak.",0.9559999999999998,1
+Answer:",A,Answer: A. The atmosphere on Mars is too thin to trap a significant amount of heat.,0.945,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The 'new racism' refers to:
@@ -2775,7 +2771,7 @@ A. a subtler form of prejudice, masked by nationalist pride
 B. a post-modern deconstruction of racist ideas to reveal their lack of depth
 C. racist practices found in newly emerging areas of social life, such as cyberspace
 D. an anti-fascist movement which challenges nationalist politics
-Answer:",A,"A. a subtler form of prejudice, masked by nationalist pride.",0.591,1
+Answer:",A,"Answer: A. the ""new racism"" is widely understood as a subtler form of prejudice that is often disguised by nationalist pride.",0.882,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following disorders is most likely related to the amount of light to which a susceptible person is exposed?
@@ -2790,7 +2786,7 @@ A. seasonal affective disorder
 B. claustrophobia
 C. Alzheimer's disease
 D. catatonic schizophrenia
-Answer:",A,A. Seasonal affective disorder.,0.7969999999999999,1
+Answer:",A,A. Seasonal affective disorder.,0.586,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Define a new measurement as the difference between the 60th and 40th percentile scores in a population. This measurement will give information concerning
@@ -2805,7 +2801,7 @@ A. central tendency.
 B. variability.
 C. symmetry.
 D. skewness.
-Answer:",B,This difference reflects **B. variability** (the spread of the middle 20 % of the data).,0.932,1
+Answer:",B,B. It gives information concerning variability.,0.9319999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: This question refers to the following information.
@@ -2834,7 +2830,7 @@ A. demonstrating high social status through large vocabulary
 B. exploiting naval power to European nation-states
 C. drawing universal conclusions from a wide range of concrete data
 D. using cause-and-effect to systematize the understanding of human behavior
-Answer:",D,The passage exemplifies the eighteenth‑century tendency to *draw universal conclusions from a wide range of concrete data* (option C).,0.9570000000000001,0
+Answer:",D,Answer: C – drawing universal conclusions from a wide range of concrete data.,0.9359999999999999,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The UK Public Services (Social Value) Act 2013 requires those procuring ______ to consider how they can secure wider _____, _____and _____ benefits.
@@ -2849,7 +2845,7 @@ A. Private services, social, economic and environmental
 B. Public services, social, cultural and environmental
 C. Private services, cultural, economic and environmental
 D. Public services, social, economic and environmental
-Answer:",D,"The UK Public Services (Social Value) Act 2013 requires those procuring public services to consider how they can secure wider social, economic and environmental benefits; however, I am not absolutely certain that this is the only correct interpretation.",0.32699999999999996,1
+Answer:",D,"The UK Public Services (Social Value) Act 2013 requires those procuring **public services** to consider how they can secure wider **social, economic and environmental** benefits.",0.9269999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: As part of her campaign for school president, Edy personally gives out cookies that say ""Vote for Edy"" on them. Which of the following is one reason that this approach might improve Edy's chances in the election?
@@ -2864,7 +2860,7 @@ A. foot-in-the-door
 B. mere-exposure effect
 C. central route of persuasion
 D. pluralistic ignorance
-Answer:",B,"B. mere‑exposure effect—by repeatedly presenting a favorable message, students become more accustomed to and positively inclined toward Edy.",0.8999999999999998,1
+Answer:",B,B. mere‑exposure effect,0.714,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Find the opposite of the number −7.
@@ -2879,7 +2875,7 @@ A. 7
 B. −7
 C. 0.7
 D. −7.7
-Answer:",A,A. 7,0.984,1
+Answer:",A,Answer: A. 7,0.969,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: According to Marquis, abortion is
@@ -2894,7 +2890,7 @@ A. absolutely wrong.
 B. seriously presumptively wrong.
 C. generally permissible.
 D. always permissible.
-Answer:",B,B. seriously presumptively wrong.,0.44400000000000006,1
+Answer:",B,B. seriously presumptively wrong.,0.27,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Monopolistic competition is said to be productively inefficient because
@@ -2909,7 +2905,7 @@ A. the long-run price is above minimum average total cost.
 B. long-run profits are positive.
 C. firms engage in collusive behavior.
 D. there exist no barriers to entry.
-Answer:",A,A. the long‑run price is above minimum average total cost.,0.9269999999999999,1
+Answer:",A,The correct answer is A: Monopolistic competition is productively inefficient because the long‑run price is above the minimum average total cost.,0.969,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: This question refers to the following information.
@@ -2932,7 +2928,7 @@ A. the inclusion of women
 B. an increase in funding from officials in the French capital
 C. the development of universal public education in many European countries
 D. the development of new, specialized fields
-Answer:",D,"The text implies that the scientific community was changing because of the development of new, specialized fields (option D).",0.769,1
+Answer:",D,"D. The development of new, specialized fields.",0.5229999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The metal surfaces for electrical resistance welding must be
@@ -2947,7 +2943,7 @@ A. rough.
 B. clean.
 C. moistened
 D. coloured
-Answer:",B,The metal surfaces for electrical resistance welding must be B. clean.,0.7780000000000001,1
+Answer:",B,"For electrical resistance welding, the metal surfaces must **be clean**.",0.944,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: What is a tracheostomy?
@@ -2962,7 +2958,7 @@ A. An opening in the anterior wall of the trachea above the cricoid cartilage.
 B. An opening in the anterior wall of the trachea below the cricoid cartilage.
 C. An opening in the anterior chest wall.
 D. An opening in the posterior wall of the trachea below the cricoid cartilage.
-Answer:",B,Answer: A. An opening in the anterior wall of the trachea above the cricoid cartilage.,0.945,0
+Answer:",B,Answer: A. An opening in the anterior wall of the trachea above the cricoid cartilage.,0.9569999999999999,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: To save the expense of purchasing a new test form, a chief school administrator asks a certified school psychologist to administer a six-year-old form of an achievement test that agreed with the curriculum of the school district at that time. Considering the situation and the Principles for Professional Ethics of the National Association of School Psychologists' (NASP) the school psychologist should
@@ -2977,7 +2973,7 @@ A. administer the outdated form but use new norms
 B. ask that at least a few copies of the new form be administered for comparison
 C. insist on administering only the most recent form of the test
 D. recommend that the assessment be canceled
-Answer:",C,C. The psychologist should insist on administering only the most recent form of the test.,0.9129999999999999,1
+Answer:",C,C. insist on administering only the most recent form of the test.,0.9399999999999998,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: What interval consists of all $u$ such that neither $2u$ nor $-20u$ is in the interval $(-\infty,-1)$ ?
@@ -2992,7 +2988,7 @@ A. [-\frac{1}{2}, 0]
 B. [-1,1]
 C. [-\frac{1}{2}, -\frac{1}{20}]
 D. [0,2]
-Answer:",C,"I’m not sure, but the set of $u$ satisfying the conditions appears to be $[-\tfrac12,\tfrac1{20}]$, which does not match any of the listed options.",0.295,0
+Answer:",C,"I’m not entirely certain, but it appears none of the listed intervals exactly matches the solution set \(u\in[-\tfrac12,\tfrac1{20}]\).",0.324,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Which of the following statements best describes our understanding of the term 'globalization'?
@@ -3007,7 +3003,7 @@ A. Globalization refers to the process by which shared hegemonic values pervade 
 B. Best described as intensification of worldwide social relations and increasing interdependence, globalization is the result of the compression of space and time through the development of new technologies.
 C. Globalization is best described as the 'shrinking' of the global community, drawing people into closer contact with one another primarily at the economic and technical levels. This process began in the early 20th century and was based on the ideological expeditions that originated from western Europe.
 D. Globalization has occurred since the 1980s, originating in Western Europe as a centre of political power and technological advancement. The process is a direct result of technological advancement in communications and travel industries that facilitate the efficient transportation of physical objects, people and ideas across the globe.
-Answer:",B,Answer: B.,0.9949999999999999,1
+Answer:",B,Answer: B.,0.9649999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Sanja hears a sound that she recognizes as the front door being shut. In order for her to detect the sound and process it so that she knows what it is, Sanja's ear funnels the sound waves to the inner ear in order to stimulate the cilia of the inner ear. This is a critical step in the process of
@@ -3022,7 +3018,7 @@ A. auditory transduction
 B. olfactory perception
 C. sensory interaction
 D. decibel cognition
-Answer:",A,Answer: A. auditory transduction,0.9649999999999999,1
+Answer:",A,Answer: A. auditory transduction.,0.969,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I borrowed a book and took photos of some pages to remember them. Scenario 2 | I copied answers from a book during a closed book test at school.
@@ -3037,7 +3033,7 @@ A. Wrong, Wrong
 B. Wrong, Not wrong
 C. Not wrong, Wrong
 D. Not wrong, Not wrong
-Answer:",C,"C. Not wrong, Wrong",0.8150000000000001,1
+Answer:",C,"C. Not wrong, Wrong",0.6199999999999999,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: A hypothesis test is set up so that P(rejecting H0 when H0 is true) = 0.05 and P(failing to reject H0 when H0 is false) = 0.26. What is the power of the test?
@@ -3052,7 +3048,7 @@ A. 0.26
 B. 0.05
 C. 0.95
 D. 0.74
-Answer:",D,The power of the test is 0.74 (Option D).,0.9489999999999998,1
+Answer:",D,D. 0.74,0.861,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Baier asserts that when we ask for moral advice, we are asking for others to:
@@ -3067,7 +3063,7 @@ A. issue commands.
 B. inform us of their preferences.
 C. deliberate with us.
 D. empathize with us.
-Answer:",C,C. deliberate with us.,0.8150000000000001,1
+Answer:",C,"Baier argues that when we ask for moral advice we are essentially seeking others to inform us of their preferences—she therefore rejects the notion that advice is a directive (A), a deliberation (C) or an act of empathy (D) in the way that a command, a joint deliberation, or a merely empathic gesture would be.",0.9399999999999998,0
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: The term that best describes an artwork that incorporates theatrical elements such as body movement, audience participation, music, and projected images is
@@ -3082,7 +3078,7 @@ A. mimesis
 B. installation art
 C. performance art
 D. digital collage
-Answer:",C,C. performance art.,0.8550000000000001,1
+Answer:",C,C. performance art.,0.716,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: If the objectives of psychological research conducted in a laboratory dictate that certain information be withheld from the participant, consent by the participant
@@ -3097,7 +3093,7 @@ A. maybe waived provided written consent is obtained from a member of the partic
 B. is not necessary, bur some explanation of the research situation to the participant is essential
 C. is necessary, and an explanation of significant aspects that might affect willingness to participate must be provided
 D. is considered essential only if there is possible risk of physical or psychological harm
-Answer:",C,"C. is necessary, and an explanation of significant aspects that might affect willingness to participate must be provided.",0.945,1
+Answer:",C,"C. is necessary, and an explanation of significant aspects that might affect willingness to participate must be provided.",0.923,1
 "Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. 
 
 Question: Evading burden of proof is another name for the fallacy of
@@ -3112,4 +3108,4 @@ A. Extension
 B. Appeal to ignorance
 C. Complex question
 D. Complex proposition
-Answer:",B,The fallacy of evading the burden of proof is commonly known as the **appeal to ignorance** (option B).,0.9400000000000001,1
+Answer:",B,The fallacy is known as **B. Appeal to ignorance**.,0.946,1

@@ -1,12 +1,41 @@
+seed: 42
+dataset_name: mmlu # must match the folder name under tasks/
+dataset_path: cais/mmlu
+subset: "all"
+split: test
+few_shot_split: dev
+few_shot_examples: 0
+limit: 200
+
+# multiple choice: "question: str", "choices : list", and "answer_index: int"
+dataset_preprocessor: task_utils.preprocess_dataset
+
+# placeholder variables must match the dataset column names, formatted using Jinja2
+question_format: "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\n\n"   # question formatting template
+system_prompt: ""
+prompt_formatter: multiple_choice 
+performance_metrics:
+  - accuracy_scalar_with_abstention
+  - ece_scalar
+  - auroc_scalar
+
 qa_model:
-  host: hf_ar # hf_ar: hf autoregressive models, hf_dllm: hf diffusion language models
-  name: default_model
-  temperature: 0.0
+  backend: hf_ar 
+  name: openai/gpt-oss-20b
+  repeat: 1
+  temperature: 0.1
   max_tokens: 1024
+  max_model_len: 2048
+  chat_template_kwargs:
+    reasoning_effort: low
+
 
 grader_model:
-  host: hf_ar # hf_ar: hf autoregressive models, hf_dllm: hf diffusion language models
-  name: default_grader_model
+  backend: hf_ar 
+  name: openai/gpt-oss-20b
+  repeat: 1
   temperature: 0.0
   max_tokens: 1024
-
+  logprobs: 1
+  chat_template_kwargs:
+    reasoning_effort: low

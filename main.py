@@ -168,3 +168,4 @@ if __name__ == "__main__":
         results_df[f'confidence_{i}'] = extracted_output.extracted_confidences[i]
         results_df[f'accuracy_{i}'] = extracted_output.accuracy_scores[i]
     results_df.to_csv(f"{path}/eval_details.csv", index=False)
+    print("Results saved to:", path)

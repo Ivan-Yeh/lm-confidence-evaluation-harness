@@ -9,3 +9,6 @@ generation_type: generation
 output_filters: null
 confidence_metrics: verbalised_numerical_confidence_with_llm_extractor
 grader: llm_grader
+
+qa_model:
+  temperature: 1.0

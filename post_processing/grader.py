@@ -34,7 +34,7 @@ def llm_generative_grader(cfg: dict, extracted_output: OrganisedOutputs, prompts
             Your job is to look at a question with a correct answer and a predicted answer, and then assign a grade of either ["CORRECT", "INCORRECT", "NOT_ATTEMPTED"].
             If the predicted answer matches, implies or covers the correct answer, the grade is CORRECT.
             If the predicted answer does not match, imply or cover the correct answer, the grade is INCORRECT. Do NOT grade it as INCORRECT if the predicted answer abstain from answering (e.g. "I don't know the answer..." or "I have no idea...").
-            If the predicted answer is empty, none or abstention (e.g. "I don't know the answer..." or "I have no idea..."), grade the predicted answer as NOT_ATTEMPTED instead of CORRECT or INCORRECT. If the predicted answer makes an attempt, do not grade it as NOT_ATTEMPTED.
+            If the predicted answer is empty, none or abstention (e.g. "I don't know the answer..." or "I have no idea..."), grade the predicted answer as NOT_ATTEMPTED instead of CORRECT or INCORRECT. If the predicted answer makes an attempt (even random guesses), do not grade it as NOT_ATTEMPTED.
             Ignore any explanation or linguistic cues present in the predicted answer. Don't apologize or correct yourself if there was a mistake; we are just trying to grade the answer.
             
             ```

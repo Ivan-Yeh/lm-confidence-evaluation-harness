@@ -6,7 +6,7 @@ defaults:
 prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"
 # prompt_format: "{{few_shot_examples}}\n\nAnswer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. \n\nQuestion: {{formatted_question}}\nAnswer: "
 
-generation_type: generation
+generation_type: continuation
 output_filters: 
   - name: multiple_choice_regex_extractor
     args:
@@ -18,7 +18,7 @@ output_filters:
         - (?i)\s*([A-D])
   - name: linguistic_confidence_augmentation
 confidence_metrics: scalar_linguistic_confidence
-grader: llm_grader
+grader: exact_match
 
 
 linguistic_confidence_augmentation_model:

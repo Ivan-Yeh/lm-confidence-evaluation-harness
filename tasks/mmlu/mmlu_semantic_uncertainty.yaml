@@ -20,7 +20,6 @@ confidence_metrics: semantic_uncertainty
 grader: exact_match
 
 qa_model:
-  model_name: meta-llama/Meta-Llama-3-8B-Instruct
   repeat: 10
   temperature: 1
   max_tokens: 512
