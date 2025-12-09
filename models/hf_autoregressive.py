@@ -7,6 +7,8 @@ import gc
 import numpy as np
 import pickle
 import os
+import logging
+
 
 class HFAutoregressiveLLM(AbstractModel):
     def __init__(self, cfg):
@@ -56,6 +58,7 @@ class HFAutoregressiveLLM(AbstractModel):
             
             for output in outputs:
                 # For each prompt, collect all n completions
+                logging.debug(output.outputs[0])
                 for completion in output.outputs:
                     if "assistantfinal" in completion.text:
                         generated_text = completion.text.rsplit("assistantfinal", 1)[-1].strip()
@@ -87,7 +90,6 @@ class HFAutoregressiveLLM(AbstractModel):
                     logprobs = logprobs[-expected_length:] if expected_length > 0 else logprobs
                     output_tokens.append(tokens)
                     output_logprobs.append(logprobs)
-            
             model_outputs_list.append(ModelOutputs(
                 context_texts=prompt_collection.context_texts,
                 output_texts=output_texts,

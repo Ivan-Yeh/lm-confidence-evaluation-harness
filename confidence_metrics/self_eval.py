@@ -1,7 +1,9 @@
 from default_utils.custom_types import ModelOutputs, PromptCollection, OrganisedOutputs
 from models.model_manager import ModelManager
 from default_utils.registry import register_confidence
+from default_utils.logger import get_logger
 import numpy as np
+import logging
 
 
 @register_confidence(name="p_true_by_continuation")
@@ -21,7 +23,7 @@ def p_true_by_continuation(cfg: dict, output_lst: list[ModelOutputs], prompts: P
             eval_prompt = p_true_prompt_template.format(question=question, model_answer=model_answer)
             true_continuation.context_texts.append(eval_prompt)
             true_continuation.continuation_texts[eval_prompt] = ["(A)"]
-        print("Scoring P(True) 'True' continuation token")
+        logging.info("Scoring P(True) 'True' continuation token")
         true_results: ModelOutputs = model.run_continuation(true_continuation)[0]
         extracted_true_probs: list[float] = [float(np.exp(np.mean(logprobs))) for logprobs in true_results.output_logprobs]
         return extracted_true_probs
@@ -53,7 +55,7 @@ def p_true_by_monte_carlo_generation(cfg: dict, output_lst: list[ModelOutputs], 
             eval_prompt = p_true_prompt_template.format(question=question, model_answer=model_answer)
             p_true_prompt_collection.context_texts.append(eval_prompt)
 
-        print("Running P(True) by Monte Carlo generation") 
+        logging.info("Running P(True) by Monte Carlo generation") 
         p_true_results: list[ModelOutputs] = model.run_generation(p_true_prompt_collection)
 
         # Each ModelOutputs in p_true_results holds responses for the same set of
@@ -63,6 +65,7 @@ def p_true_by_monte_carlo_generation(cfg: dict, output_lst: list[ModelOutputs], 
         counts_b = [0] * num_questions
 
         for result in p_true_results:
+            logging.debug(f"Monte Carlo generation result: {result}")
             for idx, output in enumerate(result.output_texts):
                 # Extract last occurrence of ANSWER: (A)/(B) or ANSWER IS: (A)/(B)
                 match = None

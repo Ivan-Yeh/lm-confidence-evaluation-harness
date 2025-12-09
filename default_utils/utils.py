@@ -8,8 +8,3 @@ def import_yaml_lib(cfg, target_attr):
         else:
                 module = importlib.import_module(module_name)
         return getattr(module, class_name)
-
-
-def print_announcement(message: str):
-    border = "=" * (len(message) + 4)
-    print(f"\n{border}\n| {message} |\n{border}\n")

@@ -83,7 +83,6 @@ class EntailmentDeberta():
 def semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs):
     strict_entailment = True
     response_lists: list[tuple[str]] = list(zip(*[outputs.output_texts for outputs in output_lst]))
-    print(response_lists)
     entailment_model = EntailmentDeberta()
     strict_entailment: bool = False
 
