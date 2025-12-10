@@ -75,7 +75,11 @@ def auroc_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> float:
         if val is None or val == "" or isinstance(val, list):
             return None
         try:
-            return float(val)
+            num = float(val)
+            # Exclude NaN values
+            if np.isnan(num):
+                return None
+            return num
         except (ValueError, TypeError):
             return None
     

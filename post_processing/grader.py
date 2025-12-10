@@ -1,10 +1,11 @@
 from default_utils.custom_types import OrganisedOutputs, PromptCollection, ModelOutputs
+from default_utils.datasets_manager import DatasetsManager
 from default_utils.registry import register_grader
 from models.model_manager import ModelManager
-
+import pandas as pd
 
 @register_grader(name="exact_match")
-def exact_match(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCollection):
+def exact_match(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCollection, dataset_manager: DatasetsManager = None):
     exact_matches = []
     answer_keys = prompts.answer_keys
     for round_outputs in extracted_output.extracted_answers:
@@ -21,7 +22,7 @@ def exact_match(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCo
 
 
 @register_grader(name="llm_grader")
-def llm_generative_grader(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCollection):
+def llm_generative_grader(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCollection, dataset_manager: DatasetsManager = None):
     model = ModelManager(master_cfg=cfg, model_config_type="grader_model")
     correct_answers = prompts.answer_keys
     questions = prompts.context_texts

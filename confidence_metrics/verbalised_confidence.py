@@ -67,21 +67,21 @@ def verbalised_numerical_confidence_with_llm_extractor(cfg: dict, output_lst: li
         extracted_scores = []
         extracted_answers = []
 
-        for x in cleaned:
+        for i, x in enumerate(cleaned):
             if isinstance(x, dict):
-                extracted_answers.append(x.get("answer"))
+                extracted_answers.append(x.get("answer", outputs.output_texts[i]))
 
                 score = x.get("confidence_score")
                 if score is None:
-                    extracted_scores.append(np.nan)
+                    extracted_scores.append(None)
                 else:
                     try:
                         extracted_scores.append(float(score) / 100.0)
                     except:
-                        extracted_scores.append(np.nan)
+                        extracted_scores.append(None)
             else:
-                extracted_answers.append(None)
-                extracted_scores.append(np.nan)
+                extracted_answers.append(outputs.output_texts[i])
+                extracted_scores.append(None)
 
         return extracted_answers, extracted_scores
 

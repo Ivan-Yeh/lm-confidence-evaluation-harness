@@ -15,12 +15,12 @@ class HFAutoregressiveLLM(AbstractModel):
         self.cfg = cfg
         self.model_name = cfg.get("name", None)
         self.repeat = cfg.get("repeat", 1)
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name, trust_remote_code=True)
-        
-    
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.model_name, trust_remote_code=True)
+
     def run_generation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
         from vllm import LLM, SamplingParams
-        
+
         # Check if cache exists
         if self.cfg.get("cache"):
             cache_path = self.cfg.get("cache")
@@ -28,66 +28,77 @@ class HFAutoregressiveLLM(AbstractModel):
             if os.path.exists(cache_file):
                 with open(cache_file, "rb") as f:
                     return pickle.load(f)
-        
+
         # Build chat messages from prompt collection
         messages_list = []
         for context_text in prompt_collection.context_texts:
             messages = []
             if prompt_collection.system_prompt:
-                messages.append({"role": "system", "content": prompt_collection.system_prompt})
+                messages.append(
+                    {"role": "system", "content": prompt_collection.system_prompt})
             messages.append({"role": "user", "content": context_text})
             messages_list.append(messages)
-        
-        sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0), 
-                                         max_tokens=self.cfg.get("max_tokens", 256),
+
+        sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0),
+                                         max_tokens=self.cfg.get(
+                                             "max_tokens", 256),
                                          logprobs=1,)
-        vllm_model = LLM(model=self.model_name, max_model_len=self.cfg.get("max_model_len", 4096))
+        vllm_model = LLM(model=self.model_name,
+                         max_model_len=self.cfg.get("max_model_len", 4096))
 
         model_outputs_list = []
         for _ in range(self.repeat):
             # Generate responses using vLLM chat
             try:
-                outputs = vllm_model.chat(messages_list, sampling_params=sampling_params, chat_template_kwargs=self.cfg.get("chat_template_kwargs", None))
+                if self.cfg.get("reasoning_effort"):
+                    outputs = vllm_model.chat(messages_list, sampling_params=sampling_params,
+                                            chat_template_kwargs={"reasoning_effort": self.cfg.get("reasoning_effort")})
+                else:
+                    outputs = vllm_model.chat(messages_list, sampling_params=sampling_params)
             except:
-                outputs = vllm_model.generate(prompt_collection.context_texts, sampling_params=sampling_params)
-            
+                outputs = vllm_model.generate(
+                    prompt_collection.context_texts, sampling_params=sampling_params)
+
             # Extract output texts and tokens
             output_texts = []
             output_tokens = []
             output_logprobs = []
-            
+
             for output in outputs:
                 # For each prompt, collect all n completions
                 logging.debug(output.outputs[0])
                 for completion in output.outputs:
                     if "assistantfinal" in completion.text:
-                        generated_text = completion.text.rsplit("assistantfinal", 1)[-1].strip()
+                        generated_text = completion.text.rsplit(
+                            "assistantfinal", 1)[-1].strip()
                     else:
                         generated_text = completion.text.strip()
                     output_texts.append(generated_text)
-                    
+
                     # Tokenize generated text to get the expected number of tokens
-                    generated_token_ids = self.tokenizer.encode(generated_text, add_special_tokens=False)
+                    generated_token_ids = self.tokenizer.encode(
+                        generated_text, add_special_tokens=False)
                     expected_length = len(generated_token_ids)
-                    
+
                     # Extract decoded tokens and logprobs, skipping special tokens
                     tokens = []
                     logprobs = []
-                    
+
                     if completion.logprobs:
                         for lp in completion.logprobs:
                             if lp and len(lp) > 0:
                                 tok_info = list(lp.values())[0]
                                 decoded_token = tok_info.decoded_token
-                                
+
                                 # Skip special tokens
                                 if decoded_token not in self.tokenizer.all_special_tokens:
                                     tokens.append(decoded_token)
                                     logprobs.append(tok_info.logprob)
-                    
+
                     # Slice tokens and logprobs to match generated text length
                     tokens = tokens[-expected_length:] if expected_length > 0 else tokens
-                    logprobs = logprobs[-expected_length:] if expected_length > 0 else logprobs
+                    logprobs = logprobs[-expected_length:
+                                        ] if expected_length > 0 else logprobs
                     output_tokens.append(tokens)
                     output_logprobs.append(logprobs)
             model_outputs_list.append(ModelOutputs(
@@ -96,28 +107,29 @@ class HFAutoregressiveLLM(AbstractModel):
                 output_tokens=output_tokens,
                 output_logprobs=output_logprobs,
             ))
-            
+
         del vllm_model
         torch.cuda.empty_cache()
-        
+
         # Pickle outputs if cache path is specified
         if self.cfg.get("cache"):
             cache_path = self.cfg.get("cache")
             os.makedirs(cache_path, exist_ok=True)
             with open(os.path.join(cache_path, "run_generation_outputs.pkl"), "wb") as f:
                 pickle.dump(model_outputs_list, f)
-        
+
         return model_outputs_list
-        
+
     def run_continuation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
         # Check if cache exists
         if self.cfg.get("cache"):
             cache_path = self.cfg.get("cache")
-            cache_file = os.path.join(cache_path, "run_continuation_outputs.pkl")
+            cache_file = os.path.join(
+                cache_path, "run_continuation_outputs.pkl")
             if os.path.exists(cache_file):
                 with open(cache_file, "rb") as f:
                     return pickle.load(f)
-        
+
         hf_model = AutoModelForCausalLM.from_pretrained(
             self.model_name,
             torch_dtype=torch.bfloat16,
@@ -139,14 +151,17 @@ class HFAutoregressiveLLM(AbstractModel):
                 continuations = prompt_collection.continuation_texts[context]
 
                 # Encode the context once
-                ctx_ids = tokenizer(context, add_special_tokens=False).input_ids
+                ctx_ids = tokenizer(
+                    context, add_special_tokens=False).input_ids
 
                 candidates = []
 
                 # ---- Score each continuation C = [c1, c2, ..., ck] ----
                 for continuation in continuations:
-                    cont_ids = tokenizer(continuation, add_special_tokens=False).input_ids
-                    rolling_ids = list(ctx_ids)         # ensure pure python list
+                    cont_ids = tokenizer(
+                        continuation, add_special_tokens=False).input_ids
+                    # ensure pure python list
+                    rolling_ids = list(ctx_ids)
 
                     cont_logps = []
 
@@ -162,10 +177,12 @@ class HFAutoregressiveLLM(AbstractModel):
 
                         with torch.inference_mode():
                             outputs = hf_model(input_ids)
-                            logits = outputs.logits           # [1, seq_len, vocab]
+                            # [1, seq_len, vocab]
+                            logits = outputs.logits
 
                         next_logits = logits[:, -1, :]        # [1, vocab]
-                        logprobs = torch.nn.functional.log_softmax(next_logits, dim=-1)
+                        logprobs = torch.nn.functional.log_softmax(
+                            next_logits, dim=-1)
 
                         lp = logprobs[0, token_id].item()
                         cont_logps.append(lp)
@@ -202,12 +219,12 @@ class HFAutoregressiveLLM(AbstractModel):
         del hf_model
         gc.collect()
         torch.cuda.empty_cache()
-        
+
         # Pickle outputs if cache path is specified
         if self.cfg.get("cache"):
             cache_path = self.cfg.get("cache")
             os.makedirs(cache_path, exist_ok=True)
             with open(os.path.join(cache_path, "run_continuation_outputs.pkl"), "wb") as f:
                 pickle.dump(model_outputs_list, f)
-        
+
         return model_outputs_list

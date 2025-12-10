@@ -18,5 +18,4 @@ linguistic_confidence_judge_model:
   temperature: 1.2
   max_tokens: 1024
   logprobs: 1
-  chat_template_kwargs:
-    reasoning_effort: low
+  reasoning_effort: low
