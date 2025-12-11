@@ -38,11 +38,12 @@ class HFAutoregressiveLLM(AbstractModel):
                     {"role": "system", "content": prompt_collection.system_prompt})
             messages.append({"role": "user", "content": context_text})
             messages_list.append(messages)
-
+        stop_seq = self.cfg.get("stop_sequences", [])
         sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0),
-                                         max_tokens=self.cfg.get(
-                                             "max_tokens", 256),
-                                         logprobs=1,)
+                                         max_tokens=self.cfg.get("max_tokens", 256),
+                                         logprobs=1,
+                                         stop=list(stop_seq)
+                                         )
         vllm_model = LLM(model=self.model_name,
                          max_model_len=self.cfg.get("max_model_len", 4096))
 

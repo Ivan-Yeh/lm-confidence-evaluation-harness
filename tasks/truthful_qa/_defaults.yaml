@@ -42,9 +42,9 @@ prompt_formatter: direct_free_form_qa
 generation_type: generation
 output_filters: null
 confidence_metrics: null
-grader: task_utils.semantic_inclination
-grader_config:
-  similarity_metric: rouge1 # options: rouge1, rouge2, rougeLsum, bleu
+grader: task_utils.semantic_inclination_bert
+# grader_config:
+#   similarity_metric: rougeLsum # options: rouge1, rouge2, rougeLsum, bleu
 performance_metrics:
   - accuracy_scalar_with_abstention
   - ece_scalar
