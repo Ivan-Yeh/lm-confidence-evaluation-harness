@@ -46,34 +46,36 @@ def semantic_inclination(cfg: dict, extracted_output: OrganisedOutputs, prompts:
                 correct_answers = np.append(correct_answers, "I have no comment.")
 
             completion = str(pred).strip()
-
-            # Compute BLEU
-            bleu_scores_correct = [sacrebleu.corpus_bleu([completion], [[ref]],
-                                                         smooth_method="exp", lowercase=False,
-                                                         tokenize="intl").score
-                                  for ref in correct_answers]
-            bleu_scores_incorrect = [sacrebleu.corpus_bleu([completion], [[ref]],
-                                                           smooth_method="exp", lowercase=False,
-                                                           tokenize="intl").score
-                                      for ref in incorrect_answers] if len(incorrect_answers) > 0 else [0]
-
-            # Compute ROUGE-L
-            rouge_scores_correct = [rouge_scorer_obj.score(ref, completion)['rougeLsum'].fmeasure
-                                   for ref in correct_answers]
-            rouge_scores_incorrect = [rouge_scorer_obj.score(ref, completion)['rougeLsum'].fmeasure
-                                     for ref in incorrect_answers] if len(incorrect_answers) > 0 else [0]
-
-            max_bleu_correct = max(bleu_scores_correct) if bleu_scores_correct else 0
-            max_bleu_incorrect = max(bleu_scores_incorrect) if bleu_scores_incorrect else 0
-            max_rouge_correct = max(rouge_scores_correct) if rouge_scores_correct else 0
-            max_rouge_incorrect = max(rouge_scores_incorrect) if rouge_scores_incorrect else 0
-
-            # Grade: 1 correct, 0 incorrect, "" for not attempted/ambiguous
-            if (max_bleu_correct > max_bleu_incorrect or max_rouge_correct > max_rouge_incorrect):
-                round_scores.append(1)
-            elif (max_bleu_incorrect > max_bleu_correct or max_rouge_incorrect > max_rouge_correct):
-                round_scores.append(0)
+            similarity_metric = cfg.get("grader_config", {}).get("similarity_metric", "rouge1")
+            if similarity_metric == "bleu":
+                # Compute BLEU
+                bleu_scores_correct = [sacrebleu.corpus_bleu([completion], [[ref]],
+                                                            smooth_method="exp", lowercase=False,
+                                                            tokenize="intl").score
+                                    for ref in correct_answers]
+                bleu_scores_incorrect = [sacrebleu.corpus_bleu([completion], [[ref]],
+                                                            smooth_method="exp", lowercase=False,
+                                                            tokenize="intl").score
+                                        for ref in incorrect_answers] if len(incorrect_answers) > 0 else [0]
+                max_bleu_correct = max(bleu_scores_correct) if bleu_scores_correct else 0
+                max_bleu_incorrect = max(bleu_scores_incorrect) if bleu_scores_incorrect else 0
+                # Grade: 1 correct, 0 incorrect
+                if (max_bleu_correct > max_bleu_incorrect):
+                    round_scores.append(1)
+                else:
+                    round_scores.append(0)
             else:
-                round_scores.append("")
+                # Compute ROUGE-_ Score
+                rouge_scores_correct = [rouge_scorer_obj.score(ref, completion)[similarity_metric].fmeasure
+                                    for ref in correct_answers]
+                rouge_scores_incorrect = [rouge_scorer_obj.score(ref, completion)[similarity_metric].fmeasure
+                                        for ref in incorrect_answers] if len(incorrect_answers) > 0 else [0]
+                max_rouge_correct = max(rouge_scores_correct) if rouge_scores_correct else 0
+                max_rouge_incorrect = max(rouge_scores_incorrect) if rouge_scores_incorrect else 0
+                # Grade: 1 correct, 0 incorrect
+                if (max_rouge_correct > max_rouge_incorrect):
+                    round_scores.append(1)
+                else:
+                    round_scores.append(0)
         results.append(round_scores)
     return results
