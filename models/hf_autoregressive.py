@@ -69,7 +69,9 @@ class HFAutoregressiveLLM(AbstractModel):
                 # For each prompt, collect all n completions
                 logging.debug(output.outputs[0])
                 for completion in output.outputs:
+                    has_assistant_token = False
                     if "assistantfinal" in completion.text:
+                        has_assistant_token = True
                         generated_text = completion.text.rsplit(
                             "assistantfinal", 1)[-1].strip()
                     else:
@@ -84,12 +86,19 @@ class HFAutoregressiveLLM(AbstractModel):
                     # Extract decoded tokens and logprobs, skipping special tokens
                     tokens = []
                     logprobs = []
+                    found_assistant = False
 
                     if completion.logprobs:
                         for lp in completion.logprobs:
                             if lp and len(lp) > 0:
                                 tok_info = list(lp.values())[0]
                                 decoded_token = tok_info.decoded_token
+
+                                # If has_assistant_token, skip tokens until we find "assistant"
+                                if has_assistant_token and not found_assistant:
+                                    if "assistant" in decoded_token.lower():
+                                        found_assistant = True
+                                    continue
 
                                 # Skip special tokens
                                 if decoded_token not in self.tokenizer.all_special_tokens:
@@ -119,6 +128,8 @@ class HFAutoregressiveLLM(AbstractModel):
             with open(os.path.join(cache_path, "run_generation_outputs.pkl"), "wb") as f:
                 pickle.dump(model_outputs_list, f)
 
+        logging.debug(model_outputs_list[0].output_tokens)
+        logging.debug(model_outputs_list[0].output_logprobs)
         return model_outputs_list
 
     def run_continuation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:

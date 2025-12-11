@@ -1,4 +1,4 @@
-GPU=0
+GPU=1
 
 CUDA_VISIBLE_DEVICES=$GPU python main.py dataset=mmlu task=lnll qa_model.name=openai/gpt-oss-20b
 CUDA_VISIBLE_DEVICES=$GPU python main.py dataset=mmlu task=lnll qa_model.name=meta-llama/Meta-Llama-3-8B-Instruct

@@ -5,7 +5,7 @@ subset: rc.nocontext
 split: validation
 few_shot_split: validation
 few_shot_examples: 0
-limit: 10
+limit: 200
 
 # multiple choice: "question: str", "choices : list", and "answer_index: int"
 dataset_preprocessor: task_utils.preprocess_dataset
@@ -35,7 +35,7 @@ qa_model:
     - "\n"
     - "."
     - ","
-  temperature: 0
+  temperature: 0.7
   max_tokens: 512
   max_model_len: 2048
   reasoning_effort: low
