@@ -3,12 +3,11 @@ defaults:
   - _self_
 
 #  full prompt formatting template: requires {few_shot_examples} and {formatted_question}
-prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer: [Return the answer letter only]" # for generation
-# prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"  #for continuation
+prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"  #for continuation
 
 generation_type: continuation
 output_filters:
-  - name: multiple_choice_regex_extractor
+  - name: regex_extractor
     args:
       regexes:
         - (?i)\bAnswer[:\s]*[\(\[]?\s*([A-D])\s*[\)\]]?

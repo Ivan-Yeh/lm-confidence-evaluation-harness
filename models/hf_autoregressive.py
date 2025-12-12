@@ -67,7 +67,6 @@ class HFAutoregressiveLLM(AbstractModel):
 
             for output in outputs:
                 # For each prompt, collect all n completions
-                logging.debug(output.outputs[0])
                 for completion in output.outputs:
                     has_assistant_token = False
                     if "assistantfinal" in completion.text:
@@ -127,9 +126,7 @@ class HFAutoregressiveLLM(AbstractModel):
             os.makedirs(cache_path, exist_ok=True)
             with open(os.path.join(cache_path, "run_generation_outputs.pkl"), "wb") as f:
                 pickle.dump(model_outputs_list, f)
-
-        logging.debug(model_outputs_list[0].output_tokens)
-        logging.debug(model_outputs_list[0].output_logprobs)
+        
         return model_outputs_list
 
     def run_continuation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:

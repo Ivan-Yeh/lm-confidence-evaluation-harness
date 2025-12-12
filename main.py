@@ -107,11 +107,10 @@ if __name__ == "__main__":
 
     logger.info("Formatting prompts")
     # format prompts
-    prompts: PromptCollection = PROMPT_FORMATTER.get(
-        cfg.get("prompt_formatter", "multiple_choice"))(cfg, dataset_manager)
-    if prompts is None:
-        prompts = import_yaml_lib(
-            cfg, "prompt_formatter")(cfg, dataset_manager)
+    prompt_formatter: callable = PROMPT_FORMATTER.get(cfg.get("prompt_formatter"))
+    if prompt_formatter is None:
+        prompt_formatter = import_yaml_lib(cfg, "prompt_formatter")
+    prompts: PromptCollection = prompt_formatter(cfg, dataset_manager)
 
     logger.info("Generating QA outputs")
     # generate qa outputs
@@ -151,7 +150,7 @@ if __name__ == "__main__":
     logger.info("Grading responses")
     # grade response
     grader_func: callable = GRADER_FUNCTIONS.get(
-        cfg.get("grader", "exact_match"))
+        cfg.get("grader", "llm_grader"))
     if grader_func is None:
         grader_func = import_yaml_lib(cfg, "grader")
     extracted_output.accuracy_scores = grader_func(
@@ -172,7 +171,7 @@ if __name__ == "__main__":
 
     # save results
     results_df = pd.DataFrame()
-    results_df['question'] = prompts.context_texts
+    results_df['question'] = prompts.questions
     results_df['full_prompts'] = prompts.context_texts
     results_df["answer"] = prompts.answer_keys
     for i, round_outputs in enumerate(extracted_output.extracted_answers):

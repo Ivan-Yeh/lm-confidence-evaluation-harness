@@ -21,8 +21,9 @@ def exact_match(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCo
     return exact_matches
 
 
+# general LLM-based grader
 @register_grader(name="llm_grader")
-def llm_generative_grader(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCollection, dataset_manager: DatasetsManager = None):
+def llm_grader(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCollection, dataset_manager: DatasetsManager = None):
     model = ModelManager(master_cfg=cfg, model_config_type="grader_model")
     correct_answers = prompts.answer_keys
     questions = prompts.context_texts

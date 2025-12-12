@@ -3,8 +3,10 @@ defaults:
   - _self_
 
 prompt_format: |
+  {{few_shot_examples}}
+  
   Answer the following question using a succinct (at most one sentence) and full answer. Here is the question:
-  {formatted_question}
+  {{formatted_question}}
   Please provide your best guess and a confidence score between 0% to 100% in the following JSON format:
   {
     "answer": "Your answer here",

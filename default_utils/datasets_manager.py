@@ -11,7 +11,7 @@ class DatasetsManager:
         self.subset: str = config.get("subset", None)
         self.split: str = config.get("split", None)
         self.few_shot_split: str = config.get("few_shot_split", None)
-        self.few_shot_examples: int = config.get("few_shot_examples", None)
+        self.few_shot_examples: int = config.get("few_shot_examples", 0)
         self.limit: int = config.get("limit", None)
         self.random_state: int = config.get("seed", 42)
         self.preprocess_fn = import_yaml_lib(config, "dataset_preprocessor") if config.get("dataset_preprocessor") else lambda x: x

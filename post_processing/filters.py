@@ -1,3 +1,4 @@
+import logging
 from default_utils.custom_types import ModelOutputs, PromptCollection
 from default_utils.registry import register_filter
 from models.model_manager import ModelManager
@@ -7,13 +8,15 @@ import ast
 
 def output_substring_extractor(regexes: list[str], model_outputs: list[ModelOutputs]) -> list[ModelOutputs]:
     potential_answer_regex = [re.compile(rf"{rgx}") for rgx in regexes]
-
     def locate_substring_tokens(decoded_tokens, token_logprobs, substring):
         """Return token-level slice for the substring in decoded tokens."""
-        full_text = "".join(decoded_tokens)
+        try:
+            full_text = "".join(decoded_tokens)
+        except Exception:
+            return decoded_tokens, token_logprobs
         start_char = full_text.find(substring)
         if start_char == -1:
-            return None, None
+            return decoded_tokens, token_logprobs
 
         end_char = start_char + len(substring)
         running = 0
@@ -34,7 +37,7 @@ def output_substring_extractor(regexes: list[str], model_outputs: list[ModelOutp
             running += tok_len
 
         if token_start is None or token_end is None:
-            return None, None
+            return decoded_tokens, token_logprobs
 
         return decoded_tokens[token_start:token_end], token_logprobs[token_start:token_end]
 
@@ -47,17 +50,18 @@ def output_substring_extractor(regexes: list[str], model_outputs: list[ModelOutp
 
         for text, tokens, logprobs in zip(output.output_texts, output.output_tokens, output.output_logprobs):
             captured_text = None
-
+            logging.debug(f"Original text: {text}")
             for rgx in potential_answer_regex:
                 m = rgx.search(text)
                 if m:
                     captured_text = m.group(1)  # capture group (answer letter)
+                    logging.debug(f"Captured text: {captured_text}")
                     break
 
             if captured_text is None:
-                new_texts.append(None)
-                new_tokens.append(None)
-                new_logprobs.append(None)
+                new_texts.append(text)
+                new_tokens.append(tokens)
+                new_logprobs.append(logprobs)
                 continue
 
             matched_tokens, matched_lp = locate_substring_tokens(tokens, logprobs, captured_text)
@@ -74,13 +78,15 @@ def output_substring_extractor(regexes: list[str], model_outputs: list[ModelOutp
                 output_logprobs=new_logprobs,
             )
         )
+    print(model_outputs[0].output_texts)
+    print(filtered_outputs[0].output_texts)
     return filtered_outputs
 
 
-@register_filter(name="multiple_choice_regex_extractor")
-def multiple_choice_regex_extractor(cfg: dict, model_outputs: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> list[ModelOutputs]:
+@register_filter(name="regex_extractor")
+def regex_extractor(cfg: dict, model_outputs: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> list[ModelOutputs]:
     potential_answer_regex = kwargs.get("regexes", [])
-    print(potential_answer_regex)
+    print("potential_answer_regex:", potential_answer_regex)
     return output_substring_extractor(potential_answer_regex, model_outputs)
 
 

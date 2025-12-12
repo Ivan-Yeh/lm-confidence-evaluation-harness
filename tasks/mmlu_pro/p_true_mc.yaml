@@ -9,11 +9,11 @@ output_filters:
   - name: regex_extractor
     args:
       regexes:
-        - (?i)\bAnswer[:\s]*[\(\[]?\s*([A-D])\s*[\)\]]?
-        - (?i)\b([A-D])\s*is\s*the\s*answer\b
-        - (?i)\bcorrect\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
-        - (?i)\bbest\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
-        - (?i)\s*([A-D])
+        - (?i)\bAnswer[:\s]*[\(\[]?\s*([A-J])\s*[\)\]]?
+        - (?i)\b([A-J])\s*is\s*the\s*answer\b
+        - (?i)\bcorrect\s*answer\s*is:*\s*[\(\[]?\s*([A-J])
+        - (?i)\bbest\s*answer\s*is:*\s*[\(\[]?\s*([A-J])
+        - (?i)\s*([A-J])
 confidence_metrics: p_true_by_monte_carlo_generation
 grader: exact_match
 

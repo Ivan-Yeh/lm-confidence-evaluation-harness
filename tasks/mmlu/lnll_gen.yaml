@@ -2,9 +2,10 @@ defaults:
   - _defaults.yaml
   - _self_
 
-prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer: [Return the answer letter only]"
+#  full prompt formatting template: requires {few_shot_examples} and {formatted_question}
+prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer: [Return the answer letter only]" # for generation
 
-generation_type: generation
+generation_type: continuation
 output_filters:
   - name: regex_extractor
     args:
@@ -14,13 +15,5 @@ output_filters:
         - (?i)\bcorrect\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
         - (?i)\bbest\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
         - (?i)\s*([A-D])
-confidence_metrics: p_true_by_monte_carlo_generation
+confidence_metrics: length_normalised_log_likelihood
 grader: exact_match
-
-
-p_true_mc_model:
-  backend: ${qa_model.backend}
-  name: ${qa_model.name}
-  repeat: 15
-  temperature: 1.0
-  max_tokens: 1024
