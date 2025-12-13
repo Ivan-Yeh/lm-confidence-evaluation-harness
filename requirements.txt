@@ -1,5 +1,3 @@
-triton
-anthropic
 backports.tarfile
 bitsandbytes
 cupy-cuda12x
@@ -12,7 +10,10 @@ fastparquet
 httptools
 hydra-core
 importlib-metadata
+inflect
 ipykernel
+jaraco-collections
+jaraco-functools
 jaraco.collections
 kernels
 matplotlib
@@ -25,7 +26,7 @@ python-dotenv
 python-multipart
 rouge-score
 sacrebleu
-scikit-learn
+sentence-transformers
 soundfile
 soxr
 together
