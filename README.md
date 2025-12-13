@@ -1,7 +1,15 @@
-# lm-eval-and-confidence
+# LM Confidence Evaluation Harness
 
-## Creating Tasks
-- each task is a sub directory in `tasks/`
-- each task has a config.yaml and it must specify : `dataset_path`, 
+## Evaluation Framework Logic
 
-## Evaluation Logic
+```mermaid
+flowchart LR
+    A[Config] -->|obj| B[Dataset Manager]
+    B -->|PromptCollection| C[Prompt Formatter]
+    C -->|PromptCollection| D[Model Manager<br/>Runs Queries]
+    D -->|list[ModelOutputs]| E[Output Post-processing<br/>Function]
+    E -->|list[ModelOutputs]| F[Confidence Extraction<br/>Function]
+    F -->|OrganisedOutputs| G[Grading]
+    G -->|OrganisedOutputs| H[Metrics]
+```
+

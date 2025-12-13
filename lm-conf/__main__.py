@@ -8,12 +8,16 @@ import pandas as pd
 from datetime import datetime
 from omegaconf import OmegaConf
 
-from .models.model_manager import ModelManager
 from .default_utils.logger import get_logger
-from .default_utils.datasets_manager import DatasetsManager
 from .default_utils.utils import import_yaml_lib
+from .models.model_manager import ModelManager
+from .default_utils.datasets_manager import DatasetsManager
 from .default_utils.custom_types import OrganisedOutputs, ModelOutputs, PromptCollection
-from .default_utils.registry import METRICS_FUNCTIONS, GRADER_FUNCTIONS, CONFIDENCE_FUNCTIONS, PROMPT_FORMATTER, FILTER_FUNCTIONS
+from .default_utils.registry import (METRICS_FUNCTIONS, 
+                                     GRADER_FUNCTIONS, 
+                                     CONFIDENCE_FUNCTIONS, 
+                                     PROMPT_FORMATTER, 
+                                     FILTER_FUNCTIONS)
 
 
 def _auto_import_modules():
@@ -106,7 +110,8 @@ if __name__ == "__main__":
 
     logger.info("Formatting prompts")
     # format prompts
-    prompt_formatter: callable = PROMPT_FORMATTER.get(cfg.get("prompt_formatter"))
+    prompt_formatter: callable = PROMPT_FORMATTER.get(
+        cfg.get("prompt_formatter"))
     if prompt_formatter is None:
         prompt_formatter = import_yaml_lib(cfg, "prompt_formatter")
     prompts: PromptCollection = prompt_formatter(cfg, dataset_manager)
