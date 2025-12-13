@@ -1,13 +1,11 @@
 from tqdm import tqdm
 from default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer
 import torch
-import torch.nn.functional as F
 import gc
 import numpy as np
 import pickle
 import os
-import logging
 from vllm import LLM, SamplingParams
 
 
