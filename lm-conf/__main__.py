@@ -17,7 +17,7 @@ from .default_utils.registry import METRICS_FUNCTIONS, GRADER_FUNCTIONS, CONFIDE
 
 
 def _auto_import_modules():
-    import default_utils
+    from . import default_utils
     for package_path in default_utils.__path__:
         for module_info in pkgutil.iter_modules([package_path]):
             module_name = module_info.name
@@ -28,7 +28,7 @@ def _auto_import_modules():
                     f"{default_utils.__name__}.{module_name}")
             except ImportError:
                 pass
-    import confidence_metrics
+    from . import confidence_metrics
     for package_path in confidence_metrics.__path__:
         for module_info in pkgutil.iter_modules([package_path]):
             module_name = module_info.name
@@ -39,7 +39,7 @@ def _auto_import_modules():
                     f"{confidence_metrics.__name__}.{module_name}")
             except ImportError:
                 pass
-    import post_processing
+    from . import post_processing
     for package_path in post_processing.__path__:
         for module_info in pkgutil.iter_modules([package_path]):
             module_name = module_info.name
@@ -79,8 +79,7 @@ def get_task_yaml() -> tuple[str, str, dict]:
     dataset_name, task_name, overrides = parse_args()
 
     # Get absolute path to config directory
-    config_dir = os.path.abspath(f"tasks/{dataset_name}")
-
+    config_dir = os.path.abspath(f"./lm-conf/tasks/{dataset_name}")
     # Initialize Hydra with the config directory and tasks search path
     with initialize_config_dir(config_dir=config_dir, version_base=None):
         # Compose config with the task and any overrides

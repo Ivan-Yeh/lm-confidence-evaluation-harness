@@ -33,13 +33,17 @@ def multiple_choice(cfg: dict, dataset_manager: DatasetsManager) -> PromptCollec
         prompts.append(base_prompt)
         continuation_texts[base_prompt] = continuations
     print(formatted_questions[0])
-    return PromptCollection(questions=formatted_questions, answer_keys=[chr(65 + idx) for idx in ds['answer_index'].tolist()], system_prompt=cfg.get("system_prompt", ""), context_texts=prompts, continuation_texts=continuation_texts)
+    return PromptCollection(questions=formatted_questions, 
+                            answer_keys=[chr(65 + idx) for idx in ds['answer_index'].tolist()], 
+                            system_prompt=cfg.get("system_prompt", ""), 
+                            context_texts=prompts, 
+                            continuation_texts=continuation_texts)
 
 
 @register_prompt_formatter(name="direct_free_form_qa")
 def direct_free_form_qa(cfg: dict, dataset_manager: DatasetsManager) -> PromptCollection:
     question_template: Template = Template(cfg.get("question_format", "{{question.strip()}}"))
-    prompt_template: Template = Template(cfg.get("prompt_format", "{{few_shot_examples}}\n\nQ: {{formatted_question}}\nA:"))
+    prompt_template: Template = Template(cfg.get("prompt_format", "{{few_shot_examples}}\n\nQuestion: {{formatted_question}}\nAnswer:"))
     prompts = []
     few_shot = dataset_manager.few_shot_examples if dataset_manager.few_shot_examples else 0
     few_shot_ds = dataset_manager.get_few_shot_dataset()
@@ -60,4 +64,8 @@ def direct_free_form_qa(cfg: dict, dataset_manager: DatasetsManager) -> PromptCo
         base_prompt = prompt_template.render(few_shot_examples=few_shot_text.strip(), formatted_question=formatted_question).strip()
         prompts.append(base_prompt)
         # continuation_texts[base_prompt] = [f" {row['answer']}"]
-    return PromptCollection(questions=formatted_questions, answer_keys=ds['answer'].tolist(), system_prompt=cfg.get("system_prompt", ""), context_texts=prompts, continuation_texts=continuation_texts)
+    return PromptCollection(questions=formatted_questions, 
+                            answer_keys=ds['answer'].tolist(), 
+                            system_prompt=cfg.get("system_prompt", ""), 
+                            context_texts=prompts, 
+                            continuation_texts=continuation_texts)
