@@ -8,6 +8,7 @@ import numpy as np
 import pickle
 import os
 import logging
+from vllm import LLM, SamplingParams
 
 
 class HFAutoregressiveLLM(AbstractModel):
@@ -19,8 +20,6 @@ class HFAutoregressiveLLM(AbstractModel):
             self.model_name, trust_remote_code=True)
 
     def run_generation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
-        from vllm import LLM, SamplingParams
-
         # Check if cache exists
         if self.cfg.get("cache"):
             cache_path = self.cfg.get("cache")
@@ -129,25 +128,26 @@ class HFAutoregressiveLLM(AbstractModel):
         
         return model_outputs_list
 
-    def run_continuation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
-        # Check if cache exists
+
+    def run_continuation(self, prompt_collection: PromptCollection):
+
+        # ---- Cache check ----
         if self.cfg.get("cache"):
-            cache_path = self.cfg.get("cache")
-            cache_file = os.path.join(
-                cache_path, "run_continuation_outputs.pkl")
+            cache_path = self.cfg["cache"]
+            cache_file = os.path.join(cache_path, "run_continuation_outputs.pkl")
             if os.path.exists(cache_file):
                 with open(cache_file, "rb") as f:
                     return pickle.load(f)
 
-        hf_model = AutoModelForCausalLM.from_pretrained(
-            self.model_name,
-            torch_dtype=torch.bfloat16,
-            device_map="auto",
+        # ---- Load vLLM ----
+        llm = LLM(
+            model=self.model_name,
+            dtype="bfloat16",
             trust_remote_code=True,
+            gpu_memory_utilization=0.90,
         )
-        hf_model.eval()
 
-        tokenizer = self.tokenizer
+        tokenizer = llm.get_tokenizer()
         model_outputs_list = []
 
         for _ in range(self.repeat):
@@ -155,58 +155,52 @@ class HFAutoregressiveLLM(AbstractModel):
             all_output_texts = []
             all_output_tokens = []
             all_output_logprobs = []
+            all_candidates = []
 
+            # Iterate contexts
             for context in tqdm(prompt_collection.context_texts, desc="Scoring continuations"):
                 continuations = prompt_collection.continuation_texts[context]
 
-                # Encode the context once
-                ctx_ids = tokenizer(
-                    context, add_special_tokens=False).input_ids
-
                 candidates = []
 
-                # ---- Score each continuation C = [c1, c2, ..., ck] ----
-                for continuation in continuations:
-                    cont_ids = tokenizer(
-                        continuation, add_special_tokens=False).input_ids
-                    # ensure pure python list
-                    rolling_ids = list(ctx_ids)
+                # ---- Build all prompts for batch scoring ----
+                prompts = [context + continuation for continuation in continuations]
 
-                    cont_logps = []
+                # ---- Ask vLLM for logprobs along the entire output ----
+                sampling = SamplingParams(
+                    temperature=0,                # deterministic
+                    max_tokens=1,                 # do NOT generate beyond the prompt
+                    logprobs=1,                   # return token-level logprobs
+                    prompt_logprobs=True,         # needed to score provided tokens
+                )
 
-                    for token_id in cont_ids:
-                        token_id = int(token_id)
+                outputs = llm.generate(prompts, sampling, use_tqdm=False)
 
-                        # Always create a clean tensor [1, L]
-                        input_ids = torch.tensor(
-                            rolling_ids,
-                            dtype=torch.long,
-                            device=hf_model.device
-                        ).unsqueeze(0)
+                # ---- Extract continuation logprobs ----
+                for continuation, out in zip(continuations, outputs):
 
-                        with torch.inference_mode():
-                            outputs = hf_model(input_ids)
-                            # [1, seq_len, vocab]
-                            logits = outputs.logits
+                    cont_ids = tokenizer(continuation, add_special_tokens=False).input_ids
+                    num_cont_toks = len(cont_ids)
 
-                        next_logits = logits[:, -1, :]        # [1, vocab]
-                        logprobs = torch.nn.functional.log_softmax(
-                            next_logits, dim=-1)
+                    # out.prompt_logprobs is a list of dicts, one per prompt token
+                    token_logprobs = out.prompt_logprobs[-num_cont_toks:]
 
-                        lp = logprobs[0, token_id].item()
-                        cont_logps.append(lp)
-
-                        rolling_ids = rolling_ids + [token_id]
+                    lp = []
+                    tokens = []
+                    for logprob_dict in token_logprobs:
+                        lp.append(list(logprob_dict.values())[0].logprob)
+                        tokens.append(list(logprob_dict.values())[0].decoded_token)
 
                     candidates.append({
                         "text": continuation,
-                        "tokens": tokenizer.decode(cont_ids),
-                        "logprobs": cont_logps,
-                        "mean": np.mean(cont_logps),
+                        "tokens": tokens,
+                        "logprobs": lp,
+                        "mean": float(np.mean(lp)),
                     })
 
-                # ---- Choose best continuation by sum logprob ----
+                # choose highest-mean continuation
                 best = max(candidates, key=lambda x: x["mean"])
+                all_candidates.append(candidates)
                 all_output_texts.append(best["text"])
                 all_output_tokens.append(best["tokens"])
                 all_output_logprobs.append(best["logprobs"])
@@ -217,23 +211,15 @@ class HFAutoregressiveLLM(AbstractModel):
                     output_texts=all_output_texts,
                     output_tokens=all_output_tokens,
                     output_logprobs=all_output_logprobs,
+                    continuation_candidates=all_candidates
                 )
             )
 
-        hf_model.to("cpu")
-        del input_ids
-        del outputs
-        del logits
-        del logprobs
-        del hf_model
-        gc.collect()
-        torch.cuda.empty_cache()
-
-        # Pickle outputs if cache path is specified
+        # ---- Save cache ----
         if self.cfg.get("cache"):
-            cache_path = self.cfg.get("cache")
-            os.makedirs(cache_path, exist_ok=True)
-            with open(os.path.join(cache_path, "run_continuation_outputs.pkl"), "wb") as f:
+            os.makedirs(self.cfg["cache"], exist_ok=True)
+            with open(os.path.join(self.cfg["cache"], "run_continuation_outputs.pkl"), "wb") as f:
                 pickle.dump(model_outputs_list, f)
 
+        gc.collect()
         return model_outputs_list

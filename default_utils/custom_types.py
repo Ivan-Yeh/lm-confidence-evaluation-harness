@@ -16,6 +16,7 @@ class ModelOutputs:
     output_texts: list[str] = field(default_factory=list) # a list of strings
     output_tokens: list[list[str]] = field(default_factory=list) # a list of strings
     output_logprobs: list[list[float]] = field(default_factory=list) # a list of floats
+    continuation_candidates: list[list[dict]] = field(default_factory=list) 
     # token_logprobs: list[dict[str, float]] = field(default_factory=list) # a list token-logprob mappings
 
 
