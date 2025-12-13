@@ -11,7 +11,7 @@ import logging
 from vllm import LLM, SamplingParams
 
 
-class HFAutoregressiveLLM(AbstractModel):
+class vLLMModel(AbstractModel):
     def __init__(self, cfg):
         self.cfg = cfg
         self.model_name = cfg.get("name", None)

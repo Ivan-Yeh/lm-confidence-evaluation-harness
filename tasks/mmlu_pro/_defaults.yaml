@@ -20,7 +20,7 @@ performance_metrics:
   - auroc_scalar
 
 qa_model:
-  backend: hf_ar 
+  backend: vllm 
   name: openai/gpt-oss-20b
   repeat: 1
   stop_sequences: []
@@ -31,7 +31,7 @@ qa_model:
 
 
 grader_model:
-  backend: hf_ar 
+  backend: vllm 
   name: openai/gpt-oss-20b
   repeat: 1
   temperature: 0.0

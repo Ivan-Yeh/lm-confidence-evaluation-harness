@@ -21,7 +21,7 @@ grader: exact_match
 
 
 linguistic_confidence_augmentation_model:
-  backend: hf_ar 
+  backend: vllm 
   name: openai/gpt-oss-20b
   repeat: 1
   temperature: 1.5
@@ -31,7 +31,7 @@ linguistic_confidence_augmentation_model:
 
 
 linguistic_confidence_judge_model:
-  backend: hf_ar 
+  backend: vllm 
   name: openai/gpt-oss-20b
   repeat: 10
   temperature: 1.5

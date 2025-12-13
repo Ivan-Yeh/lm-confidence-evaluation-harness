@@ -1,6 +1,6 @@
 from default_utils.custom_types import ModelOutputs, PromptCollection, AbstractModel
 from .dream import DreamDLM
-from .hf_autoregressive import HFAutoregressiveLLM
+from .vllm_model import vLLMModel
 from .llada import LlaDADLM
 
 
@@ -10,8 +10,8 @@ class ModelManager:
         self.model: AbstractModel
         
         match self.model_cfg.get("backend", None):
-            case "hf_ar":
-                self.model = HFAutoregressiveLLM(self.model_cfg)
+            case "vllm":
+                self.model = vLLMModel(self.model_cfg)
             case "dream":
                 self.model = DreamDLM(self.model_cfg)
             case "llada":

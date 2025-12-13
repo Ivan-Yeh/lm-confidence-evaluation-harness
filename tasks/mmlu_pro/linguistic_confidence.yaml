@@ -12,7 +12,7 @@ grader: llm_grader
 
 
 linguistic_confidence_judge_model:
-  backend: hf_ar 
+  backend: vllm 
   name: openai/gpt-oss-20b
   repeat: 10
   temperature: 1.2

@@ -14,7 +14,7 @@ confidence_metrics: scalar_linguistic_confidence
 
 
 linguistic_confidence_judge_model:
-  backend: hf_ar 
+  backend: vllm 
   name: openai/gpt-oss-20b
   repeat: 10
   temperature: 1.2
