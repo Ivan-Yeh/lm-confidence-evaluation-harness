@@ -160,6 +160,11 @@ if __name__ == "__main__":
     extracted_output.accuracy_scores = grader_func(
         cfg, extracted_output, prompts, dataset_manager)
 
+    # pickle extracted_output for later analysis
+    with open(f"{path}/extracted_output.pkl", "wb") as f:
+        import pickle
+        pickle.dump(extracted_output, f) 
+
     logger.info("Calculating performance metrics")
     os.makedirs(path, exist_ok=True)
 
@@ -168,7 +173,7 @@ if __name__ == "__main__":
     for metric in cfg.get("performance_metrics", []):
         metric_func = METRICS_FUNCTIONS[metric]
         metric_value = metric_func(cfg, extracted_output)
-        metrics_df[metric] = [metric_value]
+        metrics_df[metric] = list(metric_value)
     # save metrics
     logger.info("Performance Metrics:\n%s", metrics_df.to_string(index=False))
     metrics_df.to_csv(f"{path}/metrics.csv", index=False)

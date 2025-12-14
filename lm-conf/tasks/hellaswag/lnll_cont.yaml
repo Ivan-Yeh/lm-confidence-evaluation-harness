@@ -8,5 +8,5 @@ prompt_format: "{{formatted_question}}"
 prompt_formatter: task_utils.hella_swag_prompt_formatter
 generation_type: continuation
 output_filters: null
-confidence_metrics: length_normalised_log_likelihood
+confidence_metrics: continuation_candidate_normalised_log_likelihood
 grader: exact_match

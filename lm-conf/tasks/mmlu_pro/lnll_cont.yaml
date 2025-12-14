@@ -14,5 +14,5 @@ output_filters:
         - (?i)\bcorrect\s*answer\s*is:*\s*[\(\[]?\s*([A-J])
         - (?i)\bbest\s*answer\s*is:*\s*[\(\[]?\s*([A-J])
         - (?i)\s*([A-J])
-confidence_metrics: length_normalised_log_likelihood
+confidence_metrics: continuation_candidate_normalised_log_likelihood
 grader: exact_match

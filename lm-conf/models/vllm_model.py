@@ -38,7 +38,7 @@ class vLLMModel(AbstractModel):
         stop_seq = self.cfg.get("stop_sequences", [])
         sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0),
                                          max_tokens=self.cfg.get("max_tokens", 256),
-                                         logprobs=1,
+                                         logprobs=5,
                                          stop=list(stop_seq)
                                          )
         vllm_model = LLM(model=self.model_name,
@@ -61,6 +61,7 @@ class vLLMModel(AbstractModel):
             output_texts = []
             output_tokens = []
             output_logprobs = []
+            all_top_k_tokens = []
 
             for output in outputs:
                 # For each prompt, collect all n completions
@@ -82,11 +83,13 @@ class vLLMModel(AbstractModel):
                     # Extract decoded tokens and logprobs, skipping special tokens
                     tokens = []
                     logprobs = []
+                    top_ks = []
                     found_assistant = False
 
                     if completion.logprobs:
                         for lp in completion.logprobs:
                             if lp and len(lp) > 0:
+                                # save top 1 logprob aka output logprobs
                                 tok_info = list(lp.values())[0]
                                 decoded_token = tok_info.decoded_token
 
@@ -100,6 +103,8 @@ class vLLMModel(AbstractModel):
                                 if decoded_token not in self.tokenizer.all_special_tokens:
                                     tokens.append(decoded_token)
                                     logprobs.append(tok_info.logprob)
+                                    # save top k tokens and logprobs
+                                    top_ks.append([(tk.decoded_token, tk.logprob) for tk in list(lp.values())])
 
                     # Slice tokens and logprobs to match generated text length
                     tokens = tokens[-expected_length:] if expected_length > 0 else tokens
@@ -107,15 +112,14 @@ class vLLMModel(AbstractModel):
                                         ] if expected_length > 0 else logprobs
                     output_tokens.append(tokens)
                     output_logprobs.append(logprobs)
+                    all_top_k_tokens.append(top_ks)
             model_outputs_list.append(ModelOutputs(
                 context_texts=prompt_collection.context_texts,
                 output_texts=output_texts,
                 output_tokens=output_tokens,
                 output_logprobs=output_logprobs,
+                top_k_tokens=all_top_k_tokens,
             ))
-
-        del vllm_model
-        torch.cuda.empty_cache()
 
         # Pickle outputs if cache path is specified
         if self.cfg.get("cache"):
@@ -123,11 +127,11 @@ class vLLMModel(AbstractModel):
             os.makedirs(cache_path, exist_ok=True)
             with open(os.path.join(cache_path, "run_generation_outputs.pkl"), "wb") as f:
                 pickle.dump(model_outputs_list, f)
-        
+        gc.collect()
         return model_outputs_list
 
 
-    def run_continuation(self, prompt_collection: PromptCollection):
+    def run_continuation(self, prompt_collection: PromptCollection, free_memory=True):
 
         # ---- Cache check ----
         if self.cfg.get("cache"):
@@ -218,6 +222,5 @@ class vLLMModel(AbstractModel):
             os.makedirs(self.cfg["cache"], exist_ok=True)
             with open(os.path.join(self.cfg["cache"], "run_continuation_outputs.pkl"), "wb") as f:
                 pickle.dump(model_outputs_list, f)
-
         gc.collect()
         return model_outputs_list

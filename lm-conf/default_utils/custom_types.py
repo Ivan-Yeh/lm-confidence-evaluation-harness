@@ -11,13 +11,13 @@ class PromptCollection:
 
 
 @dataclass
-class ModelOutputs:
+class ModelOutputs: # each object corresponds to one sampling (generation) round
     context_texts: list[str] = field(default_factory=list) # a list of strings
     output_texts: list[str] = field(default_factory=list) # a list of strings
     output_tokens: list[list[str]] = field(default_factory=list) # a list of strings
     output_logprobs: list[list[float]] = field(default_factory=list) # a list of floats
     continuation_candidates: list[list[dict]] = field(default_factory=list) 
-    # token_logprobs: list[dict[str, float]] = field(default_factory=list) # a list token-logprob mappings
+    top_k_tokens: list[list[tuple[str, float]]] = field(default_factory=list) 
 
 
 @dataclass
