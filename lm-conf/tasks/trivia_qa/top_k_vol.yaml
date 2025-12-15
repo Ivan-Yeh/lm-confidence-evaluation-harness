@@ -3,4 +3,4 @@ defaults:
   - _self_
 
 output_filters: null
-confidence_metrics: volatility_adjusted_log_likelihood
+confidence_metrics: top_k_volatiltity

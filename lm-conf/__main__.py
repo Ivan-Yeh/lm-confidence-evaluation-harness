@@ -141,6 +141,13 @@ if __name__ == "__main__":
             kwargs = output_filter.get("args", {})
             outputs: list[ModelOutputs] = filter_func(
                 cfg, outputs, prompts, **kwargs)
+            
+    # pickle filtered outputs for later analysis
+    # --------------------------------------------------------------------
+    with open(f"{path}/post_filter_model_outputs.pkl", "wb") as f:
+        import pickle
+        pickle.dump(outputs, f) 
+    # --------------------------------------------------------------------
 
     logger.info("Extracting confidence scores and answers")
     # extract confidence
@@ -161,9 +168,11 @@ if __name__ == "__main__":
         cfg, extracted_output, prompts, dataset_manager)
 
     # pickle extracted_output for later analysis
-    with open(f"{path}/extracted_output.pkl", "wb") as f:
+    # --------------------------------------------------------------------
+    with open(f"{path}/organised_output.pkl", "wb") as f:
         import pickle
         pickle.dump(extracted_output, f) 
+    # --------------------------------------------------------------------
 
     logger.info("Calculating performance metrics")
     os.makedirs(path, exist_ok=True)

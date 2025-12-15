@@ -1,7 +1,6 @@
 from tqdm import tqdm
 from ..default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
 from transformers import AutoTokenizer
-import torch
 import gc
 import numpy as np
 import pickle
@@ -93,14 +92,14 @@ class vLLMModel(AbstractModel):
                                 tok_info = list(lp.values())[0]
                                 decoded_token = tok_info.decoded_token
 
-                                # If has_assistant_token, skip tokens until we find "assistant"
+                                # If has_assistant_token, skip tokens until we find "final"
                                 if has_assistant_token and not found_assistant:
-                                    if "assistant" in decoded_token.lower():
+                                    if "final" in decoded_token.lower():
                                         found_assistant = True
                                     continue
 
                                 # Skip special tokens
-                                if decoded_token not in self.tokenizer.all_special_tokens:
+                                if decoded_token not in self.tokenizer.all_special_tokens and not (decoded_token.startswith("<|") and decoded_token.endswith("|>")):
                                     tokens.append(decoded_token)
                                     logprobs.append(tok_info.logprob)
                                     # save top k tokens and logprobs

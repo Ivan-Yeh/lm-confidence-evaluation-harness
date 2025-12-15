@@ -39,31 +39,23 @@ def candidate_normalised_log_likelihood(cfg: dict, output_lst: list[ModelOutputs
 
 
 
-@register_confidence(name="volatility_adjusted_log_likelihood")
+@register_confidence(name="top_k_volatiltity")
 def volatility_adjusted_log_likelihood(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
-    def confidence_with_sigma_amp(logprobs, k=1.5, alpha=0.1):
-        logprobs = np.array(logprobs)
-        n = len(logprobs)
-        mu = logprobs.mean()
-        sigma = logprobs.std()
-        sigma_diff = np.std(np.diff(logprobs))
-        
-        # scale numerator by volatility amplifier
-        adjusted = (mu) / (1 + k * sigma + sigma_diff)
-        
-        # apply length penalty
-        adjusted /= n**alpha
-        
-        # sigmoid
-        confidence = 1 / (1 + np.exp(-adjusted))
-        return confidence
+    def top_p_sum(response_top_k, beta=10):
+        masses = []
+        for tk in response_top_k:
+            logps = np.array([lp for _, lp in tk], dtype=np.float64)
+            mass = np.exp(np.logaddexp.reduce(logps))
+            masses.append(mass)
+        std = np.std(masses)
+        # exponential decay to [0, 1]
+        return float(np.exp(-beta * std))
 
-    
     def per_round_estimator(outputs: ModelOutputs) -> list[float]: 
         sharpe_sigmoid_probs: list[float] = []
-        for logprobs in outputs.output_logprobs:
+        for logprobs in outputs.top_k_tokens:
             try:
-                confidence = confidence_with_sigma_amp(logprobs)
+                confidence = top_p_sum(logprobs)
             except:
                 confidence = None
             sharpe_sigmoid_probs.append(confidence)
