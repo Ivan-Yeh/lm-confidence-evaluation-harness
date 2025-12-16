@@ -48,13 +48,21 @@ class vLLMModel(AbstractModel):
             # Generate responses using vLLM chat
             try:
                 if self.cfg.get("reasoning_effort"):
-                    outputs = vllm_model.chat(messages_list, sampling_params=sampling_params,
-                                            chat_template_kwargs={"reasoning_effort": self.cfg.get("reasoning_effort")})
+                    if "qwen" in self.model_name.lower():
+                        enable = self.cfg.get("reasoning_effort") != None
+                        chat_template_kwargs={"enable_thinking": enable}
+                    else:
+                        chat_template_kwargs={"reasoning_effort": self.cfg.get("reasoning_effort")}
+                    outputs = vllm_model.chat(messages_list,
+                                              sampling_params=sampling_params,
+                                              chat_template_kwargs=chat_template_kwargs)
                 else:
-                    outputs = vllm_model.chat(messages_list, sampling_params=sampling_params)
+                    outputs = vllm_model.chat(messages_list, 
+                                              sampling_params=sampling_params)
             except:
                 outputs = vllm_model.generate(
-                    prompt_collection.context_texts, sampling_params=sampling_params)
+                    prompt_collection.context_texts, 
+                    sampling_params=sampling_params)
 
             # Extract output texts and tokens
             output_texts = []
