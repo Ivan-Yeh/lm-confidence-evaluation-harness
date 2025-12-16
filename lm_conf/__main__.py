@@ -83,7 +83,7 @@ def get_task_yaml() -> tuple[str, str, dict]:
     dataset_name, task_name, overrides = parse_args()
 
     # Get absolute path to config directory
-    config_dir = os.path.abspath(f"./lm-conf/tasks/{dataset_name}")
+    config_dir = os.path.abspath(f"./lm_conf/tasks/{dataset_name}")
     # Initialize Hydra with the config directory and tasks search path
     with initialize_config_dir(config_dir=config_dir, version_base=None):
         # Compose config with the task and any overrides

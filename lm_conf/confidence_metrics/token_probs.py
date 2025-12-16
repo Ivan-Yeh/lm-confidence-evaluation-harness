@@ -38,7 +38,6 @@ def candidate_normalised_log_likelihood(cfg: dict, output_lst: list[ModelOutputs
     )
 
 
-
 @register_confidence(name="top_k_volatiltity")
 def volatility_adjusted_log_likelihood(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
     def top_p_sum(response_top_k, beta=10):
