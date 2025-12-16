@@ -43,6 +43,7 @@ generation_type: generation
 output_filters: null
 confidence_metrics: null
 grader: task_utils.semantic_inclination_bert
+# grader: llm_grader
 performance_metrics:
   - accuracy_scalar_with_abstention
   - ece_scalar
@@ -53,7 +54,17 @@ qa_model:
   name: openai/gpt-oss-20b
   repeat: 5
   stop_sequences: []
-  temperature: 1
+  temperature: 0
+  max_tokens: 512
+  max_model_len: 2048
+  reasoning_effort: low
+
+
+grader_model:
+  backend: vllm 
+  name: openai/gpt-oss-20b
+  repeat: 1
+  temperature: 0
   max_tokens: 512
   max_model_len: 2048
   reasoning_effort: low

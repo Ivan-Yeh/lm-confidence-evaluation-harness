@@ -10,7 +10,7 @@ def preprocess_dataset(dataset: pd.DataFrame) -> pd.DataFrame:
     """
     Preprocess the TruthfulQA dataset according to the configuration.
     """
-    dataset["answer"] = dataset["best_answer"].values
+    dataset["answer"] = dataset["correct_answers"].values
     return dataset
 
 
