@@ -43,7 +43,7 @@ def volatility_adjusted_log_likelihood(cfg: dict, output_lst: list[ModelOutputs]
     def top_p_sum(response_top_k, beta=10):
         masses = []
         for tk in response_top_k:
-            logps = np.array([lp for _, lp in tk], dtype=np.float64)
+            logps = np.array([lp for _, lp in tk[:3]], dtype=np.float64)
             mass = np.exp(np.logaddexp.reduce(logps))
             masses.append(mass)
         std = np.std(masses)
