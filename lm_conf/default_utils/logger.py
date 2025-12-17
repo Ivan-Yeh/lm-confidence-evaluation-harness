@@ -4,7 +4,7 @@ import os
 # Global flag to ensure we only configure handlers once
 _LOGGING_CONFIGURED = False
 
-def get_logger(name: str, log_file: str = "logs/app.log", level=logging.DEBUG):
+def get_logger(name: str, log_file: str = "logs/app.log", level=logging.INFO):
     """
     Returns a logger with a shared global configuration.
     All loggers write to the same file.
