@@ -1,5 +1,11 @@
+from default_utils.custom_types import (ConfidenceExtractorFn, 
+                                        GraderFn, 
+                                        OutputFilterFn,
+                                        PromptFormatterFn,
+                                        MetricsFn)
 
-METRICS_FUNCTIONS: dict[str, callable] = dict()
+
+METRICS_FUNCTIONS: dict[str, MetricsFn] = dict()
 def register_metric(name: str):
     def decorator(func):
         METRICS_FUNCTIONS[name] = func
@@ -7,7 +13,7 @@ def register_metric(name: str):
     return decorator
 
 
-CONFIDENCE_FUNCTIONS: dict[str, callable] = dict()
+CONFIDENCE_FUNCTIONS: dict[str, ConfidenceExtractorFn] = dict()
 def register_confidence(name: str):
     def decorator(func):
         CONFIDENCE_FUNCTIONS[name] = func
@@ -15,7 +21,7 @@ def register_confidence(name: str):
     return decorator
 
 
-GRADER_FUNCTIONS: dict[str, callable] = dict()
+GRADER_FUNCTIONS: dict[str, GraderFn] = dict()
 def register_grader(name: str):
     def decorator(func):
         GRADER_FUNCTIONS[name] = func
@@ -23,7 +29,7 @@ def register_grader(name: str):
     return decorator
 
 
-PROMPT_FORMATTER: dict[str, callable] = dict()
+PROMPT_FORMATTER: dict[str, PromptFormatterFn] = dict()
 def register_prompt_formatter(name: str):
     def decorator(func):
         PROMPT_FORMATTER[name] = func
@@ -31,7 +37,7 @@ def register_prompt_formatter(name: str):
     return decorator
 
 
-FILTER_FUNCTIONS: dict[str, callable] = dict()
+FILTER_FUNCTIONS: dict[str, OutputFilterFn] = dict()
 def register_filter(name: str):
     def decorator(func):
         FILTER_FUNCTIONS[name] = func

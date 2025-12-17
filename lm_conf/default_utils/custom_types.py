@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
+from typing import Callable
+from lm_conf.default_utils.datasets_manager import DatasetsManager
 
 @dataclass
 class PromptCollection:
@@ -44,3 +46,8 @@ class AbstractModel(ABC):
         raise NotImplementedError
 
 
+PromptFormatterFn = Callable[[dict, DatasetsManager], PromptCollection]
+OutputFilterFn = Callable[[dict, list[ModelOutputs], PromptCollection], list[ModelOutputs]]
+ConfidenceExtractorFn = Callable[[dict, list[ModelOutputs], PromptCollection], OrganisedOutputs]
+GraderFn = Callable[[dict, OrganisedOutputs, PromptCollection, DatasetsManager], list[list[float]]]
+MetricsFn = Callable[[dict, OrganisedOutputs], list[float]]

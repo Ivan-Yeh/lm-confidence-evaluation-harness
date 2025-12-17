@@ -12,7 +12,14 @@ from .default_utils.logger import get_logger
 from .default_utils.utils import import_yaml_lib
 from .models.model_manager import ModelManager
 from .default_utils.datasets_manager import DatasetsManager
-from .default_utils.custom_types import OrganisedOutputs, ModelOutputs, PromptCollection
+from .default_utils.custom_types import (OrganisedOutputs, 
+                                         ModelOutputs, 
+                                         PromptCollection,
+                                         PromptFormatterFn,
+                                         OutputFilterFn,
+                                         ConfidenceExtractorFn,
+                                         GraderFn,
+                                         MetricsFn)
 from .default_utils.registry import (METRICS_FUNCTIONS, 
                                      GRADER_FUNCTIONS, 
                                      CONFIDENCE_FUNCTIONS, 
@@ -110,7 +117,7 @@ if __name__ == "__main__":
 
     logger.info("Formatting prompts")
     # format prompts
-    prompt_formatter: callable = PROMPT_FORMATTER.get(
+    prompt_formatter: PromptFormatterFn = PROMPT_FORMATTER.get(
         cfg.get("prompt_formatter"))
     if prompt_formatter is None:
         prompt_formatter = import_yaml_lib(cfg, "prompt_formatter")
@@ -132,11 +139,11 @@ if __name__ == "__main__":
     if cfg.get("output_filters") is not None:
         for output_filter in cfg.get("output_filters", []):
             try:
-                filter_func: callable = FILTER_FUNCTIONS.get(
+                filter_func: OutputFilterFn = FILTER_FUNCTIONS.get(
                     output_filter.get("name"))
                 kwargs = output_filter.get("args", {})
             except:
-                filter_func: callable = import_yaml_lib(
+                filter_func: OutputFilterFn = import_yaml_lib(
                     cfg, output_filter.get("name"))
             kwargs = output_filter.get("args", {})
             outputs: list[ModelOutputs] = filter_func(
@@ -151,7 +158,7 @@ if __name__ == "__main__":
 
     logger.info("Extracting confidence scores and answers")
     # extract confidence
-    confidence_extraction_func: callable = CONFIDENCE_FUNCTIONS.get(
+    confidence_extraction_func: ConfidenceExtractorFn = CONFIDENCE_FUNCTIONS.get(
         cfg.get("confidence_metrics", "length_normalised_log_likelihood"))
     if confidence_extraction_func is None:
         confidence_extraction_func = import_yaml_lib(cfg, "confidence_metrics")
@@ -160,7 +167,7 @@ if __name__ == "__main__":
 
     logger.info("Grading responses")
     # grade response
-    grader_func: callable = GRADER_FUNCTIONS.get(
+    grader_func: GraderFn = GRADER_FUNCTIONS.get(
         cfg.get("grader", "llm_grader"))
     if grader_func is None:
         grader_func = import_yaml_lib(cfg, "grader")
@@ -180,7 +187,7 @@ if __name__ == "__main__":
     metrics_df = pd.DataFrame()
     # calculate metrics
     for metric in cfg.get("performance_metrics", []):
-        metric_func = METRICS_FUNCTIONS[metric]
+        metric_func: MetricsFn = METRICS_FUNCTIONS[metric]
         metric_value = metric_func(cfg, extracted_output)
         metrics_df[metric] = list(metric_value)
     # save metrics
