@@ -28,8 +28,8 @@ class OrganisedOutputs:
     Each sublist corresponds to a sampling round
     """
     extracted_answers: list[list[str]] = field(default_factory=list) 
-    extracted_confidences: list[list[float]] = field(default_factory=list)
-    accuracy_scores: list[list[float]] = field(default_factory=list)
+    extracted_confidences: list[list[float]] | list[list[object]] = field(default_factory=list)
+    accuracy_scores: list[list[float]] | list[list[object]] = field(default_factory=list)
 
 
 class AbstractModel(ABC):

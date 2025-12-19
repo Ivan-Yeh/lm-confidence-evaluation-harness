@@ -106,6 +106,7 @@ if __name__ == "__main__":
     dataset_name, task_name, cfg = get_task_yaml()
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     path = f"results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
+    cfg["results_path"] = path
     logger = get_logger(__name__, log_file=f"{path}/task.log")
     _auto_import_modules()
 

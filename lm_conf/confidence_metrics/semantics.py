@@ -79,16 +79,13 @@ class EntailmentDeberta():
 
         return preds
 
-@register_confidence(name="semantic_uncertainty")
-def semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs):
-    strict_entailment = True
+
+def semantic_uncertainty_selection(output_lst: list[ModelOutputs], **kwargs) -> tuple[list[str], list[float]]:
     response_lists: list[tuple[str]] = list(zip(*[outputs.output_texts for outputs in output_lst]))
     entailment_model = EntailmentDeberta()
     strict_entailment: bool = False
-
-    confidences = []
     selected_responses = []
-
+    confidences = []
     for response_set in tqdm(response_lists, desc="Processing questions"):
         # Step 1: Compute semantic IDs
         n = len(response_set)
@@ -142,6 +139,12 @@ def semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs], prompts: Pro
     del entailment_model
     gc.collect()
     torch.cuda.empty_cache()
+    return selected_responses, confidences
+
+
+@register_confidence(name="semantic_uncertainty")
+def semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs):
+    selected_responses, confidences = semantic_uncertainty_selection(output_lst, **kwargs)
     return OrganisedOutputs(
         extracted_answers=[selected_responses],
         extracted_confidences=[confidences]

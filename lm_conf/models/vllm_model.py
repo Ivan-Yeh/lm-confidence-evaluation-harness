@@ -134,6 +134,7 @@ class vLLMModel(AbstractModel):
             os.makedirs(cache_path, exist_ok=True)
             with open(os.path.join(cache_path, "run_generation_outputs.pkl"), "wb") as f:
                 pickle.dump(model_outputs_list, f)
+        del vllm_model
         gc.collect()
         return model_outputs_list
 

@@ -6,7 +6,7 @@ split: validation
 few_shot_split: validation
 few_shot_examples: 0
 limit: 200
-
+results_path: null
 # multiple choice: "question: str", "choices : list", and "answer_index: int"
 dataset_preprocessor: task_utils.preprocess_dataset
 
