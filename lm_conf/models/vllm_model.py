@@ -47,18 +47,14 @@ class vLLMModel(AbstractModel):
         for _ in range(self.repeat):
             # Generate responses using vLLM chat
             try:
-                if self.cfg.get("reasoning_effort"):
-                    if "qwen" in self.model_name.lower():
-                        enable = self.cfg.get("reasoning_effort") != None
-                        chat_template_kwargs={"enable_thinking": enable}
-                    else:
-                        chat_template_kwargs={"reasoning_effort": self.cfg.get("reasoning_effort")}
-                    outputs = vllm_model.chat(messages_list,
-                                              sampling_params=sampling_params,
-                                              chat_template_kwargs=chat_template_kwargs)
+                if "qwen" in self.model_name.lower():
+                    enable = self.cfg.get("reasoning_effort") != None
+                    chat_template_kwargs={"enable_thinking": enable}
                 else:
-                    outputs = vllm_model.chat(messages_list, 
-                                              sampling_params=sampling_params)
+                    chat_template_kwargs={"reasoning_effort": self.cfg.get("reasoning_effort")}
+                outputs = vllm_model.chat(messages_list,
+                                            sampling_params=sampling_params,
+                                            chat_template_kwargs=chat_template_kwargs)
             except:
                 outputs = vllm_model.generate(
                     prompt_collection.context_texts, 
@@ -78,6 +74,10 @@ class vLLMModel(AbstractModel):
                         has_assistant_token = True
                         generated_text = completion.text.rsplit(
                             "assistantfinal", 1)[-1].strip()
+                    elif "</think>" in completion.text:
+                        has_assistant_token = True
+                        generated_text = completion.text.rsplit(
+                            "</think>", 1)[-1].strip()
                     else:
                         generated_text = completion.text.strip()
                     output_texts.append(generated_text)
@@ -103,6 +103,10 @@ class vLLMModel(AbstractModel):
                                 # If has_assistant_token, skip tokens until we find "final"
                                 if has_assistant_token and not found_assistant:
                                     if "final" in decoded_token.lower():
+                                        found_assistant = True
+                                    continue
+                                elif has_assistant_token and not found_assistant:
+                                    if "</think>" in decoded_token.lower():
                                         found_assistant = True
                                     continue
 

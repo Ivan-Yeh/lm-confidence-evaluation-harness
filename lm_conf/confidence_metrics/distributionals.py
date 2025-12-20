@@ -11,8 +11,8 @@ from ..models.model_manager import ModelManager
 
 class BetaDistribution:
     def __init__(self, mu: float, sigma: float):
-        self.mu = mu
-        self.sigma = sigma
+        self.mu = np.clip(mu, 1e-6, 1-1e-6)
+        self.sigma = np.clip(sigma, 1e-6, None)
         self.alpha_param, self.beta_param = self._fit_parameters()
 
     def _fit_parameters(self) -> tuple[float, float]:
@@ -27,6 +27,16 @@ class BetaDistribution:
     
     def pdf(self, x: float) -> float:
         return beta.pdf(x, self.alpha_param, self.beta_param)
+    
+    def is_valid(self) -> bool:
+        try:
+            assert isinstance(float(self.mu), float)
+            assert isinstance(float(self.sigma), float)
+            assert isinstance(float(self.alpha_param), float)
+            assert isinstance(float(self.beta_param), float)
+            return True
+        except:
+            return False
     
     def __repr__(self):
         return f"BetaDistribution(alpha={self.alpha_param}, beta={self.beta_param}, mu={self.mu}, sigma={self.sigma})"
@@ -62,7 +72,7 @@ def distributional_semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs
     entailment_model = EntailmentDeberta()
     confidence_dists: list[BetaDistribution] = []
 
-    for responses in tqdm(response_lists, desc="Processing entailments: P(Entailment)"):
+    for responses in tqdm(response_lists, desc="Processing Entailments (Entailment Probability)"):
         n = len(responses)
         premises: list[str] = []
         hypotheses: list[str] = []

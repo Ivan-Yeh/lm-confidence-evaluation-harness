@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 GPU=0
 limit=200
 

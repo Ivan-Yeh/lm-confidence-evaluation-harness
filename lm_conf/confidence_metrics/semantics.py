@@ -142,7 +142,7 @@ def semantic_uncertainty_selection(output_lst: list[ModelOutputs], **kwargs) -> 
     strict_entailment: bool = False
     selected_responses = []
     confidences = []
-    for response_set in tqdm(response_lists, desc="Processing entailments: semantic groups"):
+    for response_set in tqdm(response_lists, desc="Processing Entailments (Semantic Groups)"):
         # Step 1: Compute semantic IDs
         n = len(response_set)
         if n == 1:

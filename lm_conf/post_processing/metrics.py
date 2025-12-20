@@ -153,9 +153,10 @@ def dECE(cfg: dict, extracted_output: OrganisedOutputs, binning_mode: Literal["e
     # sanity check
     for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
         try:
-            if acc is None or conf is None:
+            if acc is None or conf is None or conf.is_valid() is False:
                 continue
-            accuracies.append(float(acc))
+            cleaned_acc = float(acc)
+            accuracies.append(cleaned_acc)
             confidence_dists.append(conf)
         except:
             continue
@@ -277,9 +278,10 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     # sanity check
     for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
         try:
-            if acc is None or conf is None:
+            if acc is None or conf is None or conf.is_valid() is False:
                 continue
-            accuracies.append(float(acc))
+            cleaned_acc = float(acc)
+            accuracies.append(cleaned_acc)
             confidence_dists.append(conf)
         except:
             continue
