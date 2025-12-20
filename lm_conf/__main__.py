@@ -34,22 +34,16 @@ def _auto_import_modules():
             module_name = module_info.name
             if module_name.startswith("_"):
                 continue
-            try:
-                importlib.import_module(
-                    f"{default_utils.__name__}.{module_name}")
-            except ImportError:
-                pass
+            importlib.import_module(
+                f"{default_utils.__name__}.{module_name}")
     from . import confidence_metrics
     for package_path in confidence_metrics.__path__:
         for module_info in pkgutil.iter_modules([package_path]):
             module_name = module_info.name
             if module_name.startswith("_"):
                 continue
-            try:
-                importlib.import_module(
-                    f"{confidence_metrics.__name__}.{module_name}")
-            except ImportError:
-                pass
+            importlib.import_module(
+                f"{confidence_metrics.__name__}.{module_name}")
     from . import post_processing
     for package_path in post_processing.__path__:
         for module_info in pkgutil.iter_modules([package_path]):
@@ -109,6 +103,7 @@ if __name__ == "__main__":
     cfg["results_path"] = path
     logger = get_logger(__name__, log_file=f"{path}/task.log")
     _auto_import_modules()
+    print(CONFIDENCE_FUNCTIONS)
 
     logger.info("Configuration:\n%s", OmegaConf.to_yaml(cfg))
 

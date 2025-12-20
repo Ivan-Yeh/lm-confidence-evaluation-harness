@@ -147,8 +147,18 @@ def dECE_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     return [float(dece_scalar)]
 
 def dECE(cfg: dict, extracted_output: OrganisedOutputs, binning_mode: Literal["equal_width", "equal_mass"] = "equal_width") -> list[float]:
-    accuracies = extracted_output.accuracy_scores[0]            # list[int] in {0,1}
-    confidence_dists: list[BetaDistribution] = extracted_output.extracted_confidences[0]  # list[BetaDistribution]
+    accuracies = []           # list[int] in {0,1}
+    confidence_dists: list[BetaDistribution] = []  # list[BetaDistribution]
+
+    # sanity check
+    for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
+        try:
+            if acc is None or conf is None:
+                continue
+            accuracies.append(float(acc))
+            confidence_dists.append(conf)
+        except:
+            continue
 
     N = len(accuracies)
     assert N == len(confidence_dists)
@@ -261,8 +271,18 @@ def dAUROC_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
 
 @register_metric(name="dAUROC")
 def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
-    accuracies = extracted_output.accuracy_scores[0]            # list[int] in {0,1}
-    confidence_dists = extracted_output.extracted_confidences[0]  # list[BetaDistribution]
+    accuracies = []           # list[int] in {0,1}
+    confidence_dists: list[BetaDistribution] = []  # list[BetaDistribution]
+
+    # sanity check
+    for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
+        try:
+            if acc is None or conf is None:
+                continue
+            accuracies.append(float(acc))
+            confidence_dists.append(conf)
+        except:
+            continue
 
     num_samples = cfg.get("num_dauroc_samples", 1000)
 

@@ -15,8 +15,7 @@ confidence_metrics: scalar_linguistic_confidence
 linguistic_confidence_judge_model:
   backend: vllm 
   name: openai/gpt-oss-20b
-  repeat: 10
+  repeat: 1
   temperature: 1.2
   max_tokens: 1024
-  logprobs: 1
   reasoning_effort: low

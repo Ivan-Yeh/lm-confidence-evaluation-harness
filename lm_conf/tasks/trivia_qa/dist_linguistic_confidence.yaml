@@ -1,5 +1,5 @@
 defaults:
-  - _defaults.yaml
+  - _distributional_defaults.yaml
   - _self_
 
 
@@ -12,11 +12,14 @@ output_filters: null
 confidence_metrics: distributional_linguistic_confidence
 
 
+qa_model:
+  repeat: 1
+
+
 linguistic_confidence_judge_model:
   backend: vllm 
   name: openai/gpt-oss-20b
   repeat: 10
   temperature: 1.2
   max_tokens: 1024
-  logprobs: 1
   reasoning_effort: low

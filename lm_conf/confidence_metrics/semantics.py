@@ -78,6 +78,62 @@ class EntailmentDeberta():
                 preds.extend(pred.cpu().tolist())
 
         return preds
+    
+    def entailment_probability_batch(
+        self,
+        texts1,
+        texts2,
+        batch_size: int = 256,
+        max_length: int = 256,
+    ):
+        """
+        Batched inference for pairs (premise -> hypothesis).
+
+        Args:
+            texts1: List[str] of premises.
+            texts2: List[str] of hypotheses (same length as texts1).
+            batch_size: Mini-batch size to control memory usage.
+            max_length: Truncation length for the tokenizer.
+            return_probs: If True, also return entailment probabilities.
+
+        Returns:
+            preds: List[float] with entailment probabilities (class 2) for each pair.
+        """
+        preds = []
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        with torch.no_grad():
+            n = len(texts1)
+            for i in range(0, n, batch_size):
+                batch1 = texts1[i : i + batch_size]
+                batch2 = texts2[i : i + batch_size]
+
+                # Tokenize a batch of (premise, hypothesis) pairs.
+                enc = self.tokenizer(
+                    batch1,
+                    batch2,
+                    padding=True,
+                    truncation=True,
+                    max_length=max_length,
+                    return_tensors="pt",
+                ).to(device)
+
+                # Forward pass: logits shape [B, 3]
+                logits = self.model(**enc).logits
+
+                # Convert logits to probabilities over classes.
+                probs = F.softmax(logits, dim=1)   # 0:contra, 1:neutral, 2:entail
+
+                # Get entailment probability (class 2) for each pair
+                # pred = probs[:, 2]  # shape [B]
+
+                p_contra = probs[:, 0]
+                p_entail = probs[:, 2]
+
+                score = p_entail / (p_entail + p_contra)
+
+                preds.extend(score.cpu().tolist())
+
+        return preds
 
 
 def semantic_uncertainty_selection(output_lst: list[ModelOutputs], **kwargs) -> tuple[list[str], list[float]]:
@@ -86,7 +142,7 @@ def semantic_uncertainty_selection(output_lst: list[ModelOutputs], **kwargs) -> 
     strict_entailment: bool = False
     selected_responses = []
     confidences = []
-    for response_set in tqdm(response_lists, desc="Processing questions"):
+    for response_set in tqdm(response_lists, desc="Processing entailments: semantic groups"):
         # Step 1: Compute semantic IDs
         n = len(response_set)
         if n == 1:
