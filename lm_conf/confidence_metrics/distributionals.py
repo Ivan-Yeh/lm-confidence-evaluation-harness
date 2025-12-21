@@ -11,16 +11,22 @@ from ..models.model_manager import ModelManager
 
 class BetaDistribution:
     def __init__(self, mu: float, sigma: float):
-        self.mu = np.clip(mu, 1e-6, 1-1e-6)
-        self.sigma = np.clip(sigma, 1e-6, None)
+        self.mu = np.clip(mu, 1e-6, 1 - 1e-6)
+
+        max_sigma2 = self.mu * (1 - self.mu)
+        sigma2 = min(sigma**2, max_sigma2 * 0.999)
+
+        self.sigma = np.sqrt(max(sigma2, 1e-8))
         self.alpha_param, self.beta_param = self._fit_parameters()
 
-    def _fit_parameters(self) -> tuple[float, float]:
-        # Using method of moments to estimate alpha and beta
-        common_factor = (self.mu * (1 - self.mu) / (self.sigma ** 2)) - 1
-        alpha_param = self.mu * common_factor
-        beta_param = (1 - self.mu) * common_factor
-        return np.clip(alpha_param, 1e-6, None), np.clip(beta_param, 1e-6, None)
+    def _fit_parameters(self):
+        var = self.sigma ** 2
+        common = self.mu * (1 - self.mu) / var - 1.0
+
+        alpha = self.mu * common
+        beta = (1 - self.mu) * common
+
+        return max(alpha, 1e-6), max(beta, 1e-6)
     
     def cdf(self, x: float) -> float:
         return beta.cdf(x, self.alpha_param, self.beta_param)
@@ -34,6 +40,13 @@ class BetaDistribution:
             assert isinstance(float(self.sigma), float)
             assert isinstance(float(self.alpha_param), float)
             assert isinstance(float(self.beta_param), float)
+            # Check that values are not NaN or inf
+            assert not np.isnan(self.mu) and not np.isinf(self.mu)
+            assert not np.isnan(self.sigma) and not np.isinf(self.sigma)
+            assert not np.isnan(self.alpha_param) and not np.isinf(self.alpha_param)
+            assert not np.isnan(self.beta_param) and not np.isinf(self.beta_param)
+            # Check that parameters are positive
+            assert self.alpha_param > 0 and self.beta_param > 0
             return True
         except:
             return False
