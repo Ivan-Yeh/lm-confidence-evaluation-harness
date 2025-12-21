@@ -47,24 +47,11 @@ class vLLMModel(AbstractModel):
         for _ in range(self.repeat):
             # Generate responses using vLLM chat
             try:
-                if "qwen" in self.model_name.lower():
-                    if self.cfg.get("reasoning_effort") is None:
-                        new_messages_list = []
-                        for msg in messages_list:
-                            msg[1]["content"] = "/no_think " + msg[1]["content"]
-                            new_messages_list.append(msg)
-                        messages_list = new_messages_list
-                    chat_template_kwargs={}
-                else:
-                    chat_template_kwargs={"reasoning_effort": self.cfg.get("reasoning_effort")}
+                chat_template_kwargs={"reasoning_effort": self.cfg.get("reasoning_effort")}
                 outputs = vllm_model.chat(messages_list,
                                             sampling_params=sampling_params,
                                             chat_template_kwargs=chat_template_kwargs)
-            except:
-                if "qwen" in self.model_name.lower():
-                    if self.cfg.get("reasoning_effort") is None:
-                        prompt_collection.context_texts = ["/no_think " + text for text in prompt_collection.context_texts]
-                        
+            except:     
                 outputs = vllm_model.generate(
                     prompt_collection.context_texts, 
                     sampling_params=sampling_params)
@@ -83,10 +70,6 @@ class vLLMModel(AbstractModel):
                         has_assistant_token = True
                         generated_text = completion.text.rsplit(
                             "assistantfinal", 1)[-1].strip()
-                    elif "</think>" in completion.text:
-                        has_assistant_token = True
-                        generated_text = completion.text.rsplit(
-                            "</think>", 1)[-1].strip()
                     else:
                         generated_text = completion.text.strip()
                     output_texts.append(generated_text)
@@ -110,16 +93,14 @@ class vLLMModel(AbstractModel):
                                 decoded_token = tok_info.decoded_token
 
                                 # If has_assistant_token, skip tokens until we find "final"
-                                if "qwen" in self.model_name.lower():
-                                    if has_assistant_token and not found_assistant:
-                                        if "</think>" in decoded_token.lower():
-                                            found_assistant = True
-                                        continue
-                                else:
-                                    if has_assistant_token and not found_assistant:
-                                        if "final" in decoded_token.lower():
-                                            found_assistant = True
-                                        continue
+                                match self.model_name.lower():
+                                    case "gpt-oss":
+                                        if has_assistant_token and not found_assistant:
+                                            if "final" in decoded_token.lower():
+                                                found_assistant = True
+                                            continue
+                                    case _:
+                                        pass
 
                                 # Skip special tokens
                                 if decoded_token not in self.tokenizer.all_special_tokens and not (decoded_token.startswith("<|") and decoded_token.endswith("|>")):

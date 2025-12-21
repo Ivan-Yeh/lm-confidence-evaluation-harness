@@ -1,12 +1,12 @@
 import logging
 from tqdm import tqdm
-from ..default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
 from transformers import AutoTokenizer
 import gc
 import numpy as np
 import pickle
 import os
 from vllm import LLM, SamplingParams
+from ..default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
 
 
 class vLLMQwen3(AbstractModel):
@@ -43,7 +43,10 @@ class vLLMQwen3(AbstractModel):
                 logging.info(f"Qwen 3 thinking pass with budget: {thinking_budget} tokens")
                 thinking_sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0),
                                             max_tokens=thinking_budget)
-                thinking_outputs = vllm_model.chat(messages_list, sampling_params=thinking_sampling_params)
+                try:
+                    thinking_outputs = vllm_model.chat(messages_list, sampling_params=thinking_sampling_params)
+                except:
+                    thinking_budget = vllm_model.generate(prompt_collection.system_prompt, sampling_params=thinking_sampling_params)
                 
                 for i, thinking_output in enumerate(thinking_outputs):
                     done_thinking = 151668 in list(thinking_output.outputs[0].token_ids)
@@ -56,25 +59,28 @@ class vLLMQwen3(AbstractModel):
                             "I have to give the solution based on the thinking directly now.\n"
                             "</think>\n\n"
                         )
-                        new_messages[1]["content"] = "/no_think " + new_messages[1]["content"] + thinking_output.outputs[0].text + early_stopping_text 
+                        new_messages[1]["content"] = new_messages[1]["content"] + "\n" + thinking_output.outputs[0].text + early_stopping_text 
                     elif not done_answering:
-                        new_messages[1]["content"] = "/no_think " + new_messages[1]["content"] + thinking_output.outputs[0].text.rsplit("</think>")[-1].strip() + "</think>\n\n" 
+                        new_messages[1]["content"] = new_messages[1]["content"] + "\n" + thinking_output.outputs[0].text.rsplit("</think>")[-1].strip() + "</think>\n\n" 
                     else:
-                        new_messages[1]["content"] = "/no_think " + new_messages[1]["content"]
+                        new_messages[1]["content"] = new_messages[1]["content"]
                     post_thinking_messages.append(new_messages)
             else:
                 logging.info(f"Qwen 3 thinking skipped")
-                for msg in messages_list:
-                    new_msg = msg.copy()
-                    new_msg[1]["content"] = "/no_think " + new_msg[1]["content"]
-                    post_thinking_messages.append(new_msg)
+                post_thinking_messages = messages_list
             # generation pass without thinking
             sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0),
                                          max_tokens=self.cfg.get("max_tokens", 256),
                                          logprobs=5,
                                          stop=list(stop_seq)
                                          )
-            outputs = vllm_model.chat(post_thinking_messages, sampling_params=sampling_params)
+            try:
+                outputs = vllm_model.chat(post_thinking_messages, 
+                                        sampling_params=sampling_params, 
+                                        chat_template_kwargs={"enable_thinking": False})
+            except:
+                non_chat_messages_list = ["/no_think " + msgs[1]["content"] for msgs in post_thinking_messages]
+                outputs = vllm_model.generate(non_chat_messages_list, sampling_params=sampling_params)
 
             # Extract output texts and tokens
             output_texts = []
