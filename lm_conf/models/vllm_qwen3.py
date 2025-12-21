@@ -12,6 +12,7 @@ from vllm import LLM, SamplingParams
 class vLLMQwen3(AbstractModel):
     """
     vLLM model wrapper for Qwen 3 models with additional thinking budget control. 
+    Thinking budget control reference: https://qwen.readthedocs.io/en/latest/getting_started/quickstart.html
     """
     def __init__(self, cfg):
         self.cfg = cfg
