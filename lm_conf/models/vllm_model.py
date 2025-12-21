@@ -28,11 +28,8 @@ class vLLMModel(AbstractModel):
         # Build chat messages from prompt collection
         messages_list = []
         for context_text in prompt_collection.context_texts:
-            messages = []
-            if prompt_collection.system_prompt:
-                messages.append(
-                    {"role": "system", "content": prompt_collection.system_prompt})
-            messages.append({"role": "user", "content": context_text})
+            messages = [{"role": "system", "content": prompt_collection.system_prompt},
+                        {"role": "user", "content": context_text}]
             messages_list.append(messages)
         stop_seq = self.cfg.get("stop_sequences", [])
         sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0),
@@ -48,8 +45,13 @@ class vLLMModel(AbstractModel):
             # Generate responses using vLLM chat
             try:
                 if "qwen" in self.model_name.lower():
-                    enable = self.cfg.get("reasoning_effort") != None
-                    chat_template_kwargs={"enable_thinking": enable}
+                    if self.cfg.get("reasoning_effort") is None:
+                        new_messages_list = []
+                        for msg in messages_list:
+                            msg[1]["content"] = "/no_think " + msg[1]["content"]
+                            new_messages_list.append(msg)
+                        messages_list = new_messages_list
+                    chat_template_kwargs={}
                 else:
                     chat_template_kwargs={"reasoning_effort": self.cfg.get("reasoning_effort")}
                 outputs = vllm_model.chat(messages_list,
