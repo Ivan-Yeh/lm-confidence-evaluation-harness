@@ -142,7 +142,7 @@ class vLLMQwen3(AbstractModel):
         return model_outputs_list
 
 
-    def run_continuation(self, prompt_collection: PromptCollection, free_memory=True):
+    def run_continuation(self, prompt_collection: PromptCollection):
 
         # ---- Cache check ----
         if self.cfg.get("cache"):
