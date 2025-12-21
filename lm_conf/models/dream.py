@@ -81,9 +81,9 @@ class DreamDLM(AbstractModel):
                 )
             )
 
-        torch.cuda.empty_cache()
         del model
         gc.collect()
+        torch.cuda.empty_cache()
         return model_outputs_list
 
     def run_continuation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
@@ -174,7 +174,7 @@ class DreamDLM(AbstractModel):
                 )
             )
 
-        torch.cuda.empty_cache()
         del hf_model
         gc.collect()
+        torch.cuda.empty_cache()
         return model_outputs_list
