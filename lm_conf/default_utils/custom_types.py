@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from typing import Callable
-from lm_conf.default_utils.datasets_manager import DatasetsManager
+from ..default_utils.datasets_manager import DatasetsManager
 
 @dataclass
 class PromptCollection:

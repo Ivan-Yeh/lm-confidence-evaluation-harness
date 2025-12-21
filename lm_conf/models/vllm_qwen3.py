@@ -1,3 +1,4 @@
+import logging
 from tqdm import tqdm
 from ..default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
 from transformers import AutoTokenizer
@@ -8,9 +9,9 @@ import os
 from vllm import LLM, SamplingParams
 
 
-class vLLMModel(AbstractModel):
+class vLLMQwen3(AbstractModel):
     """
-    vLLM model wrapper for general HF models.
+    vLLM model wrapper for Qwen 3 models with additional thinking budget control. 
     """
     def __init__(self, cfg):
         self.cfg = cfg
@@ -20,87 +21,79 @@ class vLLMModel(AbstractModel):
             self.model_name, trust_remote_code=True)
 
     def run_generation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
-        # Check if cache exists
-        if self.cfg.get("cache"):
-            cache_path = self.cfg.get("cache")
-            cache_file = os.path.join(cache_path, "run_generation_outputs.pkl")
-            if os.path.exists(cache_file):
-                with open(cache_file, "rb") as f:
-                    return pickle.load(f)
-
-        # Build chat messages from prompt collection
-        messages_list = []
-        for context_text in prompt_collection.context_texts:
-            messages = [{"role": "system", "content": prompt_collection.system_prompt},
-                        {"role": "user", "content": context_text}]
-            messages_list.append(messages)
         stop_seq = self.cfg.get("stop_sequences", [])
-        sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0),
-                                         max_tokens=self.cfg.get("max_tokens", 256),
-                                         logprobs=5,
-                                         stop=list(stop_seq)
-                                         )
         vllm_model = LLM(model=self.model_name,
                          max_model_len=self.cfg.get("max_model_len", 4096))
 
         model_outputs_list = []
         for _ in range(self.repeat):
-            # Generate responses using vLLM chat
-            try:
-                if "qwen" in self.model_name.lower():
-                    if self.cfg.get("reasoning_effort") is None:
-                        new_messages_list = []
-                        for msg in messages_list:
-                            msg[1]["content"] = "/no_think " + msg[1]["content"]
-                            new_messages_list.append(msg)
-                        messages_list = new_messages_list
-                    chat_template_kwargs={}
-                else:
-                    chat_template_kwargs={"reasoning_effort": self.cfg.get("reasoning_effort")}
-                outputs = vllm_model.chat(messages_list,
-                                            sampling_params=sampling_params,
-                                            chat_template_kwargs=chat_template_kwargs)
-            except:
-                if "qwen" in self.model_name.lower():
-                    if self.cfg.get("reasoning_effort") is None:
-                        prompt_collection.context_texts = ["/no_think " + text for text in prompt_collection.context_texts]
-                        
-                outputs = vllm_model.generate(
-                    prompt_collection.context_texts, 
-                    sampling_params=sampling_params)
+
+            messages_list = []
+            for context_text in prompt_collection.context_texts:
+                messages = [{"role": "system", "content": prompt_collection.system_prompt},
+                            {"role": "user", "content": context_text}]
+                messages_list.append(messages)
+
+            # thinking pass
+            reasoning_effort_map = {"low": 256, "medium": 512, "high": 1024}
+            thinking_budget = reasoning_effort_map.get(self.cfg.get("reasoning_effort"))
+            post_thinking_messages = []
+            if thinking_budget:
+                logging.info(f"Qwen 3 thinking pass with budget: {thinking_budget} tokens")
+                thinking_sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0),
+                                            max_tokens=thinking_budget)
+                thinking_outputs = vllm_model.chat(messages_list, sampling_params=thinking_sampling_params)
+                
+                for i, thinking_output in enumerate(thinking_outputs):
+                    done_thinking = 151668 in list(thinking_output.outputs[0].token_ids)
+                    done_answering = 151645 in list(thinking_output.outputs[0].token_ids)
+                    new_messages = messages_list[i].copy()
+                    if not done_thinking:
+                        # append early stopping to force end thinking
+                        early_stopping_text = (
+                            "\n\nConsidering the limited time by the user, "
+                            "I have to give the solution based on the thinking directly now.\n"
+                            "</think>\n\n"
+                        )
+                        new_messages[1]["content"] = "/no_think " + new_messages[1]["content"] + thinking_output.outputs[0].text + early_stopping_text 
+                    elif not done_answering:
+                        new_messages[1]["content"] = "/no_think " + new_messages[1]["content"] + thinking_output.outputs[0].text.rsplit("</think>")[-1].strip() + "</think>\n\n" 
+                    else:
+                        new_messages[1]["content"] = "/no_think " + new_messages[1]["content"]
+                    post_thinking_messages.append(new_messages)
+            else:
+                logging.info(f"Qwen 3 thinking skipped")
+                for msg in messages_list:
+                    new_msg = msg.copy()
+                    new_msg[1]["content"] = "/no_think " + new_msg[1]["content"]
+                    post_thinking_messages.append(new_msg)
+            # generation pass without thinking
+            sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0),
+                                         max_tokens=self.cfg.get("max_tokens", 256),
+                                         logprobs=5,
+                                         stop=list(stop_seq)
+                                         )
+            outputs = vllm_model.chat(post_thinking_messages, sampling_params=sampling_params)
 
             # Extract output texts and tokens
             output_texts = []
             output_tokens = []
             output_logprobs = []
-            all_top_k_tokens = []
+            all_top_k_tokens = []   
 
             for output in outputs:
                 # For each prompt, collect all n completions
                 for completion in output.outputs:
-                    has_assistant_token = False
-                    if "assistantfinal" in completion.text:
-                        has_assistant_token = True
-                        generated_text = completion.text.rsplit(
-                            "assistantfinal", 1)[-1].strip()
-                    elif "</think>" in completion.text:
-                        has_assistant_token = True
-                        generated_text = completion.text.rsplit(
-                            "</think>", 1)[-1].strip()
-                    else:
-                        generated_text = completion.text.strip()
+                    generated_text = completion.text.strip()
                     output_texts.append(generated_text)
-
                     # Tokenize generated text to get the expected number of tokens
-                    generated_token_ids = self.tokenizer.encode(
-                        generated_text, add_special_tokens=False)
+                    generated_token_ids = self.tokenizer.encode(generated_text, add_special_tokens=False)
                     expected_length = len(generated_token_ids)
 
                     # Extract decoded tokens and logprobs, skipping special tokens
                     tokens = []
                     logprobs = []
                     top_ks = []
-                    found_assistant = False
 
                     if completion.logprobs:
                         for lp in completion.logprobs:
@@ -109,20 +102,8 @@ class vLLMModel(AbstractModel):
                                 tok_info = list(lp.values())[0]
                                 decoded_token = tok_info.decoded_token
 
-                                # If has_assistant_token, skip tokens until we find "final"
-                                if "qwen" in self.model_name.lower():
-                                    if has_assistant_token and not found_assistant:
-                                        if "</think>" in decoded_token.lower():
-                                            found_assistant = True
-                                        continue
-                                else:
-                                    if has_assistant_token and not found_assistant:
-                                        if "final" in decoded_token.lower():
-                                            found_assistant = True
-                                        continue
-
                                 # Skip special tokens
-                                if decoded_token not in self.tokenizer.all_special_tokens and not (decoded_token.startswith("<|") and decoded_token.endswith("|>")):
+                                if decoded_token not in self.tokenizer.all_special_tokens:
                                     tokens.append(decoded_token)
                                     logprobs.append(tok_info.logprob)
                                     # save top k tokens and logprobs

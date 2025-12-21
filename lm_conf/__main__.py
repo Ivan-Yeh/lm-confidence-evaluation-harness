@@ -185,7 +185,10 @@ if __name__ == "__main__":
     for metric in cfg.get("performance_metrics", []):
         metric_func: MetricsFn = METRICS_FUNCTIONS[metric]
         metric_value = metric_func(cfg, extracted_output)
-        metrics_df[metric] = list(metric_value)
+        if isinstance(metric_value, list):
+            metrics_df[metric] = metric_value
+        elif isinstance(metric_value, float):
+            metrics_df[metric] = [metric_value]
     # save metrics
     logger.info("Performance Metrics:\n%s", metrics_df.to_string(index=False))
     metrics_df.to_csv(f"{path}/metrics.csv", index=False)

@@ -2,7 +2,8 @@ from ..default_utils.custom_types import ModelOutputs, PromptCollection, Abstrac
 from .dream import DreamDLM
 from .vllm_model import vLLMModel
 from .llada import LlaDADLM
-
+from .vllm_qwen3 import vLLMQwen3
+import logging
 
 class ModelManager:
     def __init__(self, master_cfg: dict, model_config_type="qa_model"):
@@ -11,10 +12,17 @@ class ModelManager:
         
         match self.model_cfg.get("backend", None):
             case "vllm":
-                self.model = vLLMModel(self.model_cfg)
+                if "qwen3" in self.model_cfg.get("name").lower():
+                    logging.info("Using vLLM Qwen3 model backend")
+                    self.model = vLLMQwen3(self.model_cfg)
+                else:
+                    logging.info("Using vLLM general model backend")
+                    self.model = vLLMModel(self.model_cfg)
             case "dream":
+                logging.info("Using Dream model backend")
                 self.model = DreamDLM(self.model_cfg)
             case "llada":
+                logging.info("Using LlaDA model backend")
                 self.model = LlaDADLM(self.model_cfg)
             case "openai_batch":
                 raise NotImplementedError("Not implemented yet")

@@ -1,11 +1,13 @@
-from lm_conf.confidence_metrics.distributionals import BetaDistribution
+from typing import Literal
+
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import beta, wasserstein_distance
+from sklearn.metrics import roc_auc_score
+
+from ..confidence_metrics.distributionals import BetaDistribution
 from ..default_utils.custom_types import OrganisedOutputs
 from ..default_utils.registry import register_metric
-import numpy as np
-from sklearn.metrics import roc_auc_score
-from scipy.stats import wasserstein_distance, beta
-import matplotlib.pyplot as plt
-from typing import Literal
 
 
 @register_metric(name="accuracy_scalar_with_abstention")
@@ -76,9 +78,9 @@ def ece_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
 
     finite_eces = [ece for ece in eces if not np.isnan(ece)]
     if len(finite_eces) == 0:
-        return float("nan")
+        return [float("nan")]
 
-    return (finite_eces)
+    return finite_eces
 
 
 @register_metric(name="auroc_scalar")
@@ -129,7 +131,7 @@ def auroc_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
 
     finite_aurocs = [auc for auc in aurocs if not np.isnan(auc)]
     if len(finite_aurocs) == 0:
-        return float("nan")
+        return [float("nan")]
 
     return finite_aurocs
 
