@@ -4,6 +4,7 @@ GPU=0
 limit=200
 
 models=(
+    "meta-llama/Meta-Llama-3-8B-Instruct"
     "meta-llama/Llama-3.1-8B-Instruct"
     "openai/gpt-oss-20b"
     "qwen/Qwen2.5-7B-Instruct"
@@ -11,12 +12,12 @@ models=(
 )
 
 tasks=(
-    "dist_lnll"
-    "dist_semantic_uncertainty"
-    "dist_linguistic_confidence"
     "lnll"
-    "semantic_uncertainty"
     "linguistic_confidence"
+    "semantic_uncertainty"
+    "dist_lnll"
+    "dist_linguistic_confidence"
+    "dist_semantic_uncertainty"
 )
 
 for model in "${models[@]}"; do

@@ -14,11 +14,11 @@ models=(
 
 tasks=(
     "lnll"
-    # "semantic_uncertainty"
-    # "linguistic_confidence"
+    "linguistic_confidence"
+    "semantic_uncertainty"
     "dist_lnll"
-    # "dist_semantic_uncertainty"
-    # "dist_linguistic_confidence"
+    "dist_linguistic_confidence"
+    "dist_semantic_uncertainty"
 )
 
 for model in "${models[@]}"; do
