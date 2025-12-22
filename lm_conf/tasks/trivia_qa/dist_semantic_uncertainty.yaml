@@ -5,10 +5,5 @@ defaults:
 output_filters: null
 confidence_metrics: distributional_semantic_uncertainty
 
-performance_metrics:
-  - accuracy_scalar_with_abstention
-  - dECE_equal_width
-  - dECE_equal_mass
-  - dECE_scalar
-  - dAUROC
-  - dAUROC_scalar
+qa_model:
+  temperature: 1

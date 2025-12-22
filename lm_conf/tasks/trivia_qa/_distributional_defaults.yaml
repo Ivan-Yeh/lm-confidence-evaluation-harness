@@ -48,5 +48,5 @@ grader_model:
   repeat: 1
   temperature: 0
   max_tokens: 512
-  max_model_len: 2048
+  max_model_len: 4096
   reasoning_effort: low

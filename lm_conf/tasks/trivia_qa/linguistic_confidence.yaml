@@ -11,6 +11,9 @@ prompt_format: |
 output_filters: null
 confidence_metrics: scalar_linguistic_confidence
 
+qa_model:
+  temperature: 0.7
+
 
 linguistic_confidence_judge_model:
   backend: vllm 

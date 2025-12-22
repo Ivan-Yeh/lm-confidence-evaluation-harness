@@ -21,5 +21,5 @@ linguistic_confidence_judge_model:
   name: openai/gpt-oss-20b
   repeat: 10
   temperature: 1.2
-  max_tokens: 1024
+  max_tokens: 512
   reasoning_effort: low

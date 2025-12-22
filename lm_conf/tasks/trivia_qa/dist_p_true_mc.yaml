@@ -13,6 +13,6 @@ p_true_mc_model:
   name: ${qa_model.name}
   repeat: 15
   temperature: 1.0
-  max_tokens: 1024
+  max_tokens: 512
   max_model_len: ${qa_model.max_model_len}
   reasoning_effort: ${qa_model.reasoning_effort}
