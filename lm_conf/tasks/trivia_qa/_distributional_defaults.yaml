@@ -1,3 +1,4 @@
+rounds: 1
 seed: 42
 dataset_name: trivia_qa # must match the folder name under tasks/
 dataset_path: mandarjoshi/trivia_qa

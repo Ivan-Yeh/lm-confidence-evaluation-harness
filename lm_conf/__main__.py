@@ -7,6 +7,7 @@ import os
 import pandas as pd
 from datetime import datetime
 from omegaconf import OmegaConf
+import pickle
 
 from .default_utils.logger import get_logger
 from .default_utils.utils import import_yaml_lib
@@ -103,7 +104,6 @@ if __name__ == "__main__":
     cfg["results_path"] = path
     logger = get_logger(__name__, log_file=f"{path}/task.log")
     _auto_import_modules()
-    print(CONFIDENCE_FUNCTIONS)
 
     logger.info("Configuration:\n%s", OmegaConf.to_yaml(cfg))
 
@@ -119,88 +119,109 @@ if __name__ == "__main__":
         prompt_formatter = import_yaml_lib(cfg, "prompt_formatter")
     prompts: PromptCollection = prompt_formatter(cfg, dataset_manager)
 
-    logger.info("Generating QA outputs")
-    # generate qa outputs
-    model_manager: ModelManager = ModelManager(
-        master_cfg=cfg, model_config_type="qa_model")
-    if cfg.get("generation_type", "generation") == "generation":
-        outputs: list[ModelOutputs] = model_manager.run_generation(prompts)
-    elif cfg.get("generation_type") == "continuation":
-        outputs: list[ModelOutputs] = model_manager.run_continuation(prompts)
-    else:
-        raise ValueError(f"Unknown generation type: {cfg.generation_type}")
+    rounds = cfg.get("rounds", 1)
+    logger.info(f"Running for {rounds} rounds")
 
-    logger.info("Post-processing outputs")
-    # post process raw responses
-    if cfg.get("output_filters") is not None:
-        for output_filter in cfg.get("output_filters", []):
-            try:
-                filter_func: OutputFilterFn = FILTER_FUNCTIONS.get(
-                    output_filter.get("name"))
-                kwargs = output_filter.get("args", {})
-            except:
-                filter_func: OutputFilterFn = import_yaml_lib(
-                    cfg, output_filter.get("name"))
-            kwargs = output_filter.get("args", {})
-            outputs: list[ModelOutputs] = filter_func(
-                cfg, outputs, prompts, **kwargs)
-            
-    # pickle filtered outputs for later analysis
-    # --------------------------------------------------------------------
-    with open(f"{path}/post_filter_model_outputs.pkl", "wb") as f:
-        import pickle
-        pickle.dump(outputs, f) 
-    # --------------------------------------------------------------------
+    all_rounds_eval_details = pd.DataFrame({
+            'question': prompts.questions,
+            'full_prompts': prompts.context_texts,
+            'answer': prompts.answer_keys
+    })
+    all_rounds_metrics = pd.DataFrame()
 
-    logger.info("Extracting confidence scores and answers")
-    # extract confidence
-    confidence_extraction_func: ConfidenceExtractorFn = CONFIDENCE_FUNCTIONS.get(
-        cfg.get("confidence_metrics", "length_normalised_log_likelihood"))
-    if confidence_extraction_func is None:
-        confidence_extraction_func = import_yaml_lib(cfg, "confidence_metrics")
-    extracted_output: OrganisedOutputs = confidence_extraction_func(
-        cfg, outputs, prompts)
+    for round_idx in range(rounds):
+        try:
+            logger.info(f"Starting round {round_idx + 1}/{rounds}")
 
-    logger.info("Grading responses")
-    # grade response
-    grader_func: GraderFn = GRADER_FUNCTIONS.get(
-        cfg.get("grader", "llm_grader"))
-    if grader_func is None:
-        grader_func = import_yaml_lib(cfg, "grader")
-    extracted_output.accuracy_scores = grader_func(
-        cfg, extracted_output, prompts, dataset_manager)
+            logger.info(f"Generating QA outputs [Round {round_idx + 1}/{rounds}]")
+            # generate qa outputs
+            model_manager: ModelManager = ModelManager(
+                master_cfg=cfg, model_config_type="qa_model")
+            if cfg.get("generation_type", "generation") == "generation":
+                outputs: list[ModelOutputs] = model_manager.run_generation(prompts)
+            elif cfg.get("generation_type") == "continuation":
+                outputs: list[ModelOutputs] = model_manager.run_continuation(prompts)
+            else:
+                raise ValueError(f"Unknown generation type: {cfg.generation_type}")
 
-    # pickle extracted_output for later analysis
-    # --------------------------------------------------------------------
-    with open(f"{path}/organised_output.pkl", "wb") as f:
-        import pickle
-        pickle.dump(extracted_output, f) 
-    # --------------------------------------------------------------------
+            logger.info(f"Post-processing outputs [Round {round_idx + 1}/{rounds}]")
+            # post process raw responses
+            if cfg.get("output_filters") is not None:
+                for output_filter in cfg.get("output_filters", []):
+                    try:
+                        filter_func: OutputFilterFn = FILTER_FUNCTIONS.get(
+                            output_filter.get("name"))
+                        kwargs = output_filter.get("args", {})
+                    except:
+                        filter_func: OutputFilterFn = import_yaml_lib(
+                            cfg, output_filter.get("name"))
+                    kwargs = output_filter.get("args", {})
+                    outputs: list[ModelOutputs] = filter_func(
+                        cfg, outputs, prompts, **kwargs)
+                    
+            # pickle filtered outputs for later analysis
+            # --------------------------------------------------------------------
+            with open(f"{path}/filtered_outputs_{round_idx}.pkl", "wb") as f:
+                pickle.dump(outputs, f) 
+            # --------------------------------------------------------------------
 
-    logger.info("Calculating performance metrics")
-    os.makedirs(path, exist_ok=True)
+            logger.info(f"Extracting confidence scores and answers [Round {round_idx + 1}/{rounds}]")
+            # extract confidence
+            confidence_extraction_func: ConfidenceExtractorFn = CONFIDENCE_FUNCTIONS.get(
+                cfg.get("confidence_metrics", "length_normalised_log_likelihood"))
+            if confidence_extraction_func is None:
+                confidence_extraction_func = import_yaml_lib(cfg, "confidence_metrics")
+            extracted_output: OrganisedOutputs = confidence_extraction_func(
+                cfg, outputs, prompts)
 
-    metrics_df = pd.DataFrame()
-    # calculate metrics
-    for metric in cfg.get("performance_metrics", []):
-        metric_func: MetricsFn = METRICS_FUNCTIONS[metric]
-        metric_value = metric_func(cfg, extracted_output)
-        if isinstance(metric_value, list):
-            metrics_df[metric] = metric_value
-        elif isinstance(metric_value, float):
-            metrics_df[metric] = [metric_value]
-    # save metrics
-    logger.info("Performance Metrics:\n%s", metrics_df.to_string(index=False))
-    metrics_df.to_csv(f"{path}/metrics.csv", index=False)
+            logger.info(f"Grading responses [Round {round_idx + 1}/{rounds}]")
+            # grade response
+            grader_func: GraderFn = GRADER_FUNCTIONS.get(
+                cfg.get("grader", "llm_grader"))
+            if grader_func is None:
+                grader_func = import_yaml_lib(cfg, "grader")
+            extracted_output.accuracy_scores = grader_func(
+                cfg, extracted_output, prompts, dataset_manager)
 
-    # save results
-    results_df = pd.DataFrame()
-    results_df['question'] = prompts.questions
-    results_df['full_prompts'] = prompts.context_texts
-    results_df["answer"] = prompts.answer_keys
-    for i, round_outputs in enumerate(extracted_output.extracted_answers):
-        results_df[f'response_{i}'] = round_outputs
-        results_df[f'confidence_{i}'] = extracted_output.extracted_confidences[i]
-        results_df[f'accuracy_{i}'] = extracted_output.accuracy_scores[i]
-    results_df.to_csv(f"{path}/eval_details.csv", index=False)
-    logger.info("Results saved to: %s", path)
+            # pickle extracted_output for later analysis
+            # --------------------------------------------------------------------
+            with open(f"{path}/graded_outputs_{round_idx}.pkl", "wb") as f:
+                pickle.dump(extracted_output, f) 
+            # --------------------------------------------------------------------
+
+            logger.info(f"Calculating performance metrics [Round {round_idx + 1}/{rounds}]")
+            os.makedirs(path, exist_ok=True)
+            metrics_df = pd.DataFrame()
+            # calculate metrics
+            for metric in cfg.get("performance_metrics", []):
+                metric_func: MetricsFn = METRICS_FUNCTIONS[metric]
+                metric_value = metric_func(cfg, extracted_output)
+                if isinstance(metric_value, list):
+                    metrics_df[metric] = metric_value
+                elif isinstance(metric_value, float):
+                    metrics_df[metric] = [metric_value] 
+            logger.info(f"Metrics for Round {round_idx + 1}:\n{metrics_df.to_string(index=False)}")
+            all_rounds_metrics = pd.concat([all_rounds_metrics, metrics_df], axis=0)
+
+            all_rounds_eval_details = pd.concat([all_rounds_eval_details, pd.DataFrame({
+                f'response_{round_idx}': extracted_output.extracted_answers[0],
+                f'confidence_{round_idx}': extracted_output.extracted_confidences[0],
+                f'accuracy_{round_idx}': extracted_output.accuracy_scores[0]
+            })], axis=1)
+        except Exception as e:
+            logger.error(f"Error during round {round_idx + 1}: {e}", exc_info=True)
+
+    # save all results
+    logger.info(f"Performance Metrics:\n{all_rounds_metrics.to_string(index=False)}")
+    all_rounds_metrics.to_csv(f"{path}/eval_metrics.csv", index=False)
+    
+    all_rounds_eval_details.to_csv(f"{path}/eval_details.csv", index=False)
+
+    all_round_stats = pd.DataFrame()
+    all_round_stats['metric'] = all_rounds_metrics.columns
+    all_round_stats['mean'] = all_rounds_metrics.mean().values
+    all_round_stats['std'] = all_rounds_metrics.std().values
+    logger.info(f"Performance Summary Stats:\n{all_round_stats.to_string(index=False)}")
+    all_round_stats.to_csv(f"{path}/eval_metrics_summary.csv", index=False)
+    
+    logger.info(f"All results saved to: {path}")

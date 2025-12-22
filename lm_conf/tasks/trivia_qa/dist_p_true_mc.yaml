@@ -1,0 +1,18 @@
+defaults:
+  - _distributional_defaults.yaml
+  - _self_
+
+output_filters: null
+confidence_metrics: distributional_p_true_mc
+
+qa_model:
+  repeat: 1
+
+p_true_mc_model:
+  backend: ${qa_model.backend}
+  name: ${qa_model.name}
+  repeat: 15
+  temperature: 1.0
+  max_tokens: 1024
+  max_model_len: ${qa_model.max_model_len}
+  reasoning_effort: ${qa_model.reasoning_effort}

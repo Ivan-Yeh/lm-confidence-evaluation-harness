@@ -1,3 +1,4 @@
+rounds: 5
 seed: 42
 dataset_name: trivia_qa # must match the folder name under tasks/
 dataset_path: mandarjoshi/trivia_qa
@@ -32,7 +33,7 @@ qa_model:
   name: openai/gpt-oss-20b
   repeat: 1
   stop_sequences: []
-  temperature: 0
+  temperature: 1
   max_tokens: 512
   max_model_len: 2048
   reasoning_effort: low

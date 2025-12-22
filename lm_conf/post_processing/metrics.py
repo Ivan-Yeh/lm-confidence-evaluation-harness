@@ -1,3 +1,4 @@
+import os
 from typing import Literal
 
 import matplotlib.pyplot as plt
@@ -136,7 +137,6 @@ def auroc_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     return finite_aurocs
 
 
-
 @register_metric(name="dECE_scalar")
 def dECE_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     confidence_dists: list[BetaDistribution] = extracted_output.extracted_confidences[0]  # list[BetaDistribution]
@@ -145,8 +145,8 @@ def dECE_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
         extracted_answers=extracted_output.extracted_answers,
         extracted_confidences=[confs],
         accuracy_scores=extracted_output.accuracy_scores
-    ))[0]
-    return [float(dece_scalar)]
+    ))
+    return dece_scalar
 
 def dECE(cfg: dict, extracted_output: OrganisedOutputs, binning_mode: Literal["equal_width", "equal_mass"] = "equal_width") -> list[float]:
     accuracies = []           # list[int] in {0,1}
@@ -244,7 +244,14 @@ def dECE(cfg: dict, extracted_output: OrganisedOutputs, binning_mode: Literal["e
         axes[0].legend()
         fig.suptitle("dECE: Confidence vs Accuracy distributions per bin")
         fig.tight_layout()
-        results_path = cfg.get("results_path") + f"/dECE_{binning_mode}_distributions.png"
+        
+        results_dir = cfg.get("results_path")
+        base_path = f"{results_dir}/dECE_{binning_mode}_distributions"
+        idx = 0
+        results_path = f"{base_path}_{idx}.png"
+        while os.path.exists(results_path):
+            idx += 1
+            results_path = f"{base_path}_{idx}.png"
         plt.savefig(results_path, dpi=150)
         plt.close(fig)
     return [float(dECE_value)]

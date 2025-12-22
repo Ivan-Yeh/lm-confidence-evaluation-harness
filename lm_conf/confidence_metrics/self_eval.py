@@ -1,9 +1,9 @@
 from ..default_utils.custom_types import ModelOutputs, PromptCollection, OrganisedOutputs
 from ..models.model_manager import ModelManager
 from ..default_utils.registry import register_confidence
-from ..default_utils.logger import get_logger
 import numpy as np
 import logging
+import re
 
 
 @register_confidence(name="p_true_by_continuation")
@@ -34,10 +34,8 @@ def p_true_by_continuation(cfg: dict, output_lst: list[ModelOutputs], prompts: P
     )
 
 
-
 @register_confidence(name="p_true_by_monte_carlo_generation")
 def p_true_by_monte_carlo_generation(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
-    import re
     p_true_prompt_template = """
     Question: {question}
     Possible Answer: {model_answer}

@@ -13,6 +13,7 @@ class ModelManager:
         match self.model_cfg.get("backend", None):
             case "vllm":
                 if "qwen3" in self.model_cfg.get("name").lower():
+                    # Qwen 3 has a two-stage reasoning control mechanism; hence a custom vLLM wrapper
                     logging.info("Using vLLM Qwen3 model backend")
                     self.model = vLLMQwen3(self.model_cfg)
                 else:

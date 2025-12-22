@@ -1,4 +1,5 @@
 import gc
+import logging
 import numpy as np
 import torch
 from tqdm import tqdm
@@ -27,12 +28,6 @@ class BetaDistribution:
         beta = (1 - self.mu) * common
 
         return max(alpha, 1e-6), max(beta, 1e-6)
-    
-    def cdf(self, x: float) -> float:
-        return beta.cdf(x, self.alpha_param, self.beta_param)
-    
-    def pdf(self, x: float) -> float:
-        return beta.pdf(x, self.alpha_param, self.beta_param)
     
     def is_valid(self) -> bool:
         try:
@@ -157,3 +152,102 @@ def distributional_linguistic_confidence(cfg: dict, output_lst: list[ModelOutput
         extracted_answers=all_answers,
         extracted_confidences=all_confidences,
     )
+
+
+@register_confidence(name="distributional_p_true_mc")
+def distributional_p_true_mc(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
+    p_true_prompt_template = """
+    Question: {question}
+    Possible Answer: {model_answer}
+    Is the possible answer:
+    (A) True
+    (B) False
+    Return only (A) or (B). The possible answer is:
+    """.strip()
+    model = ModelManager(master_cfg=cfg, model_config_type="p_true_mc_model")
+    
+    outputs = output_lst[0]
+    num_questions = len(outputs.context_texts)
+    num_rounds = 10
+    
+    # Build all prompts for all rounds at once
+    all_prompts = []
+    for _ in range(num_rounds):
+        for question, model_answer in zip(outputs.context_texts, outputs.output_texts):
+            eval_prompt = p_true_prompt_template.format(question=question, model_answer=model_answer)
+            all_prompts.append(eval_prompt)
+    
+    # Run generation once on all prompts
+    logging.info("Running P(True) by Monte Carlo generation (batched)")
+    p_true_prompt_collection = PromptCollection(context_texts=all_prompts)
+    p_true_results: list[ModelOutputs] = model.run_generation(p_true_prompt_collection)
+    
+    # Initialize counts for all rounds
+    counts_per_round = [[0] * num_questions for _ in range(num_rounds)]
+    counts_b_per_round = [[0] * num_questions for _ in range(num_rounds)]
+    
+    # Process results
+    flat_idx = 0
+    for result in p_true_results:
+        logging.debug(f"Monte Carlo generation result: {result}")
+        for output_text in result.output_texts:
+            round_idx = flat_idx // num_questions
+            question_idx = flat_idx % num_questions
+            flat_idx += 1
+            
+            if round_idx >= num_rounds:
+                break
+            
+            # Extract last occurrence of ANSWER: (A)/(B) or ANSWER IS: (A)/(B)
+            match = None
+            for pattern in [r'ANSWER\s*IS\s*:\s*\(([AB])\)', r'ANSWER\s*:\s*\(([AB])\)', r'\s*\(([AB])\)']:
+                matches = list(re.finditer(pattern, output_text.upper()))
+                if matches:
+                    match = matches[-1]  # Get last occurrence
+                    break
+            
+            if match:
+                choice = match.group(1)
+                if choice == 'A':
+                    counts_per_round[round_idx][question_idx] += 1
+                elif choice == 'B':
+                    counts_b_per_round[round_idx][question_idx] += 1
+            else:
+                # Fallback to simpler token matching
+                upper = output_text.upper()
+                if any(token in upper for token in ["(A)", "A", "TRUE"]):
+                    counts_per_round[round_idx][question_idx] += 1
+                elif any(token in upper for token in ["(B)", "B", "FALSE"]):
+                    counts_b_per_round[round_idx][question_idx] += 1
+    
+    # Calculate probabilities per round
+    all_confidences_scores = []
+    for round_idx in range(num_rounds):
+        round_probs = []
+        for a_count, b_count in zip(counts_per_round[round_idx], counts_b_per_round[round_idx]):
+            try:
+                total = a_count + b_count
+                p_true = a_count / total if total > 0 else 0.0
+                round_probs.append(p_true)
+            except:
+                round_probs.append(0.0)
+        all_confidences_scores.append(round_probs)
+    
+    # Transpose to per-question
+    all_confidences_scores = list(zip(*all_confidences_scores))
+    all_confidence_dists = []
+    for conf in all_confidences_scores:
+        # fit a distributional estimator
+        mu = np.mean(conf)
+        sigma = np.std(conf, ddof=1)
+        try:
+            estimator = BetaDistribution(mu, sigma)
+        except:
+            estimator = None
+        all_confidence_dists.append(estimator)
+    
+    return OrganisedOutputs(
+        extracted_answers=[output_lst[0].output_texts],
+        extracted_confidences=[all_confidence_dists],
+    )
+
