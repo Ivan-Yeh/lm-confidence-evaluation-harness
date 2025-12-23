@@ -29,6 +29,9 @@ class BetaDistribution:
 
         return max(alpha, 1e-6), max(beta, 1e-6)
     
+    def sample(self, size: int = 1) -> np.ndarray:
+        return beta.rvs(self.alpha_param, self.beta_param, size=size)
+    
     def is_valid(self) -> bool:
         try:
             assert isinstance(float(self.mu), float)

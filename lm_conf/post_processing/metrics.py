@@ -1,7 +1,5 @@
 import os
 from typing import Literal
-from concurrent.futures import ProcessPoolExecutor
-import multiprocessing
 import logging
 import random
 
@@ -14,24 +12,6 @@ from tqdm import tqdm
 from ..confidence_metrics.distributionals import BetaDistribution
 from ..default_utils.custom_types import OrganisedOutputs
 from ..default_utils.registry import register_metric
-
-
-# Helper function for parallelization (must be module-level for pickling)
-def _compute_dauroc_pair(args):
-    """Compute probability comparison for a single (pos, neg) Beta distribution pair"""
-    bd_pos, bd_neg, num_samples = args
-    pos_samples = beta.rvs(
-        bd_pos.alpha_param,
-        bd_pos.beta_param,
-        size=num_samples
-    )
-    neg_samples = beta.rvs(
-        bd_neg.alpha_param,
-        bd_neg.beta_param,
-        size=num_samples
-    )
-    wins = np.sum(pos_samples[:, None] > neg_samples[None, :])
-    return wins
 
 
 @register_metric(name="accuracy_scalar_with_abstention")
@@ -277,21 +257,25 @@ def dECE(cfg: dict, extracted_output: OrganisedOutputs, binning_mode: Literal["e
             results_path = f"{base_path}_{idx}.png"
         plt.savefig(results_path, dpi=150)
         plt.close(fig)
+        logging.info(f"Saved dECE distribution plots to {results_path}")
     return [float(dECE_value)]
 
 
 @register_metric(name="dECE_equal_width")
 def dECE_equal_width(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+    logging.info("Computing dECE_equal_width")
     return dECE(cfg, extracted_output, binning_mode="equal_width")
 
 
 @register_metric(name="dECE_equal_mass")
 def dECE_equal_mass(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+    logging.info("Computing dECE_equal_mass")
     return dECE(cfg, extracted_output, binning_mode="equal_mass")
 
 
 @register_metric(name="dAUROC_scalar")
 def dAUROC_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+    logging.info("Computing dAUROC_scalar")
     confidence_dists: list[BetaDistribution] = extracted_output.extracted_confidences[0]  # list[BetaDistribution]
     confs = [bd.mu for bd in confidence_dists]
     d_auroc_scalar = auroc_scalar(cfg, OrganisedOutputs(
@@ -304,52 +288,48 @@ def dAUROC_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
 
 @register_metric(name="dAUROC")
 def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
-    logging.info("Starting dAUROC computation...")
+    logging.info("Computing dAUROC")
     accuracies = []
-    confidence_dists: list[BetaDistribution] = []
+    confidence_dists = []
 
-    # Filter invalid entries
+    # sanity check
     for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
         try:
-            if acc is None or conf is None or not conf.is_valid():
+            if acc is None or conf is None or conf.is_valid() is False:
                 continue
-            accuracies.append(float(acc))
+            cleaned_acc = float(acc)
+            accuracies.append(cleaned_acc)
             confidence_dists.append(conf)
         except:
             continue
 
-    num_samples = cfg.get("num_dauroc_samples", 50)
-    max_pairs = cfg.get("max_dauroc_pairs", 5000)  # optional subsampling
-
     pos_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 1]
     neg_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 0]
 
-    if len(pos_dists) == 0 or len(neg_dists) == 0:
+    if not pos_dists or not neg_dists:
         return [float("nan")]
 
-    # Optional subsampling of pos/neg distributions
-    if max_pairs is not None:
-        pos_dists = random.sample(pos_dists, min(len(pos_dists), max_pairs))
-        neg_dists = random.sample(neg_dists, min(len(neg_dists), max_pairs))
+    num_dauroc_mc = cfg.get("num_dauroc_mc", 100_000_000)
+    seed = cfg.get("seed", None)
 
-    total_comparisons = len(pos_dists) * len(neg_dists) * num_samples * num_samples
-
-    os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    num_workers = cfg.get("num_workers", None) or (multiprocessing.cpu_count() - 1)
+    if seed is not None:
+        random.seed(seed)
+        np.random.seed(seed)
 
     wins = 0
-    with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        # Generator for pairs
-        def pair_generator():
-            for bd_pos in pos_dists:
-                for bd_neg in neg_dists:
-                    yield (bd_pos, bd_neg, num_samples)
+    comparisons = 0
+    batch_size = 50000
 
-        for result in tqdm(executor.map(_compute_dauroc_pair, pair_generator()),
-                           total=len(pos_dists) * len(neg_dists),
-                           desc="Computing dAUROC"):
-            wins += result
+    for _ in tqdm(range(0, num_dauroc_mc, batch_size), desc="Computing dAUROC with global Monte Carlo sampling"):
+        pos_samples = np.array([
+            pos_dists[random.randrange(len(pos_dists))].sample(1)[0]
+            for _ in range(batch_size)
+        ])
+        neg_samples = np.array([
+            neg_dists[random.randrange(len(neg_dists))].sample(1)[0]
+            for _ in range(batch_size)
+        ])
+        wins += np.sum(pos_samples > neg_samples)
+        comparisons += batch_size
 
-    d_auroc = wins / total_comparisons
-    return [float(d_auroc)]
-
+    return [float(wins / comparisons)]
