@@ -309,7 +309,7 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     if not pos_dists or not neg_dists:
         return [float("nan")]
 
-    num_dauroc_mc = cfg.get("num_dauroc_mc", 1_000_000)
+    num_dauroc_mc = cfg.get("num_dauroc_mc", 10_000_000)
     seed = cfg.get("seed", None)
 
     if seed is not None:
