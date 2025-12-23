@@ -3,7 +3,8 @@ from typing import Literal
 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import beta, wasserstein_distance
+from scipy.stats import beta, wasserstein_distance, norm
+from scipy.integrate import quad
 from sklearn.metrics import roc_auc_score
 
 from ..confidence_metrics.distributionals import BetaDistribution
@@ -281,54 +282,62 @@ def dAUROC_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
 
 @register_metric(name="dAUROC")
 def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
-    accuracies = []           # list[int] in {0,1}
-    confidence_dists: list[BetaDistribution] = []  # list[BetaDistribution]
+    
+    accuracies = []
+    confidence_dists: list[BetaDistribution] = []
 
-    # sanity check
-    for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
+    for acc, conf in zip(
+        extracted_output.accuracy_scores[0],
+        extracted_output.extracted_confidences[0]
+    ):
         try:
-            if acc is None or conf is None or conf.is_valid() is False:
+            if acc is None or conf is None or not conf.is_valid():
                 continue
-            cleaned_acc = float(acc)
-            accuracies.append(cleaned_acc)
+            accuracies.append(float(acc))
             confidence_dists.append(conf)
         except:
             continue
 
-    num_samples = cfg.get("num_dauroc_samples", 200)
+    pos_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 1]
+    neg_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 0]
 
-    # Split into correct / incorrect examples
-    pos_dists = [
-        bd for y, bd in zip(accuracies, confidence_dists) if y == 1
-    ]
-    neg_dists = [
-        bd for y, bd in zip(accuracies, confidence_dists) if y == 0
-    ]
-
-    # Edge cases
     if len(pos_dists) == 0 or len(neg_dists) == 0:
         return [float("nan")]
 
-    wins = 0
+    wins = 0.0
     total = 0
 
+    SMALL_THRESHOLD = 5.0
+
+    def beta_gaussian_prob_gt(bd1: BetaDistribution, bd2: BetaDistribution):
+        """Gaussian approximation: P(C1 > C2)"""
+        mu1, var1 = bd1.mu, bd1.sigma ** 2
+        mu2, var2 = bd2.mu, bd2.sigma ** 2
+        z = (mu1 - mu2) / np.sqrt(var1 + var2)
+        return norm.cdf(z)
+
+    def beta_quad_prob_gt(bd1: BetaDistribution, bd2: BetaDistribution):
+        """Exact deterministic Beta-Beta comparison via quadrature"""
+        a1, b1 = bd1.alpha_param, bd1.beta_param
+        a2, b2 = bd2.alpha_param, bd2.beta_param
+
+        return quad(
+            lambda x: beta.pdf(x, a1, b1) * beta.cdf(x, a2, b2),
+            0.0,
+            1.0,
+            epsabs=1e-8
+        )[0]
+
+    def prob_beta_gt_beta(bd1: BetaDistribution, bd2: BetaDistribution):
+        """Hybrid selector"""
+        if min(bd1.alpha_param, bd1.beta_param, bd2.alpha_param, bd2.beta_param) >= SMALL_THRESHOLD:
+            return beta_gaussian_prob_gt(bd1, bd2)
+        else:
+            return beta_quad_prob_gt(bd1, bd2)
+
     for bd_pos in pos_dists:
-        pos_samples = beta.rvs(
-            bd_pos.alpha_param,
-            bd_pos.beta_param,
-            size=num_samples
-        )
-
         for bd_neg in neg_dists:
-            neg_samples = beta.rvs(
-                bd_neg.alpha_param,
-                bd_neg.beta_param,
-                size=num_samples
-            )
+            wins += prob_beta_gt_beta(bd_pos, bd_neg)
+            total += 1
 
-            # Probability C+ > C-
-            wins += np.sum(pos_samples[:, None] > neg_samples[None, :])
-            total += num_samples * num_samples
-
-    d_auroc = wins / total
-    return [float(d_auroc)]
+    return [float(wins / total)]
