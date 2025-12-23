@@ -2,7 +2,7 @@
 
 GPU=3
 limit=null
-rounds=5
+rounds=3
 
 models=(
     "meta-llama/Meta-Llama-3-8B-Instruct"
