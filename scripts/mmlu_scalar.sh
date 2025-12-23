@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-GPU=3
+GPU=0,1
 limit=null
 rounds=5
 
@@ -15,14 +15,14 @@ models=(
 )
 
 tasks=(
-    # "dist_lnll" # gpu 1
-    # "dist_linguistic_confidence" # gpu 1
-    # "dist_p_true_mc" # gpu 2
-    "dist_semantic_uncertainty" # gpu 3
+    "lnll_gen"
+    "linguistic_confidence"
+    "p_true_mc"
+    "semantic_uncertainty"
 )
 
 for model in "${models[@]}"; do
     for task in "${tasks[@]}"; do
-        CUDA_VISIBLE_DEVICES=$GPU python -m lm_conf dataset=trivia_qa rounds=$rounds limit=$limit task=$task qa_model.name=$model qa_model.reasoning_effort=low qa_model.max_tokens=512 
+        CUDA_VISIBLE_DEVICES=$GPU python -m lm_conf dataset=mmlu rounds=$rounds limit=$limit task=$task qa_model.name=$model qa_model.reasoning_effort=low qa_model.max_tokens=512 
     done
 done

@@ -18,13 +18,16 @@ system_prompt: ""
 prompt_formatter: multiple_choice 
 performance_metrics:
   - accuracy_scalar_with_abstention
-  - ece_scalar
-  - auroc_scalar
+  - dECE_equal_width
+  - dECE_equal_mass
+  - dECE_scalar
+  - dAUROC
+  - dAUROC_scalar
 
 qa_model:
   backend: vllm 
   name: openai/gpt-oss-20b
-  repeat: 1
+  repeat: 10
   stop_sequences: [] 
   temperature: 1
   max_tokens: 512
