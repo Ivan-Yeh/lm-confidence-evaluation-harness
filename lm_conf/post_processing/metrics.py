@@ -2,6 +2,8 @@ import os
 from typing import Literal
 from concurrent.futures import ProcessPoolExecutor
 import multiprocessing
+import logging
+import random
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -302,9 +304,11 @@ def dAUROC_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
 
 @register_metric(name="dAUROC")
 def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+    logging.info("Starting dAUROC computation...")
     accuracies = []
     confidence_dists: list[BetaDistribution] = []
 
+    # Filter invalid entries
     for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
         try:
             if acc is None or conf is None or not conf.is_valid():
@@ -315,6 +319,7 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
             continue
 
     num_samples = cfg.get("num_dauroc_samples", 50)
+    max_pairs = cfg.get("max_dauroc_pairs", 5000)  # optional subsampling
 
     pos_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 1]
     neg_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 0]
@@ -322,18 +327,24 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     if len(pos_dists) == 0 or len(neg_dists) == 0:
         return [float("nan")]
 
+    # Optional subsampling of pos/neg distributions
+    if max_pairs is not None:
+        pos_dists = random.sample(pos_dists, min(len(pos_dists), max_pairs))
+        neg_dists = random.sample(neg_dists, min(len(neg_dists), max_pairs))
+
     total_comparisons = len(pos_dists) * len(neg_dists) * num_samples * num_samples
 
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     num_workers = cfg.get("num_workers", None) or (multiprocessing.cpu_count() - 1)
 
-    def pair_generator():
-        for bd_pos in pos_dists:
-            for bd_neg in neg_dists:
-                yield (bd_pos, bd_neg, num_samples)
-
     wins = 0
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        # Generator for pairs
+        def pair_generator():
+            for bd_pos in pos_dists:
+                for bd_neg in neg_dists:
+                    yield (bd_pos, bd_neg, num_samples)
+
         for result in tqdm(executor.map(_compute_dauroc_pair, pair_generator()),
                            total=len(pos_dists) * len(neg_dists),
                            desc="Computing dAUROC"):
@@ -341,3 +352,4 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
 
     d_auroc = wins / total_comparisons
     return [float(d_auroc)]
+
