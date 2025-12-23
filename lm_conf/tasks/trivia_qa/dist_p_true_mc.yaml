@@ -11,7 +11,7 @@ qa_model:
 p_true_mc_model:
   backend: ${qa_model.backend}
   name: ${qa_model.name}
-  repeat: 15
+  repeat: 10
   temperature: 1.0
   max_tokens: 512
   max_model_len: ${qa_model.max_model_len}

@@ -49,7 +49,7 @@ class EntailmentDeberta():
                    (0=contradiction, 1=neutral, 2=entailment).
         """
         preds = []
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = next(self.model.parameters()).device
         with torch.no_grad():
             n = len(texts1)
             for i in range(0, n, batch_size):
@@ -69,11 +69,8 @@ class EntailmentDeberta():
                 # Forward pass: logits shape [B, 3]
                 logits = self.model(**enc).logits
 
-                # Convert logits to probabilities over classes.
-                probs = F.softmax(logits, dim=1)   # 0:contra, 1:neutral, 2:entail
-
                 # Predicted class indices.
-                pred = torch.argmax(probs, dim=1)  # shape [B]
+                pred = torch.argmax(logits, dim=1)  # shape [B]
 
                 preds.extend(pred.cpu().tolist())
 
@@ -100,7 +97,7 @@ class EntailmentDeberta():
             preds: List[float] with entailment probabilities (class 2) for each pair.
         """
         preds = []
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = next(self.model.parameters()).device
         with torch.no_grad():
             n = len(texts1)
             for i in range(0, n, batch_size):

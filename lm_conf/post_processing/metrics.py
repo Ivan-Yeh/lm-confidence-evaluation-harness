@@ -1,15 +1,35 @@
 import os
 from typing import Literal
+from concurrent.futures import ProcessPoolExecutor
+import multiprocessing
 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import beta, wasserstein_distance, norm
-from scipy.integrate import quad
+from scipy.stats import beta, wasserstein_distance
 from sklearn.metrics import roc_auc_score
+from tqdm import tqdm
 
 from ..confidence_metrics.distributionals import BetaDistribution
 from ..default_utils.custom_types import OrganisedOutputs
 from ..default_utils.registry import register_metric
+
+
+# Helper function for parallelization (must be module-level for pickling)
+def _compute_dauroc_pair(args):
+    """Compute probability comparison for a single (pos, neg) Beta distribution pair"""
+    bd_pos, bd_neg, num_samples = args
+    pos_samples = beta.rvs(
+        bd_pos.alpha_param,
+        bd_pos.beta_param,
+        size=num_samples
+    )
+    neg_samples = beta.rvs(
+        bd_neg.alpha_param,
+        bd_neg.beta_param,
+        size=num_samples
+    )
+    wins = np.sum(pos_samples[:, None] > neg_samples[None, :])
+    return wins
 
 
 @register_metric(name="accuracy_scalar_with_abstention")
@@ -168,7 +188,7 @@ def dECE(cfg: dict, extracted_output: OrganisedOutputs, binning_mode: Literal["e
     assert N == len(confidence_dists)
 
     num_bins = cfg.get("num_bins", 10)
-    num_samples = cfg.get("num_wasserstein_samples", 200)
+    num_samples = cfg.get("num_wasserstein_samples", 1000)
 
     # bin by expected confidence (mu)
     mean_conf = np.array([bd.mu for bd in confidence_dists])
@@ -282,62 +302,48 @@ def dAUROC_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
 
 @register_metric(name="dAUROC")
 def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
-    
-    accuracies = []
-    confidence_dists: list[BetaDistribution] = []
+    accuracies = []           # list[int] in {0,1}
+    confidence_dists: list[BetaDistribution] = []  # list[BetaDistribution]
 
-    for acc, conf in zip(
-        extracted_output.accuracy_scores[0],
-        extracted_output.extracted_confidences[0]
-    ):
+    # sanity check
+    for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
         try:
-            if acc is None or conf is None or not conf.is_valid():
+            if acc is None or conf is None or conf.is_valid() is False:
                 continue
-            accuracies.append(float(acc))
+            cleaned_acc = float(acc)
+            accuracies.append(cleaned_acc)
             confidence_dists.append(conf)
         except:
             continue
 
-    pos_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 1]
-    neg_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 0]
+    num_samples = cfg.get("num_dauroc_samples", 50)
 
+    # Split into correct / incorrect examples
+    pos_dists = [
+        bd for y, bd in zip(accuracies, confidence_dists) if y == 1
+    ]
+    neg_dists = [
+        bd for y, bd in zip(accuracies, confidence_dists) if y == 0
+    ]
+
+    # Edge cases
     if len(pos_dists) == 0 or len(neg_dists) == 0:
         return [float("nan")]
 
-    wins = 0.0
-    total = 0
+    # Generate all pairs with num_samples
+    pairs = [(bd_pos, bd_neg, num_samples) for bd_pos in pos_dists for bd_neg in neg_dists]
+    total_comparisons = len(pairs) * num_samples * num_samples
 
-    SMALL_THRESHOLD = 5.0
-
-    def beta_gaussian_prob_gt(bd1: BetaDistribution, bd2: BetaDistribution):
-        """Gaussian approximation: P(C1 > C2)"""
-        mu1, var1 = bd1.mu, bd1.sigma ** 2
-        mu2, var2 = bd2.mu, bd2.sigma ** 2
-        z = (mu1 - mu2) / np.sqrt(var1 + var2)
-        return norm.cdf(z)
-
-    def beta_quad_prob_gt(bd1: BetaDistribution, bd2: BetaDistribution):
-        """Exact deterministic Beta-Beta comparison via quadrature"""
-        a1, b1 = bd1.alpha_param, bd1.beta_param
-        a2, b2 = bd2.alpha_param, bd2.beta_param
-
-        return quad(
-            lambda x: beta.pdf(x, a1, b1) * beta.cdf(x, a2, b2),
-            0.0,
-            1.0,
-            epsabs=1e-8
-        )[0]
-
-    def prob_beta_gt_beta(bd1: BetaDistribution, bd2: BetaDistribution):
-        """Hybrid selector"""
-        if min(bd1.alpha_param, bd1.beta_param, bd2.alpha_param, bd2.beta_param) >= SMALL_THRESHOLD:
-            return beta_gaussian_prob_gt(bd1, bd2)
-        else:
-            return beta_quad_prob_gt(bd1, bd2)
-
-    for bd_pos in pos_dists:
-        for bd_neg in neg_dists:
-            wins += prob_beta_gt_beta(bd_pos, bd_neg)
-            total += 1
-
-    return [float(wins / total)]
+    # Use multiprocessing to compute probabilities in parallel
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    num_workers = cfg.get("num_workers", None) or (multiprocessing.cpu_count() - 1)
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        results = list(tqdm(
+            executor.map(_compute_dauroc_pair, pairs),
+            total=len(pairs),
+            desc="Computing dAUROC by Monte Carlo"
+        ))
+    
+    wins = sum(results)
+    d_auroc = wins / total_comparisons
+    return [float(d_auroc)]

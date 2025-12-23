@@ -52,9 +52,15 @@ class BetaDistribution:
 
 @register_confidence(name="distributional_length_normalised_log_likelihood")
 def distributional_length_normalised_log_likelihood(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
-    selected_responses, _ = semantic_uncertainty_selection(output_lst)
     lnlls = [list(map(lambda x: float(np.exp(np.mean(x))), output.output_logprobs)) for output in output_lst]
     lnlls = list(zip(*lnlls))  # transpose to per-question
+    
+    # Select response with highest LNLL for each question
+    selected_responses = []
+    for q_idx, lnll_values in enumerate(lnlls):
+        best_idx = np.argmax(lnll_values)
+        selected_response = output_lst[best_idx].output_texts[q_idx]
+        selected_responses.append(selected_response)
 
     all_confidence_dists = []
     for lnll in lnlls:
