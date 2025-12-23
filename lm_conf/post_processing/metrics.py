@@ -302,50 +302,42 @@ def dAUROC_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
 
 @register_metric(name="dAUROC")
 def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
-    accuracies = []           # list[int] in {0,1}
-    confidence_dists: list[BetaDistribution] = []  # list[BetaDistribution]
+    accuracies = []
+    confidence_dists: list[BetaDistribution] = []
 
-    # sanity check
     for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
         try:
-            if acc is None or conf is None or conf.is_valid() is False:
+            if acc is None or conf is None or not conf.is_valid():
                 continue
-            cleaned_acc = float(acc)
-            accuracies.append(cleaned_acc)
+            accuracies.append(float(acc))
             confidence_dists.append(conf)
         except:
             continue
 
     num_samples = cfg.get("num_dauroc_samples", 50)
 
-    # Split into correct / incorrect examples
-    pos_dists = [
-        bd for y, bd in zip(accuracies, confidence_dists) if y == 1
-    ]
-    neg_dists = [
-        bd for y, bd in zip(accuracies, confidence_dists) if y == 0
-    ]
+    pos_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 1]
+    neg_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 0]
 
-    # Edge cases
     if len(pos_dists) == 0 or len(neg_dists) == 0:
         return [float("nan")]
 
-    # Generate all pairs with num_samples (show progress for large splits)
-    pairs = []
-    for bd_pos in tqdm(pos_dists, desc="Building dAUROC pairs", total=len(pos_dists)):
-        pairs.extend((bd_pos, bd_neg, num_samples) for bd_neg in neg_dists)
-    total_comparisons = len(pairs) * num_samples * num_samples
+    total_comparisons = len(pos_dists) * len(neg_dists) * num_samples * num_samples
 
-    # Use multiprocessing to compute probabilities in parallel
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     num_workers = cfg.get("num_workers", None) or (multiprocessing.cpu_count() - 1)
+
+    def pair_generator():
+        for bd_pos in pos_dists:
+            for bd_neg in neg_dists:
+                yield (bd_pos, bd_neg, num_samples)
+
+    wins = 0
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        results = list(tqdm(
-            executor.map(_compute_dauroc_pair, pairs),
-            total=len(pairs),
-            desc="Computing dAUROC by Monte Carlo"
-        ))
-    
-    wins = sum(results)
+        for result in tqdm(executor.map(_compute_dauroc_pair, pair_generator()),
+                           total=len(pos_dists) * len(neg_dists),
+                           desc="Computing dAUROC"):
+            wins += result
+
     d_auroc = wins / total_comparisons
     return [float(d_auroc)]
