@@ -330,8 +330,10 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     if len(pos_dists) == 0 or len(neg_dists) == 0:
         return [float("nan")]
 
-    # Generate all pairs with num_samples
-    pairs = [(bd_pos, bd_neg, num_samples) for bd_pos in pos_dists for bd_neg in neg_dists]
+    # Generate all pairs with num_samples (show progress for large splits)
+    pairs = []
+    for bd_pos in tqdm(pos_dists, desc="Building dAUROC pairs", total=len(pos_dists)):
+        pairs.extend((bd_pos, bd_neg, num_samples) for bd_neg in neg_dists)
     total_comparisons = len(pairs) * num_samples * num_samples
 
     # Use multiprocessing to compute probabilities in parallel
