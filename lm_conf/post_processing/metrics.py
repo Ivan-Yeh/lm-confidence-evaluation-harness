@@ -167,7 +167,7 @@ def dECE(cfg: dict, extracted_output: OrganisedOutputs, binning_mode: Literal["e
     assert N == len(confidence_dists)
 
     num_bins = cfg.get("num_bins", 10)
-    num_samples = cfg.get("num_wasserstein_samples", 1000)
+    num_samples = cfg.get("num_wasserstein_samples", 200)
 
     # bin by expected confidence (mu)
     mean_conf = np.array([bd.mu for bd in confidence_dists])
@@ -295,7 +295,7 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
         except:
             continue
 
-    num_samples = cfg.get("num_dauroc_samples", 1000)
+    num_samples = cfg.get("num_dauroc_samples", 200)
 
     # Split into correct / incorrect examples
     pos_dists = [
