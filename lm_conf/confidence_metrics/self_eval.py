@@ -67,7 +67,7 @@ def p_true_by_monte_carlo_generation(cfg: dict, output_lst: list[ModelOutputs], 
             for idx, output in enumerate(result.output_texts):
                 # Extract last occurrence of ANSWER: (A)/(B) or ANSWER IS: (A)/(B)
                 match = None
-                for pattern in [r'ANSWER\s*IS\s*:\s*\(([AB])\)', r'ANSWER\s*:\s*\(([AB])\)', r'\s*\(([AB])\)']:
+                for pattern in [r'ANSWER\s*IS\s*:*\s*\(*([AB])\)*', r'ANSWER\s*:*\s*\(*([AB])\)*', r'\s*\(*([AB])\)*']:
                     matches = list(re.finditer(pattern, output.upper()))
                     if matches:
                         match = matches[-1]  # Get last occurrence
