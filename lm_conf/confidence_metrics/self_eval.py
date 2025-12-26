@@ -20,7 +20,10 @@ def p_true_by_continuation(cfg: dict, output_lst: list[ModelOutputs], prompts: P
     """.strip()
     def per_round_estimator(outputs: ModelOutputs) -> list[float]:
         for question, model_answer in zip(outputs.context_texts, outputs.output_texts):
-            eval_prompt = p_true_prompt_template.format(question=question, model_answer=model_answer)
+            if model_answer:
+                eval_prompt = p_true_prompt_template.format(question=question, model_answer=model_answer)
+            else:
+                eval_prompt = p_true_prompt_template.format(question=question, model_answer="No answer provided.")
             true_continuation.context_texts.append(eval_prompt)
             true_continuation.continuation_texts[eval_prompt] = ["(A)"]
         logging.info("Scoring P(True) 'True' continuation token")
@@ -50,12 +53,13 @@ def p_true_by_monte_carlo_generation(cfg: dict, output_lst: list[ModelOutputs], 
         # Build prompts fresh per round to avoid leaking state across evaluations
         p_true_prompt_collection: PromptCollection = PromptCollection(context_texts=[])
         for question, model_answer in zip(outputs.context_texts, outputs.output_texts):
-            eval_prompt = p_true_prompt_template.format(question=question, model_answer=model_answer)
-            p_true_prompt_collection.context_texts.append(eval_prompt)
-
+            if model_answer:
+                eval_prompt = p_true_prompt_template.format(question=question, model_answer=model_answer)
+            else:
+                eval_prompt = p_true_prompt_template.format(question=question, model_answer="No answer provided.")
+            p_true_prompt_collection.context_texts.append(str(eval_prompt))
         logging.info("Running P(True) by Monte Carlo generation") 
         p_true_results: list[ModelOutputs] = model.run_generation(p_true_prompt_collection)
-
         # Each ModelOutputs in p_true_results holds responses for the same set of
         # questions; accumulate counts per question across all rounds.
         num_questions = len(outputs.context_texts)

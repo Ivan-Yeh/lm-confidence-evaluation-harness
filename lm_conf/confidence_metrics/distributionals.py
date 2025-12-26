@@ -179,7 +179,10 @@ def distributional_p_true_mc(cfg: dict, output_lst: list[ModelOutputs], prompts:
     # Build prompts fresh per round to avoid leaking state across evaluations
     p_true_prompt_collection: PromptCollection = PromptCollection(context_texts=[])
     for question, model_answer in zip(outputs.context_texts, outputs.output_texts):
-        eval_prompt = p_true_prompt_template.format(question=question, model_answer=model_answer)
+        if model_answer:
+            eval_prompt = p_true_prompt_template.format(question=question, model_answer=model_answer)
+        else:
+            eval_prompt = p_true_prompt_template.format(question=question, model_answer="No answer provided.")
         p_true_prompt_collection.context_texts.append(eval_prompt)
 
     logging.info("Running P(True) by Monte Carlo generation") 
@@ -226,7 +229,6 @@ def distributional_p_true_mc(cfg: dict, output_lst: list[ModelOutputs], prompts:
             extracted_true_probs_dists.append(BetaDistribution(mu, sigma))
         except:
             extracted_true_probs_dists.append(None)
-
     
     return OrganisedOutputs(
         extracted_answers=[outputs.output_texts],
