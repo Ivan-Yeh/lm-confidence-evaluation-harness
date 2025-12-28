@@ -230,23 +230,48 @@ def dECE(cfg: dict, extracted_output: OrganisedOutputs, binning_mode: Literal["e
 
     # Create a single figure with one subplot per non-empty bin
     if 'dece_plot_bins' in locals() and len(dece_plot_bins) > 0:
+
+        # Increase default font sizes
+        plt.rcParams.update({
+            'font.family': 'serif',
+            'font.size': 12,
+            'axes.titlesize': 12,
+            'axes.labelsize': 12,
+            'xtick.labelsize': 12,
+            'ytick.labelsize': 12,
+            'legend.fontsize': 12,
+        })
+        
         num_plots = len(dece_plot_bins)
-        cols = int(np.ceil(np.sqrt(num_plots)))
+        cols = 3
         rows = int(np.ceil(num_plots / cols))
-        fig, axes = plt.subplots(rows, cols, figsize=(4*cols, 3*rows), sharex=True, sharey=True)
+        
+        # Larger figure size and increased font sizes for paper readability
+        fig, axes = plt.subplots(rows, cols, figsize=(12, 3.2*rows))
         axes = np.array(axes).reshape(-1)
+        
         x_range = (0.0, 1.0)
         for ax, data in zip(axes, dece_plot_bins):
-            ax.hist(data["conf"], bins=30, range=x_range, alpha=0.6, density=True, label="Confidence")
-            ax.hist(data["acc"], bins=30, range=x_range, alpha=0.6, density=True, label="Accuracy")
-            ax.set_title(f"Bin {data['bin']} [{data['lo']:.2f},{data['hi']:.2f}] n={data['n']}")
+            ax.hist(data["conf"], bins=50, range=x_range, alpha=0.6, density=True, label="Confidence", color='blue', linewidth=1.5)
+            ax.hist(data["acc"], bins=50, range=x_range, alpha=0.6, density=True, label="Accuracy", color='orange', linewidth=1.5)
+            ax.set_title(f"Bin {data['bin']} [{data['lo']:.2f},{data['hi']:.2f}] (n={data['n']})", fontsize=14)
             ax.set_xlim(*x_range)
+            ax.set_xlabel("Probability")
+            ax.set_ylabel("Density")
+            ax.grid(True, alpha=0.3, linestyle='--', linewidth=0.5)
+            
         # Hide any unused subplots
         for ax in axes[num_plots:]:
             ax.axis('off')
-        axes[0].legend()
-        fig.suptitle("dECE: Confidence vs Accuracy distributions per bin")
-        fig.tight_layout()
+        
+        # Place legend at the top
+        handles, labels = axes[0].get_legend_handles_labels()
+        legend = fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1), 
+                   ncol=2, frameon=True, fancybox=True, fontsize=14)
+        
+        # fig.suptitle("dECE: Confidence vs Accuracy Distributions per Bin", 
+        #             y=0.995, fontsize=18, fontweight='bold')
+        fig.tight_layout(rect=[0, 0, 1, 0.96])
         
         results_dir = cfg.get("results_path")
         base_path = f"{results_dir}/dECE_{binning_mode}_distributions"
@@ -255,7 +280,7 @@ def dECE(cfg: dict, extracted_output: OrganisedOutputs, binning_mode: Literal["e
         while os.path.exists(results_path):
             idx += 1
             results_path = f"{base_path}_{idx}.png"
-        plt.savefig(results_path, dpi=150)
+        plt.savefig(results_path, dpi=150, bbox_inches='tight')
         plt.close(fig)
         logging.info(f"Saved dECE distribution plots to {results_path}")
     return [float(dECE_value)]
