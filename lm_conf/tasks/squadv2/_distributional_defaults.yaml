@@ -1,4 +1,4 @@
-rounds: 3
+rounds: 2
 seed: 42
 dataset_name: squadv2 # must match the folder name under tasks/
 dataset_path: rajpurkar/squad_v2
@@ -7,7 +7,7 @@ split: validation
 few_shot_split: validation
 few_shot_examples: 0
 limit: 200
-results_path: null 
+results_path: null
 # multiple choice: "question: str", "choices : list", and "answer_index: int"
 dataset_preprocessor: task_utils.preprocess_dataset
 
@@ -26,15 +26,18 @@ confidence_metrics: null
 grader: llm_grader
 performance_metrics:
   - accuracy_scalar_with_abstention
-  - ece_scalar
-  - auroc_scalar
+  - dECE_equal_width
+  - dECE_equal_mass
+  - dECE_scalar
+  - dAUROC
+  - dAUROC_scalar
 
 qa_model:
   backend: vllm 
   name: openai/gpt-oss-20b
-  repeat: 1
+  repeat: 10
   stop_sequences: []
-  temperature: 0.1
+  temperature: 1
   max_tokens: 512
   max_model_len: 2048
   reasoning_effort: low
@@ -46,5 +49,5 @@ grader_model:
   repeat: 1
   temperature: 0
   max_tokens: 512
-  max_model_len: 2048
+  max_model_len: 4096
   reasoning_effort: low
