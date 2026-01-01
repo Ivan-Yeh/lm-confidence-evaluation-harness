@@ -5,6 +5,8 @@ defaults:
 output_filters: null
 confidence_metrics: distributional_p_true_mc
 
+qa_model:
+  repeat: 1
 
 p_true_mc_model:
   backend: ${qa_model.backend}

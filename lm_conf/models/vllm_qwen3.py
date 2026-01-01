@@ -28,7 +28,7 @@ class vLLMQwen3(AbstractModel):
 
         model_outputs_list = []
         for _ in range(self.repeat):
-
+            logging.info(f"vLLM Qwen 3 Generation Round {_ + 1}/{self.repeat}")
             messages_list = []
             for context_text in prompt_collection.context_texts:
                 messages = [{"role": "system", "content": prompt_collection.system_prompt},
@@ -131,27 +131,13 @@ class vLLMQwen3(AbstractModel):
                 top_k_tokens=all_top_k_tokens,
             ))
 
-        # Pickle outputs if cache path is specified
-        if self.cfg.get("cache"):
-            cache_path = self.cfg.get("cache")
-            os.makedirs(cache_path, exist_ok=True)
-            with open(os.path.join(cache_path, "run_generation_outputs.pkl"), "wb") as f:
-                pickle.dump(model_outputs_list, f)
         del vllm_model
+        del self.tokenizer
         gc.collect()
         return model_outputs_list
 
 
     def run_continuation(self, prompt_collection: PromptCollection):
-
-        # ---- Cache check ----
-        if self.cfg.get("cache"):
-            cache_path = self.cfg["cache"]
-            cache_file = os.path.join(cache_path, "run_continuation_outputs.pkl")
-            if os.path.exists(cache_file):
-                with open(cache_file, "rb") as f:
-                    return pickle.load(f)
-
         # ---- Load vLLM ----
         llm = LLM(
             model=self.model_name,
@@ -227,11 +213,8 @@ class vLLMQwen3(AbstractModel):
                     continuation_candidates=all_candidates
                 )
             )
-
-        # ---- Save cache ----
-        if self.cfg.get("cache"):
-            os.makedirs(self.cfg["cache"], exist_ok=True)
-            with open(os.path.join(self.cfg["cache"], "run_continuation_outputs.pkl"), "wb") as f:
-                pickle.dump(model_outputs_list, f)
+        del llm
+        del tokenizer
+        del self.tokenizer
         gc.collect()
         return model_outputs_list

@@ -100,7 +100,8 @@ if __name__ == "__main__":
     # load config
     dataset_name, task_name, cfg = get_task_yaml()
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    path = f"results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
+    path = f"/hdd/ivny/results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
+    os.makedirs(path, exist_ok=True)
     cfg["results_path"] = path
     logger = get_logger(__name__, log_file=f"{path}/task.log")
     _auto_import_modules()
@@ -190,7 +191,6 @@ if __name__ == "__main__":
             # --------------------------------------------------------------------
 
             logger.info(f"Calculating performance metrics [Round {round_idx + 1}/{rounds}]")
-            os.makedirs(path, exist_ok=True)
             metrics_df = pd.DataFrame()
             # calculate metrics
             for metric in cfg.get("performance_metrics", []):

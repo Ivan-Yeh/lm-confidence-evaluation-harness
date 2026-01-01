@@ -51,13 +51,14 @@ def p_true_by_monte_carlo_generation(cfg: dict, output_lst: list[ModelOutputs], 
     model = ModelManager(master_cfg=p_true_cfg, model_config_type="p_true_mc_model")
     def per_round_estimator(outputs: ModelOutputs) -> list[float]:
         # Build prompts fresh per round to avoid leaking state across evaluations
-        p_true_prompt_collection: PromptCollection = PromptCollection(context_texts=[])
+        ctx_texts = []
         for question, model_answer in zip(outputs.context_texts, outputs.output_texts):
             if model_answer:
                 eval_prompt = p_true_prompt_template.format(question=question, model_answer=model_answer)
             else:
                 eval_prompt = p_true_prompt_template.format(question=question, model_answer="No answer provided.")
-            p_true_prompt_collection.context_texts.append(str(eval_prompt))
+            ctx_texts.append(eval_prompt)
+        p_true_prompt_collection = PromptCollection(context_texts=ctx_texts)
         logging.info("Running P(True) by Monte Carlo generation") 
         p_true_results: list[ModelOutputs] = model.run_generation(p_true_prompt_collection)
         # Each ModelOutputs in p_true_results holds responses for the same set of

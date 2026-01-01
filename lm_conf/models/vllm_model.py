@@ -6,6 +6,7 @@ import numpy as np
 import pickle
 import os
 from vllm import LLM, SamplingParams
+import logging
 
 
 class vLLMModel(AbstractModel):
@@ -15,18 +16,11 @@ class vLLMModel(AbstractModel):
     def __init__(self, cfg):
         self.cfg = cfg
         self.model_name = cfg.get("name", None)
-        self.repeat = int(cfg.get("repeat", 1))
+        self.repeat = cfg.get("repeat", 1)
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.model_name, trust_remote_code=True)
 
     def run_generation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
-        # Check if cache exists
-        if self.cfg.get("cache"):
-            cache_path = self.cfg.get("cache")
-            cache_file = os.path.join(cache_path, "run_generation_outputs.pkl")
-            if os.path.exists(cache_file):
-                with open(cache_file, "rb") as f:
-                    return pickle.load(f)
 
         # Build chat messages from prompt collection
         messages_list = []
@@ -35,88 +29,88 @@ class vLLMModel(AbstractModel):
                         {"role": "user", "content": context_text}]
             messages_list.append(messages)
         stop_seq = self.cfg.get("stop_sequences", [])
-        sampling_params = SamplingParams(temperature=float(self.cfg.get("temperature", 1.0)),
-                                         max_tokens=int(self.cfg.get("max_tokens", 256)),
+        sampling_params = SamplingParams(temperature=self.cfg.get("temperature", 1.0),
+                                         max_tokens=self.cfg.get("max_tokens", 256),
                                          logprobs=5,
-                                         stop=list(stop_seq),
-                                         n=self.repeat
+                                         stop=list(stop_seq)
                                          )
         vllm_model = LLM(model=self.model_name,
-                         max_model_len=int(self.cfg.get("max_model_len", 4096)))
+                         max_model_len=self.cfg.get("max_model_len", 4096))
 
         model_outputs_list = []
-        # Generate responses using vLLM chat
-        try:
-            chat_template_kwargs={"reasoning_effort": self.cfg.get("reasoning_effort")}
-            outputs = vllm_model.chat(messages_list,
-                                        sampling_params=sampling_params,
-                                        chat_template_kwargs=chat_template_kwargs)
-        except:     
-            outputs = vllm_model.generate(
-                prompt_collection.context_texts, 
-                sampling_params=sampling_params)
-            
-        for repeat_idx in range(self.repeat):
+        for _ in range(self.repeat):
+            logging.info(f"vLLM Generation Round {_ + 1}/{self.repeat}")
+            # Generate responses using vLLM chat
+            try:
+                chat_template_kwargs={"reasoning_effort": self.cfg.get("reasoning_effort")}
+                outputs = vllm_model.chat(messages_list,
+                                            sampling_params=sampling_params,
+                                            chat_template_kwargs=chat_template_kwargs)
+            except:     
+                outputs = vllm_model.generate(
+                    prompt_collection.context_texts, 
+                    sampling_params=sampling_params)
+
             # Extract output texts and tokens
             output_texts = []
             output_tokens = []
             output_logprobs = []
             all_top_k_tokens = []
 
-            for prompt_output in outputs:
+            for output in outputs:
                 # For each prompt, collect all n completions
-                completion = prompt_output.outputs[repeat_idx]
-                has_assistant_token = False
-                if "assistantfinal" in completion.text:
-                    has_assistant_token = True
-                    generated_text = completion.text.rsplit(
-                        "assistantfinal", 1)[-1].strip()
-                else:
-                    generated_text = completion.text.strip()
-                output_texts.append(generated_text)
+                for completion in output.outputs:
+                    has_assistant_token = False
+                    if "assistantfinal" in completion.text:
+                        has_assistant_token = True
+                        generated_text = completion.text.rsplit(
+                            "assistantfinal", 1)[-1].strip()
+                    else:
+                        generated_text = completion.text.strip()
+                    output_texts.append(generated_text)
 
-                # Tokenize generated text to get the expected number of tokens
-                generated_token_ids = self.tokenizer.encode(
-                    generated_text, add_special_tokens=False)
-                expected_length = len(generated_token_ids)
+                    # Tokenize generated text to get the expected number of tokens
+                    generated_token_ids = self.tokenizer.encode(
+                        generated_text, add_special_tokens=False)
+                    expected_length = len(generated_token_ids)
 
-                # Extract decoded tokens and logprobs, skipping special tokens
-                tokens = []
-                logprobs = []
-                top_ks = []
-                found_assistant = False
+                    # Extract decoded tokens and logprobs, skipping special tokens
+                    tokens = []
+                    logprobs = []
+                    top_ks = []
+                    found_assistant = False
 
-                if completion.logprobs:
-                    for lp in completion.logprobs:
-                        if lp and len(lp) > 0:
-                            # save top 1 logprob aka output logprobs
-                            tok_info = list(lp.values())[0]
-                            decoded_token = tok_info.decoded_token
+                    if completion.logprobs:
+                        for lp in completion.logprobs:
+                            if lp and len(lp) > 0:
+                                # save top 1 logprob aka output logprobs
+                                tok_info = list(lp.values())[0]
+                                decoded_token = tok_info.decoded_token
 
-                            # If has_assistant_token, skip tokens until we find "final"
-                            match self.model_name.lower():
-                                case "gpt-oss":
-                                    if has_assistant_token and not found_assistant:
-                                        if "final" in decoded_token.lower():
-                                            found_assistant = True
-                                        continue
-                                case _:
-                                    pass
+                                # If has_assistant_token, skip tokens until we find "final"
+                                match self.model_name.lower():
+                                    case "gpt-oss":
+                                        if has_assistant_token and not found_assistant:
+                                            if "final" in decoded_token.lower():
+                                                found_assistant = True
+                                            continue
+                                    case _:
+                                        pass
 
-                            # Skip special tokens
-                            if decoded_token not in self.tokenizer.all_special_tokens and not (decoded_token.startswith("<|") and decoded_token.endswith("|>")):
-                                tokens.append(decoded_token)
-                                logprobs.append(tok_info.logprob)
-                                # save top k tokens and logprobs
-                                top_ks.append([(tk.decoded_token, tk.logprob) for tk in list(lp.values())])
+                                # Skip special tokens
+                                if decoded_token not in self.tokenizer.all_special_tokens and not (decoded_token.startswith("<|") and decoded_token.endswith("|>")):
+                                    tokens.append(decoded_token)
+                                    logprobs.append(tok_info.logprob)
+                                    # save top k tokens and logprobs
+                                    top_ks.append([(tk.decoded_token, tk.logprob) for tk in list(lp.values())])
 
-                # Slice tokens and logprobs to match generated text length
-                tokens = tokens[-expected_length:] if expected_length > 0 else tokens
-                logprobs = logprobs[-expected_length:
-                                    ] if expected_length > 0 else logprobs
-                output_tokens.append(tokens)
-                output_logprobs.append(logprobs)
-                all_top_k_tokens.append(top_ks)
+                    # Slice tokens and logprobs to match generated text length
+                    tokens = tokens[-expected_length:] if expected_length > 0 else tokens
+                    logprobs = logprobs[-expected_length:
+                                        ] if expected_length > 0 else logprobs
+                    output_tokens.append(tokens)
+                    output_logprobs.append(logprobs)
+                    all_top_k_tokens.append(top_ks)
             model_outputs_list.append(ModelOutputs(
                 context_texts=prompt_collection.context_texts,
                 output_texts=output_texts,
@@ -124,27 +118,13 @@ class vLLMModel(AbstractModel):
                 output_logprobs=output_logprobs,
                 top_k_tokens=all_top_k_tokens,
             ))
-
-        # Pickle outputs if cache path is specified
-        if self.cfg.get("cache"):
-            cache_path = self.cfg.get("cache")
-            os.makedirs(cache_path, exist_ok=True)
-            with open(os.path.join(cache_path, "run_generation_outputs.pkl"), "wb") as f:
-                pickle.dump(model_outputs_list, f)
         del vllm_model
+        del self.tokenizer
         gc.collect()
         return model_outputs_list
 
 
     def run_continuation(self, prompt_collection: PromptCollection):
-
-        # ---- Cache check ----
-        if self.cfg.get("cache"):
-            cache_path = self.cfg["cache"]
-            cache_file = os.path.join(cache_path, "run_continuation_outputs.pkl")
-            if os.path.exists(cache_file):
-                with open(cache_file, "rb") as f:
-                    return pickle.load(f)
 
         # ---- Load vLLM ----
         llm = LLM(
@@ -152,7 +132,6 @@ class vLLMModel(AbstractModel):
             dtype="bfloat16",
             trust_remote_code=True,
             gpu_memory_utilization=0.90,
-            max_model_len=int(self.cfg.get("max_model_len", 4096))
         )
 
         tokenizer = llm.get_tokenizer()
@@ -176,7 +155,7 @@ class vLLMModel(AbstractModel):
 
                 # ---- Ask vLLM for logprobs along the entire output ----
                 sampling = SamplingParams(
-                    temperature=0.8,                # deterministic
+                    temperature=0,                # deterministic
                     max_tokens=1,                 # do NOT generate beyond the prompt
                     logprobs=1,                   # return token-level logprobs
                     prompt_logprobs=True,         # needed to score provided tokens
@@ -222,11 +201,8 @@ class vLLMModel(AbstractModel):
                     continuation_candidates=all_candidates
                 )
             )
-
-        # ---- Save cache ----
-        if self.cfg.get("cache"):
-            os.makedirs(self.cfg["cache"], exist_ok=True)
-            with open(os.path.join(self.cfg["cache"], "run_continuation_outputs.pkl"), "wb") as f:
-                pickle.dump(model_outputs_list, f)
+        del llm
+        del tokenizer
+        del self.tokenizer
         gc.collect()
         return model_outputs_list

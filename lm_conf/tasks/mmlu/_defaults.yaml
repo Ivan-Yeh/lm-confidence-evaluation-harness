@@ -26,9 +26,9 @@ qa_model:
   name: openai/gpt-oss-20b
   repeat: 1
   stop_sequences: [] 
-  temperature: 1
+  temperature: 0.1
   max_tokens: 512
-  max_model_len: 1024
+  max_model_len: 2048
   reasoning_effort: low
 
 

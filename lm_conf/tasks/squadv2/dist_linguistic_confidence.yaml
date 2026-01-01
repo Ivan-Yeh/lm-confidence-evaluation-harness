@@ -10,6 +10,8 @@ prompt_format: |
 output_filters: null
 confidence_metrics: distributional_linguistic_confidence
 
+qa_model:
+  repeat: 1
 
 linguistic_confidence_judge_model:
   backend: vllm 
