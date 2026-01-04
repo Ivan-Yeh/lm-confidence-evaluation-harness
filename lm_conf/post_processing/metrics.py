@@ -274,15 +274,16 @@ def dECE(cfg: dict, extracted_output: OrganisedOutputs, binning_mode: Literal["e
         fig.tight_layout(rect=[0, 0, 1, 0.96])
         
         results_dir = cfg.get("results_path")
-        base_path = f"{results_dir}/dECE_{binning_mode}_distributions"
-        idx = 0
-        results_path = f"{base_path}_{idx}.png"
-        while os.path.exists(results_path):
-            idx += 1
+        if results_dir is not None:
+            base_path = f"{results_dir}/dECE_{binning_mode}_distributions"
+            idx = 0
             results_path = f"{base_path}_{idx}.png"
-        plt.savefig(results_path, dpi=150, bbox_inches='tight')
-        plt.close(fig)
-        logging.info(f"Saved dECE distribution plots to {results_path}")
+            while os.path.exists(results_path):
+                idx += 1
+                results_path = f"{base_path}_{idx}.png"
+            plt.savefig(results_path, dpi=150, bbox_inches='tight')
+            plt.close(fig)
+            logging.info(f"Saved dECE distribution plots to {results_path}")
     return [float(dECE_value)]
 
 
@@ -334,7 +335,7 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     if not pos_dists or not neg_dists:
         return [float("nan")]
 
-    num_dauroc_mc = cfg.get("num_dauroc_mc", 1_000_000)
+    num_dauroc_mc = cfg.get("num_dauroc_mc", 500000)
     seed = cfg.get("seed", None)
 
     if seed is not None:
@@ -343,7 +344,7 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
 
     wins = 0
     comparisons = 0
-    batch_size = 50000
+    batch_size = 100000
 
     for _ in tqdm(range(0, num_dauroc_mc, batch_size), desc="Computing dAUROC with global Monte Carlo sampling"):
         pos_samples = np.array([

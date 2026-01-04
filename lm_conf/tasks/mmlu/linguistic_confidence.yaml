@@ -10,6 +10,8 @@ output_filters: null
 confidence_metrics: scalar_linguistic_confidence
 grader: llm_grader
 
+qa_model:
+  temperature: 1
 
 linguistic_confidence_judge_model:
   backend: vllm 

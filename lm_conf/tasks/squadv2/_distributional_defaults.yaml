@@ -14,7 +14,7 @@ dataset_preprocessor: task_utils.preprocess_dataset
 # placeholder variables must match the dataset column names, formatted using Jinja2
 question_format: "Title: {{ title.strip() }}\n\nBackground: {{ context.strip() }}\n\nQuestion: {{ question.strip() }}"   # question formatting template
 prompt_format: |
-  Question: {{ formatted_question }}
+  {{ formatted_question }}
 
   Answer: 
 

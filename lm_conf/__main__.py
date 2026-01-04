@@ -132,7 +132,7 @@ if __name__ == "__main__":
 
     for round_idx in range(rounds):
         try:
-            logger.info(f"Starting round {round_idx + 1}/{rounds}")
+            logger.info(f"Starting {dataset_name}, {task_name} [round {round_idx + 1}/{rounds}]")
 
             logger.info(f"Generating QA outputs [Round {round_idx + 1}/{rounds}]")
             # generate qa outputs
