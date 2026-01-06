@@ -500,7 +500,7 @@ def dist_reliability_diagram(
     fig.tight_layout()
 
 
-    out_path = f"{cfg.get('results_path', '.')}/dist_reliability_{binning_mode}.png"
+    out_path = f"{cfg.get('results_path', '.')}/dist_reliability_{binning_mode}.pdf"
     plt.savefig(out_path, dpi=300, bbox_inches="tight")
     plt.close(fig)
 
