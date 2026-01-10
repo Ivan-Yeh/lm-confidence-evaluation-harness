@@ -135,54 +135,74 @@ if __name__ == "__main__":
             logger.info(f"Starting {dataset_name}, {task_name} [round {round_idx + 1}/{rounds}]")
 
             logger.info(f"Generating QA outputs [Round {round_idx + 1}/{rounds}]")
-            # generate qa outputs
-            model_manager: ModelManager = ModelManager(
-                master_cfg=cfg, model_config_type="qa_model")
-            if cfg.get("generation_type", "generation") == "generation":
-                outputs: list[ModelOutputs] = model_manager.run_generation(prompts)
-            elif cfg.get("generation_type") == "continuation":
-                outputs: list[ModelOutputs] = model_manager.run_continuation(prompts)
-            else:
-                raise ValueError(f"Unknown generation type: {cfg.generation_type}")
 
-            logger.info(f"Post-processing outputs [Round {round_idx + 1}/{rounds}]")
-            # post process raw responses
-            if cfg.get("output_filters") is not None:
-                for output_filter in cfg.get("output_filters", []):
-                    try:
-                        filter_func: OutputFilterFn = FILTER_FUNCTIONS.get(
-                            output_filter.get("name"))
+            # read from cache if exists to skip QA
+            # --------------------------------------------------------------------
+            filtered_output_path = cfg.get("filtered_output_path")
+            if filtered_output_path and os.path.exists(os.path.join(filtered_output_path, f"filtered_outputs_{round_idx}.pkl")):
+                logger.info("Cache for filtered_outputs found. Skipping QA generation and filtering.")
+                filtered_outputs_pkl_path = os.path.join(filtered_output_path, f"filtered_outputs_{round_idx}.pkl")
+                with open(filtered_outputs_pkl_path, "rb") as f:
+                    outputs = pickle.load(f)
+            # --------------------------------------------------------------------
+            else:
+                # generate qa outputs
+                model_manager: ModelManager = ModelManager(
+                    master_cfg=cfg, model_config_type="qa_model")
+                if cfg.get("generation_type", "generation") == "generation":
+                    outputs: list[ModelOutputs] = model_manager.run_generation(prompts)
+                elif cfg.get("generation_type") == "continuation":
+                    outputs: list[ModelOutputs] = model_manager.run_continuation(prompts)
+                else:
+                    raise ValueError(f"Unknown generation type: {cfg.generation_type}")
+
+                logger.info(f"Post-processing outputs [Round {round_idx + 1}/{rounds}]")
+                # post process raw responses
+                if cfg.get("output_filters") is not None:
+                    for output_filter in cfg.get("output_filters", []):
+                        try:
+                            filter_func: OutputFilterFn = FILTER_FUNCTIONS.get(
+                                output_filter.get("name"))
+                            kwargs = output_filter.get("args", {})
+                        except:
+                            filter_func: OutputFilterFn = import_yaml_lib(
+                                cfg, output_filter.get("name"))
                         kwargs = output_filter.get("args", {})
-                    except:
-                        filter_func: OutputFilterFn = import_yaml_lib(
-                            cfg, output_filter.get("name"))
-                    kwargs = output_filter.get("args", {})
-                    outputs: list[ModelOutputs] = filter_func(
-                        cfg, outputs, prompts, **kwargs)
-                    
+                        outputs: list[ModelOutputs] = filter_func(
+                            cfg, outputs, prompts, **kwargs)
+                        
             # pickle filtered outputs for later analysis
             # --------------------------------------------------------------------
             with open(f"{path}/filtered_outputs_{round_idx}.pkl", "wb") as f:
                 pickle.dump(outputs, f) 
             # --------------------------------------------------------------------
 
-            logger.info(f"Extracting confidence scores and answers [Round {round_idx + 1}/{rounds}]")
-            # extract confidence
-            confidence_extraction_func: ConfidenceExtractorFn = CONFIDENCE_FUNCTIONS.get(
-                cfg.get("confidence_metrics", "length_normalised_log_likelihood"))
-            if confidence_extraction_func is None:
-                confidence_extraction_func = import_yaml_lib(cfg, "confidence_metrics")
-            extracted_output: OrganisedOutputs = confidence_extraction_func(
-                cfg, outputs, prompts)
+            # read from cache if exists to skip QA
+            # --------------------------------------------------------------------
+            graded_outputs_path = cfg.get("graded_outputs_path")
+            if graded_outputs_path and os.path.exists(os.path.join(graded_outputs_path, f"graded_outputs_{round_idx}.pkl")):
+                logger.info("Cache for graded_outputs found. confidence extraction and grading.")
+                graded_outputs_pkl_path = os.path.join(graded_outputs_path, f"graded_outputs_{round_idx}.pkl")
+                with open(graded_outputs_pkl_path, "rb") as f:
+                    extracted_output = pickle.load(f)
+            else:
+                logger.info(f"Extracting confidence scores and answers [Round {round_idx + 1}/{rounds}]")
+                # extract confidence
+                confidence_extraction_func: ConfidenceExtractorFn = CONFIDENCE_FUNCTIONS.get(
+                    cfg.get("confidence_metrics", "length_normalised_log_likelihood"))
+                if confidence_extraction_func is None:
+                    confidence_extraction_func = import_yaml_lib(cfg, "confidence_metrics")
+                extracted_output: OrganisedOutputs = confidence_extraction_func(
+                    cfg, outputs, prompts)
 
-            logger.info(f"Grading responses [Round {round_idx + 1}/{rounds}]")
-            # grade response
-            grader_func: GraderFn = GRADER_FUNCTIONS.get(
-                cfg.get("grader", "llm_grader"))
-            if grader_func is None:
-                grader_func = import_yaml_lib(cfg, "grader")
-            extracted_output.accuracy_scores = grader_func(
-                cfg, extracted_output, prompts, dataset_manager)
+                logger.info(f"Grading responses [Round {round_idx + 1}/{rounds}]")
+                # grade response
+                grader_func: GraderFn = GRADER_FUNCTIONS.get(
+                    cfg.get("grader", "llm_grader"))
+                if grader_func is None:
+                    grader_func = import_yaml_lib(cfg, "grader")
+                extracted_output.accuracy_scores = grader_func(
+                    cfg, extracted_output, prompts, dataset_manager)
 
             # pickle extracted_output for later analysis
             # --------------------------------------------------------------------

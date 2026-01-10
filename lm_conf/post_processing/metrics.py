@@ -87,6 +87,153 @@ def ece_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     return finite_eces
 
 
+@register_metric(name="dECE_point_mass")
+def dECE_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+    confidence_dists: list[BetaDistribution] = extracted_output.extracted_confidences[0]  # list[BetaDistribution]
+    confs = [bd.mu for bd in confidence_dists]
+    dECE_point_mass = ece_scalar(cfg, OrganisedOutputs(
+        extracted_answers=extracted_output.extracted_answers,
+        extracted_confidences=[confs],
+        accuracy_scores=extracted_output.accuracy_scores
+    ))
+    return dECE_point_mass
+
+
+@register_metric(name="dECE")
+def dECE(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+    accuracies = []
+    confidence_dists: list[BetaDistribution] = [] 
+
+    # --- Existing sanity check and data cleaning ---
+    for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
+        try:
+            if acc is None or conf is None or conf.is_valid() is False:
+                continue
+            accuracies.append(float(acc))
+            confidence_dists.append(conf)
+        except:
+            continue
+
+    N = len(accuracies)
+    num_bins = cfg.get("num_bins", 10)
+    num_samples = cfg.get("num_wasserstein_samples", 100000)
+    samples_list = [bd.sample(size=num_samples) for bd in confidence_dists]
+    bins = np.linspace(0, 1, num_bins + 1)
+
+    dECE_bins = []
+    bin_total_weights = []
+    bin_accuracies = []
+    bin_confidences = []
+
+    for m in range(len(bins) - 1):
+        s_min, s_max = bins[m], bins[m + 1]
+        weighted_W = []
+        total_weight = 0.0
+        weighted_correct_sum = 0.0
+        weighted_conf_sum = 0.0
+
+        for samples, y in zip(samples_list, accuracies):
+            # Soft membership weight for this distribution in this bin
+            w = np.mean((samples >= s_min) & (samples < s_max))
+            if w == 0: continue
+            
+            weighted_correct_sum += w * y
+            # Mean of samples that actually fell into this bin
+            weighted_conf_sum += w * np.mean(samples[(samples >= s_min) & (samples < s_max)])
+            total_weight += w
+
+        # Step 2: Bin Metrics
+        bin_acc = weighted_correct_sum / total_weight if total_weight > 0 else 0.0
+        bin_conf = weighted_conf_sum / total_weight if total_weight > 0 else (s_min + s_max) / 2
+        
+        bin_accuracies.append(bin_acc)
+        bin_confidences.append(bin_conf)
+
+        # Step 3: Wasserstein calculation (from your original code)
+        for samples in samples_list:
+            mask = (samples >= s_min) & (samples < s_max)
+            w = np.mean(mask)
+            if w == 0: continue
+            samples_bin = samples[mask]
+            acc_samples = np.full(len(samples_bin), bin_acc)
+            W = wasserstein_distance(samples_bin, acc_samples)
+            weighted_W.append(w * W)
+
+        dECE_bin = np.sum(weighted_W) / total_weight if total_weight > 0 else 0.0
+        dECE_bins.append(dECE_bin)
+        bin_total_weights.append(total_weight)
+
+    # Calculate final dECE
+    bin_total_weights = np.array(bin_total_weights)
+    dataset_dECE = np.sum(np.array(dECE_bins) * bin_total_weights) / bin_total_weights.sum() if bin_total_weights.sum() > 0 else float("nan")
+
+    # --- NEW: Plotting Logic with 95% Vertical Confidence Interval ---
+    plot_path = cfg.get("results_path")
+    if plot_path:
+        plt.figure(figsize=(8, 8))
+        
+        # 1. Calculate the 95% CI (2.5th and 97.5th percentiles) for each bin
+        lower_bounds = []
+        upper_bounds = []
+        
+        for m in range(len(bins) - 1):
+            s_min, s_max = bins[m], bins[m + 1]
+            all_samples_in_bin = []
+            
+            for samples in samples_list:
+                mask = (samples >= s_min) & (samples < s_max)
+                if np.any(mask):
+                    all_samples_in_bin.extend(samples[mask])
+            
+            if all_samples_in_bin:
+                lower_bounds.append(np.percentile(all_samples_in_bin, 2.5))
+                upper_bounds.append(np.percentile(all_samples_in_bin, 97.5))
+            else:
+                lower_bounds.append(bin_accuracies[m]) # Fallback
+                upper_bounds.append(bin_accuracies[m])
+
+        # Convert to relative errors for matplotlib: [lower_offset, upper_offset]
+        y_err = [
+            np.array(bin_accuracies) - np.array(lower_bounds),
+            np.array(upper_bounds) - np.array(bin_accuracies)
+        ]
+
+        # 2. Perfect calibration line
+        plt.plot([0, 1], [0, 1], "--", color="gray", label="Perfect Calibration", alpha=0.7)
+        
+        # 3. Plot the Bin Accuracy with the 95% Confidence Interval vertically
+        plt.errorbar(
+            bin_confidences, 
+            bin_accuracies, 
+            yerr=y_err, 
+            fmt='o', 
+            color='#1f77b4', 
+            ecolor='#1f77b4', 
+            elinewidth=2, 
+            capsize=4, 
+            alpha=0.8,
+            label=f"Mean Accuracy (95% Confidence CI)\nTotal dECE: {dataset_dECE:.4f}"
+        )
+
+        # 4. Optional: Shaded band for visual continuity
+        plt.fill_between(bin_confidences, lower_bounds, upper_bounds, color='#1f77b4', alpha=0.1)
+        
+        # 5. Aesthetics
+        plt.xlabel("Mean Predicted Confidence")
+        plt.ylabel("Accuracy")
+        plt.title("dECE Reliability Diagram")
+        plt.legend(loc="upper left")
+        plt.grid(True, linestyle=':', alpha=0.6)
+        plt.xlim(0, 1)
+        plt.ylim(0, 1)
+        
+        plt.tight_layout()
+        plt.savefig(plot_path)
+        plt.close()
+
+    return [dataset_dECE]
+
+
 @register_metric(name="auroc_scalar")
 def auroc_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     """
@@ -140,176 +287,17 @@ def auroc_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     return finite_aurocs
 
 
-@register_metric(name="dECE_scalar")
-def dECE_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+@register_metric(name="dAUROC_point_mass")
+def dAUROC_point_mass(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+    logging.info("Computing dAUROC_point_mass")
     confidence_dists: list[BetaDistribution] = extracted_output.extracted_confidences[0]  # list[BetaDistribution]
     confs = [bd.mu for bd in confidence_dists]
-    dece_scalar = ece_scalar(cfg, OrganisedOutputs(
-        extracted_answers=extracted_output.extracted_answers,
-        extracted_confidences=[confs],
-        accuracy_scores=extracted_output.accuracy_scores
-    ))
-    return dece_scalar
-
-def dECE(cfg: dict, extracted_output: OrganisedOutputs, binning_mode: Literal["equal_width", "equal_mass"] = "equal_width") -> list[float]:
-    accuracies = []           # list[int] in {0,1}
-    confidence_dists: list[BetaDistribution] = []  # list[BetaDistribution]
-
-    # sanity check
-    for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
-        try:
-            if acc is None or conf is None or conf.is_valid() is False:
-                continue
-            cleaned_acc = float(acc)
-            accuracies.append(cleaned_acc)
-            confidence_dists.append(conf)
-        except:
-            continue
-
-    N = len(accuracies)
-    assert N == len(confidence_dists)
-
-    num_bins = cfg.get("num_bins", 10)
-    num_samples = cfg.get("num_wasserstein_samples", 1000)
-
-    # bin by expected confidence (mu)
-    mean_conf = np.array([bd.mu for bd in confidence_dists])
-    
-    if binning_mode == "equal_width":
-        # equal-width bins on [0, 1]
-        bin_edges = np.linspace(0.0, 1.0, num_bins + 1)
-    else:
-        # equal-mass (quantile) bins
-        quantiles = np.linspace(0.0, 1.0, num_bins + 1)
-        bin_edges = np.quantile(mean_conf, quantiles)
-
-    dECE_value = 0.0
-
-    # 2. per-bin Wasserstein distance
-    for m in range(num_bins):
-        lo, hi = bin_edges[m], bin_edges[m + 1]
-
-        # include right edge for last bin
-        if m == num_bins - 1:
-            idx = np.where((mean_conf >= lo) & (mean_conf <= hi))[0]
-        else:
-            idx = np.where((mean_conf >= lo) & (mean_conf < hi))[0]
-
-        if len(idx) == 0:
-            continue
-
-        conf_samples = []
-        for i in idx:
-            bd: BetaDistribution = confidence_dists[i]
-            conf_samples.append(
-                beta.rvs(bd.alpha_param, bd.beta_param, size=num_samples)
-            )
-        conf_samples = np.concatenate(conf_samples)
-
-        k = sum(accuracies[i] for i in idx)
-        n = len(idx)
-        alpha_y = k + 1
-        beta_y = (n - k) + 1
-        acc_samples = beta.rvs(alpha_y, beta_y, size=len(conf_samples))
-
-        w1 = wasserstein_distance(conf_samples, acc_samples)
-
-        dECE_value += (len(idx) / N) * w1
-
-        # Collect data for optional plotting
-        if 'dece_plot_bins' not in locals():
-            dece_plot_bins = []
-        dece_plot_bins.append({
-            "bin": m,
-            "lo": lo,
-            "hi": hi,
-            "n": n,
-            "conf": conf_samples,
-            "acc": acc_samples,
-        })
-
-    # Create a single figure with one subplot per non-empty bin
-    if 'dece_plot_bins' in locals() and len(dece_plot_bins) > 0:
-
-        # Increase default font sizes
-        plt.rcParams.update({
-            'font.family': 'serif',
-            'font.size': 12,
-            'axes.titlesize': 12,
-            'axes.labelsize': 12,
-            'xtick.labelsize': 12,
-            'ytick.labelsize': 12,
-            'legend.fontsize': 12,
-        })
-        
-        num_plots = len(dece_plot_bins)
-        cols = 3
-        rows = int(np.ceil(num_plots / cols))
-        
-        # Larger figure size and increased font sizes for paper readability
-        fig, axes = plt.subplots(rows, cols, figsize=(12, 3.2*rows))
-        axes = np.array(axes).reshape(-1)
-        
-        x_range = (0.0, 1.0)
-        for ax, data in zip(axes, dece_plot_bins):
-            ax.hist(data["conf"], bins=50, range=x_range, alpha=0.6, density=True, label="Confidence", color='blue', linewidth=1.5)
-            ax.hist(data["acc"], bins=50, range=x_range, alpha=0.6, density=True, label="Accuracy", color='orange', linewidth=1.5)
-            ax.set_title(f"Bin {data['bin']} [{data['lo']:.2f},{data['hi']:.2f}] (n={data['n']})", fontsize=14)
-            ax.set_xlim(*x_range)
-            ax.set_xlabel("Probability")
-            ax.set_ylabel("Density")
-            ax.grid(True, alpha=0.3, linestyle='--', linewidth=0.5)
-            
-        # Hide any unused subplots
-        for ax in axes[num_plots:]:
-            ax.axis('off')
-        
-        # Place legend at the top
-        handles, labels = axes[0].get_legend_handles_labels()
-        legend = fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1), 
-                   ncol=2, frameon=True, fancybox=True, fontsize=14)
-        
-        # fig.suptitle("dECE: Confidence vs Accuracy Distributions per Bin", 
-        #             y=0.995, fontsize=18, fontweight='bold')
-        fig.tight_layout(rect=[0, 0, 1, 0.96])
-        
-        results_dir = cfg.get("results_path")
-        if results_dir is not None:
-            base_path = f"{results_dir}/dECE_{binning_mode}_distributions"
-            idx = 0
-            results_path = f"{base_path}_{idx}.png"
-            while os.path.exists(results_path):
-                idx += 1
-                results_path = f"{base_path}_{idx}.png"
-            plt.savefig(results_path, dpi=150, bbox_inches='tight')
-            plt.close(fig)
-            logging.info(f"Saved dECE distribution plots to {results_path}")
-    return [float(dECE_value)]
-
-
-@register_metric(name="dECE_equal_width")
-def dECE_equal_width(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
-    logging.info("Computing dECE_equal_width")
-    return dECE(cfg, extracted_output, binning_mode="equal_width")
-
-
-@register_metric(name="dECE_equal_mass")
-def dECE_equal_mass(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
-    logging.info("Computing dECE_equal_mass")
-    return dECE(cfg, extracted_output, binning_mode="equal_mass")
-
-
-@register_metric(name="dAUROC_scalar")
-def dAUROC_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
-    logging.info("Computing dAUROC_scalar")
-    confidence_dists: list[BetaDistribution] = extracted_output.extracted_confidences[0]  # list[BetaDistribution]
-    confs = [bd.mu for bd in confidence_dists]
-    d_auroc_scalar = auroc_scalar(cfg, OrganisedOutputs(
+    dauroc_point_mass = auroc_scalar(cfg, OrganisedOutputs(
         extracted_answers=extracted_output.extracted_answers,
         extracted_confidences=[confs],
         accuracy_scores=extracted_output.accuracy_scores
     ))[0]
-    return [float(d_auroc_scalar)]
+    return [float(dauroc_point_mass)]
 
 
 @register_metric(name="dAUROC")
