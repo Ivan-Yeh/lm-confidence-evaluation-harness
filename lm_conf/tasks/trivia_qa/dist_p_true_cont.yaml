@@ -3,16 +3,14 @@ defaults:
   - _self_
 
 output_filters: null
-confidence_metrics: distributional_p_true_mc
+confidence_metrics: distributional_p_true_cont
 
-qa_model:
-  repeat: 1
 
-p_true_mc_model:
+p_true_cont_model:
   backend: ${qa_model.backend}
   name: ${qa_model.name}
-  repeat: 10
-  temperature: 1.0
-  max_tokens: 512
+  repeat: 1
+  temperature: 0
+  max_tokens: 1
   max_model_len: ${qa_model.max_model_len}
   reasoning_effort: ${qa_model.reasoning_effort}

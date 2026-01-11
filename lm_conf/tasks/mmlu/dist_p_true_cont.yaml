@@ -14,15 +14,12 @@ output_filters:
         - (?i)\bcorrect\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
         - (?i)\bbest\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
         - (?i)\s*([A-D])
-confidence_metrics: distributional_p_true_mc
+confidence_metrics: distributional_p_true_cont
 grader: exact_match
 
-qa_model:
-  repeat: 1
-
-p_true_mc_model:
+p_true_cont_model:
   backend: ${qa_model.backend}
   name: ${qa_model.name}
-  repeat: 10
+  repeat: 1
   temperature: 1.0
-  max_tokens: 2048
+  max_tokens: 1

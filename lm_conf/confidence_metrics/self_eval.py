@@ -12,11 +12,11 @@ def p_true_by_continuation(cfg: dict, output_lst: list[ModelOutputs], prompts: P
     true_continuation: PromptCollection = PromptCollection(context_texts=[], continuation_texts={})
     p_true_prompt_template = """
     Question: {question}
-    Possible Answer: {model_answer}
-    Is the possible answer:
+    Proposed Answer: {model_answer}
+    Is the proposed answer:
     (A) True
     (B) False
-    Return only (A) or (B). The possible answer is:
+    Return only A or B. The proposed answer is:
     """.strip()
     def per_round_estimator(outputs: ModelOutputs) -> list[float]:
         for question, model_answer in zip(outputs.context_texts, outputs.output_texts):
@@ -25,7 +25,7 @@ def p_true_by_continuation(cfg: dict, output_lst: list[ModelOutputs], prompts: P
             else:
                 eval_prompt = p_true_prompt_template.format(question=question, model_answer="No answer provided.")
             true_continuation.context_texts.append(eval_prompt)
-            true_continuation.continuation_texts[eval_prompt] = ["(A)"]
+            true_continuation.continuation_texts[eval_prompt] = [" A"]
         logging.info("Scoring P(True) 'True' continuation token")
         true_results: ModelOutputs = model.run_continuation(true_continuation)[0]
         extracted_true_probs: list[float] = [float(np.exp(np.mean(logprobs))) for logprobs in true_results.output_logprobs]

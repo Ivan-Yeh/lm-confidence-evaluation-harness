@@ -1,3 +1,4 @@
+import time
 from tqdm import tqdm
 from ..default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
 from transformers import AutoTokenizer
@@ -118,6 +119,7 @@ class vLLMModel(AbstractModel):
                 output_logprobs=output_logprobs,
                 top_k_tokens=all_top_k_tokens,
             ))
+        vllm_model.llm_engine.engine_core.shutdown()
         del vllm_model
         del self.tokenizer
         gc.collect()
@@ -165,25 +167,28 @@ class vLLMModel(AbstractModel):
 
                 # ---- Extract continuation logprobs ----
                 for continuation, out in zip(continuations, outputs):
+                    try:
+                        cont_ids = tokenizer(continuation, add_special_tokens=False).input_ids
+                        num_cont_toks = len(cont_ids)
 
-                    cont_ids = tokenizer(continuation, add_special_tokens=False).input_ids
-                    num_cont_toks = len(cont_ids)
+                        # out.prompt_logprobs is a list of dicts, one per prompt token
+                        token_logprobs = out.prompt_logprobs[-num_cont_toks:]
 
-                    # out.prompt_logprobs is a list of dicts, one per prompt token
-                    token_logprobs = out.prompt_logprobs[-num_cont_toks:]
+                        lp = []
+                        tokens = []
+                        for logprob_dict in token_logprobs:
+                            lp.append(list(logprob_dict.values())[0].logprob)
+                            tokens.append(list(logprob_dict.values())[0].decoded_token)
 
-                    lp = []
-                    tokens = []
-                    for logprob_dict in token_logprobs:
-                        lp.append(list(logprob_dict.values())[0].logprob)
-                        tokens.append(list(logprob_dict.values())[0].decoded_token)
-
-                    candidates.append({
-                        "text": continuation,
-                        "tokens": tokens,
-                        "logprobs": lp,
-                        "mean": float(np.mean(lp)),
-                    })
+                        candidates.append({
+                            "text": continuation,
+                            "tokens": tokens,
+                            "logprobs": lp,
+                            "mean": float(np.mean(lp)),
+                        })
+                    except Exception as e:
+                        logging.error(f"Error processing continuation: {continuation}\n{e}")
+                        continue
 
                 # choose highest-mean continuation
                 best = max(candidates, key=lambda x: x["mean"])
@@ -201,6 +206,7 @@ class vLLMModel(AbstractModel):
                     continuation_candidates=all_candidates
                 )
             )
+        llm.llm_engine.engine_core.shutdown()
         del llm
         del tokenizer
         del self.tokenizer

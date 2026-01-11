@@ -167,68 +167,156 @@ def dECE(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     bin_total_weights = np.array(bin_total_weights)
     dataset_dECE = np.sum(np.array(dECE_bins) * bin_total_weights) / bin_total_weights.sum() if bin_total_weights.sum() > 0 else float("nan")
 
-    # --- NEW: Plotting Logic with 95% Vertical Confidence Interval ---
+    # --- NEW: Plotting Logic with Bootstrap Confidence Interval and Confidence Violins ---
     plot_path = cfg.get("results_path")
     if plot_path:
-        plt.figure(figsize=(8, 8))
+        plt.figure(figsize=(6, 6))
         
-        # 1. Calculate the 95% CI (2.5th and 97.5th percentiles) for each bin
-        lower_bounds = []
-        upper_bounds = []
-        
+        # Use serif fonts for all text
+        plt.rcParams['font.family'] = 'serif'
+        plt.rcParams['font.serif'] = ['Times New Roman', 'DejaVu Serif', 'Bitstream Vera Serif', 'Computer Modern Roman']
+
+        n_bootstrap = cfg.get("n_bootstrap_samples", 5000)
+        max_violin_samples = cfg.get("max_violin_samples", 5000)
+
+        plot_bin_confidences = []
+        plot_bin_accuracies = []
+        plot_lower_bounds = []
+        plot_upper_bounds = []
+        bin_conf_samples = []
+
+        # Step 1: collect per-bin accuracy and confidence samples
         for m in range(len(bins) - 1):
             s_min, s_max = bins[m], bins[m + 1]
-            all_samples_in_bin = []
-            
-            for samples in samples_list:
+
+            ys = []
+            ws = []
+            conf_samples_bin = []
+
+            for samples, y in zip(samples_list, accuracies):
                 mask = (samples >= s_min) & (samples < s_max)
-                if np.any(mask):
-                    all_samples_in_bin.extend(samples[mask])
-            
-            if all_samples_in_bin:
-                lower_bounds.append(np.percentile(all_samples_in_bin, 2.5))
-                upper_bounds.append(np.percentile(all_samples_in_bin, 97.5))
+                w = np.mean(mask)
+                if w > 0:
+                    ys.append(y)
+                    ws.append(w)
+                    conf_samples_bin.append(samples[mask])
+
+            # Combine confidence samples for horizontal violin
+            if len(conf_samples_bin) > 0:
+                conf_samples_bin = np.concatenate(conf_samples_bin)
+                # Subsample for plotting efficiency
+                if len(conf_samples_bin) > max_violin_samples:
+                    conf_samples_bin = np.random.choice(conf_samples_bin, size=max_violin_samples, replace=False)
+                bin_conf_samples.append(conf_samples_bin)
             else:
-                lower_bounds.append(bin_accuracies[m]) # Fallback
-                upper_bounds.append(bin_accuracies[m])
+                bin_conf_samples.append(None)
 
-        # Convert to relative errors for matplotlib: [lower_offset, upper_offset]
-        y_err = [
-            np.array(bin_accuracies) - np.array(lower_bounds),
-            np.array(upper_bounds) - np.array(bin_accuracies)
-        ]
+            # Skip empty bins
+            if len(ys) == 0:
+                continue
 
-        # 2. Perfect calibration line
-        plt.plot([0, 1], [0, 1], "--", color="gray", label="Perfect Calibration", alpha=0.7)
-        
-        # 3. Plot the Bin Accuracy with the 95% Confidence Interval vertically
+            ys = np.asarray(ys)
+            ws = np.asarray(ws)
+            ws = ws / ws.sum()  # normalize soft weights
+
+            # Soft-bin accuracy
+            r_hat = bin_accuracies[m]
+
+            # Bootstrap CI for accuracy
+            bootstrap_estimates = []
+            n_obs = len(ys)
+            for _ in range(n_bootstrap):
+                idx = np.random.randint(0, n_obs, size=n_obs)
+                ws_b = ws[idx]
+                ys_b = ys[idx]
+                ws_b = ws_b / ws_b.sum()
+                bootstrap_estimates.append(np.sum(ws_b * ys_b))
+
+            lower, upper = np.percentile(bootstrap_estimates, [2.5, 97.5])
+
+            plot_bin_confidences.append(bin_confidences[m])
+            plot_bin_accuracies.append(r_hat)
+            plot_lower_bounds.append(lower)
+            plot_upper_bounds.append(upper)
+
+        # Step 2: Convert to arrays for plotting
+        plot_bin_confidences = np.array(plot_bin_confidences)
+        plot_bin_accuracies = np.array(plot_bin_accuracies)
+        plot_lower_bounds = np.array(plot_lower_bounds)
+        plot_upper_bounds = np.array(plot_upper_bounds)
+        y_err = np.vstack([
+            np.maximum(0, plot_bin_accuracies - plot_lower_bounds),
+            np.maximum(0, plot_upper_bounds - plot_bin_accuracies),
+        ])
+
+        # Step 3: Horizontal violins for confidence distributions
+        violin_label_added = False
+        for m, conf_samples in enumerate(bin_conf_samples):
+            if conf_samples is None or m >= len(plot_bin_accuracies):
+                continue
+
+            y_center = plot_bin_accuracies[m]
+
+            parts = plt.violinplot(
+                conf_samples,
+                positions=[y_center],
+                vert=False,
+                widths=0.03,          # controls vertical thickness of the violin
+                showmeans=False,
+                showmedians=False,
+                showextrema=False,
+            )
+
+            for pc in parts["bodies"]:
+                pc.set_facecolor("#10d1a1")
+                pc.set_alpha(0.15)
+                # Add legend label only once
+                if not violin_label_added:
+                    pc.set_label("Confidence Distribution")
+                    violin_label_added = True
+
+        # Step 4: Perfect calibration line
+        plt.plot([0, 1], [0, 1], "--", color="gray", alpha=0.7, label="Perfect Calibration")
+
+        # Step 5: Accuracy points with vertical CI
         plt.errorbar(
-            bin_confidences, 
-            bin_accuracies, 
-            yerr=y_err, 
-            fmt='o', 
-            color='#1f77b4', 
-            ecolor='#1f77b4', 
-            elinewidth=2, 
-            capsize=4, 
-            alpha=0.8,
-            label=f"Mean Accuracy (95% Confidence CI)\nTotal dECE: {dataset_dECE:.4f}"
+            plot_bin_confidences,
+            plot_bin_accuracies,
+            yerr=y_err,
+            fmt="o",
+            capsize=4,
+            elinewidth=2,
+            alpha=0.85,
+            label=f"Bin Accuracy (95% CI)\nTotal dECE: {dataset_dECE:.4f}",
         )
 
-        # 4. Optional: Shaded band for visual continuity
-        plt.fill_between(bin_confidences, lower_bounds, upper_bounds, color='#1f77b4', alpha=0.1)
-        
-        # 5. Aesthetics
+        # Optional shaded vertical band for visual continuity
+        plt.fill_between(
+            plot_bin_confidences,
+            plot_lower_bounds,
+            plot_upper_bounds,
+            alpha=0.15,
+            color="#1f77b4"
+        )
+
+        # Step 6: Plot aesthetics
         plt.xlabel("Mean Predicted Confidence")
         plt.ylabel("Accuracy")
-        plt.title("dECE Reliability Diagram")
-        plt.legend(loc="upper left")
-        plt.grid(True, linestyle=':', alpha=0.6)
+        plt.title("dECE Reliability Diagram with Confidence Uncertainty")
+        plt.legend(loc="lower right")
+        plt.grid(True, linestyle=":", alpha=0.6)
         plt.xlim(0, 1)
         plt.ylim(0, 1)
-        
         plt.tight_layout()
-        plt.savefig(plot_path)
+
+        # Step 7: Save figure
+        name = "dECE_reliability_diagram_0"
+        if os.path.exists(plot_path + f"/{name}.pdf"):
+            idx = 1
+            while os.path.exists(plot_path + f"/dECE_reliability_diagram_{idx}.pdf"):
+                idx += 1
+            name = f"dECE_reliability_diagram_{idx}"
+        plt.savefig(plot_path + f"/{name}.pdf", bbox_inches="tight", dpi=300)
         plt.close()
 
     return [dataset_dECE]
@@ -287,9 +375,9 @@ def auroc_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     return finite_aurocs
 
 
-@register_metric(name="dAUROC_point_mass")
-def dAUROC_point_mass(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
-    logging.info("Computing dAUROC_point_mass")
+@register_metric(name="AUROC_point_mass")
+def AUROC_point_mass(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+    logging.info("Computing AUROC_point_mass")
     confidence_dists: list[BetaDistribution] = extracted_output.extracted_confidences[0]  # list[BetaDistribution]
     confs = [bd.mu for bd in confidence_dists]
     dauroc_point_mass = auroc_scalar(cfg, OrganisedOutputs(

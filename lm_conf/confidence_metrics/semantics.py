@@ -195,6 +195,69 @@ def semantic_uncertainty_selection(output_lst: list[ModelOutputs], **kwargs) -> 
     return selected_responses, confidences
 
 
+def semantic_cluster_selection(output_lst: list[ModelOutputs], **kwargs) -> tuple[list[list[str]], list[list[list[float]]]]:
+    response_lists: list[tuple[str]] = list(zip(*[outputs.output_texts for outputs in output_lst]))
+    logprobs_lists: list[tuple[list[float]]] = list(zip(*[outputs.output_logprobs for outputs in output_lst]))
+    entailment_model = EntailmentDeberta()
+    strict_entailment: bool = False
+    clusters: list[list[str]] = []
+    clusters_logprobs: list[list[list[float]]] = []
+    for idx, response_set in enumerate(tqdm(response_lists, desc="Processing Entailments (Semantic Groups)")):
+        logprobs_set = logprobs_lists[idx]
+        # Step 1: Compute semantic IDs
+        n = len(response_set)
+        if n == 1:
+            semantic_ids = [0]
+        else:
+            # Build all unique pairs
+            left = []
+            right = []
+            for i in range(n):
+                for j in range(i+1, n):
+                    left.append(response_set[i])
+                    right.append(response_set[j])
+            
+            # Check semantic equivalence
+            batch_results = entailment_model.check_implication_batch(left, right)
+            
+            # Map results to boolean equivalence
+            def are_equivalent(idx1, idx2):
+                pair_idx = idx1 * (n - 1) - (idx1 * (idx1 + 1)) // 2 + (idx2 - idx1 - 1)
+                i1 = batch_results[pair_idx]
+                i2 = batch_results[pair_idx]  # symmetric
+                if strict_entailment:
+                    return i1 == 2 and i2 == 2
+                else:
+                    return i1 != 0 and i2 != 0 and not (i1 == 1 and i2 == 1)
+
+            # Assign semantic IDs
+            semantic_ids = [-1] * n
+            next_id = 0
+            for i in range(n):
+                if semantic_ids[i] == -1:
+                    semantic_ids[i] = next_id
+                    for j in range(i + 1, n):
+                        if are_equivalent(i, j):
+                            semantic_ids[j] = next_id
+                    next_id += 1
+
+        # Step 2: Find most frequent semantic ID and collect all its members
+        most_freq_id = max(set(semantic_ids), key=semantic_ids.count)
+        cluster_indices = [i for i, sid in enumerate(semantic_ids) if sid == most_freq_id]
+        cluster_members = [response_set[i] for i in cluster_indices]
+        cluster_members_logprobs = [logprobs_set[i] for i in cluster_indices]
+        clusters.append(cluster_members)
+        clusters_logprobs.append(cluster_members_logprobs)
+        
+    entailment_model.model.to("cpu")
+    del entailment_model.model
+    del entailment_model.tokenizer
+    del entailment_model
+    gc.collect()
+    torch.cuda.empty_cache()
+    return clusters, clusters_logprobs
+
+
 @register_confidence(name="semantic_uncertainty")
 def semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs):
     selected_responses, confidences = semantic_uncertainty_selection(output_lst, **kwargs)

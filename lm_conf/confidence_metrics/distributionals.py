@@ -5,7 +5,7 @@ import torch
 from tqdm import tqdm
 from scipy.stats import beta
 import re
-from ..confidence_metrics.semantics import semantic_uncertainty_selection, EntailmentDeberta
+from ..confidence_metrics.semantics import semantic_cluster_selection, EntailmentDeberta
 from ..default_utils.registry import register_confidence
 from ..default_utils.custom_types import OrganisedOutputs, ModelOutputs, PromptCollection
 from ..models.model_manager import ModelManager
@@ -55,60 +55,18 @@ class BetaDistribution:
 
 @register_confidence(name="distributional_length_normalised_log_likelihood")
 def distributional_length_normalised_log_likelihood(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
-    outputs = output_lst[0]
-    responses = outputs.output_texts
-    # for each response, generate 10 semantically equivalent responses using an llm
-    model = ModelManager(master_cfg=cfg, model_config_type="semantic_perturbation_model")
-    perturbed_prompts = PromptCollection(context_texts=[
-        f"""Generate 9 more semantically equivalent variations of the following response:
-        Answer: {response}
-
-        Do not change the meaning of the original response. Provide the variations as a list in the following format, including the provided answer itself. 
-        Please only return the list of strings. Start with an opening bracket "[" and end with a closing bracket "]", 
-        without any additional text. Place each item in a new line.
-        [
-            "variation 1",
-            "variation 2",
-            ...
-            "variation 10"
-        ]
-        """
-        for response in responses
-    ])
-    perturbed_outputs: ModelOutputs = model.run_generation(perturbed_prompts)[0]
-
-    # extract the variations from the outputs using literal_eval
-    from ast import literal_eval
-    extracted_variations: list[list[str]] = []
-    for out_text in perturbed_outputs.output_texts:
-        try:
-            parsed = literal_eval(out_text)
-            if isinstance(parsed, list) and all(isinstance(v, str) for v in parsed):
-                extracted_variations.append(parsed)
-            else:
-                extracted_variations.append(out_text.replace("[", "").replace("]", "").splitlines())
-        except:
-            extracted_variations.append(out_text.replace("[", "").replace("]", "").splitlines())
-
-    continuations = {
-        ctx: conts for ctx, conts in zip(outputs.context_texts, extracted_variations)
-    }
-    qa_model = ModelManager(master_cfg=cfg, model_config_type="qa_model")
-    lnll_outputs = qa_model.run_continuation(PromptCollection(
-        context_texts=outputs.context_texts,
-        continuation_texts=continuations
-    ))[0]
-
-    confidence_dists: list[BetaDistribution] = []
-    for response_conts in lnll_outputs.continuation_candidates:
-        candidates_probs = [np.exp(d["mean"]) for d in response_conts]
-        mu = float(np.mean(candidates_probs))
-        sigma = float(np.std(candidates_probs))
-        confidence_dists.append(BetaDistribution(mu=mu, sigma=sigma))
+    best_cluster_str, best_cluster_logprobs = semantic_cluster_selection(output_lst)
+    selected_responses: list[str] = [cluster[0] for cluster in best_cluster_str]
+    cluster_token_probs_dist = []
+    for cluster_logprobs in best_cluster_logprobs:
+        cluster_probs = [np.exp(np.mean(x)) for x in cluster_logprobs if x is not None and len(x) > 0]
+        mu = np.mean(cluster_probs) if len(cluster_probs) > 0 else 0.0
+        sigma = np.std(cluster_probs) if len(cluster_probs) > 1 else 0.0
+        cluster_token_probs_dist.append(BetaDistribution(mu=mu, sigma=sigma))
 
     return OrganisedOutputs(
-        extracted_answers=[outputs.output_texts],
-        extracted_confidences=[confidence_dists]
+        extracted_answers=[selected_responses],
+        extracted_confidences=[cluster_token_probs_dist]
     )
 
 
@@ -208,75 +166,85 @@ def distributional_linguistic_confidence(cfg: dict, output_lst: list[ModelOutput
     )
 
 
-# @register_confidence(name="distributional_p_true_mc")
-# def distributional_p_true_mc(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
-#     p_true_prompt_template = """
-#     Question: {question}
-#     Possible Answer: {model_answer}
-#     Is the possible answer:
-#     (A) True
-#     (B) False
-#     Return only (A) or (B). The possible answer is:
-#     """.strip()
-#     model = ModelManager(master_cfg=cfg, model_config_type="p_true_mc_model")
+@register_confidence(name="distributional_p_true_cont")
+def distributional_p_true_mc(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
+    p_true_prompt_template = """
+    Question: {question}
+    Proposed Answer: {model_answer}
+    Is the proposed answer:
+    A) True
+    B) False
+    Return only A or B. The proposed answer is:
+    """.strip()
+    model = ModelManager(master_cfg=cfg, model_config_type="p_true_cont_model")
+    # Get clusters per question (list[list[str]]) and ignore logprobs here
+    clusters, _ = semantic_cluster_selection(output_lst)
 
-#     outputs = output_lst[0]
-#     # Build prompts fresh per round to avoid leaking state across evaluations
-#     p_true_prompt_collection: PromptCollection = PromptCollection(context_texts=[])
-#     for question, model_answer in zip(outputs.context_texts, outputs.output_texts):
-#         if model_answer:
-#             eval_prompt = p_true_prompt_template.format(question=question, model_answer=model_answer)
-#         else:
-#             eval_prompt = p_true_prompt_template.format(question=question, model_answer="No answer provided.")
-#         p_true_prompt_collection.context_texts.append(eval_prompt)
+    selected_answers: list[str] = []
+    cluster_beta_dists: list[BetaDistribution | None] = [None for _ in clusters]
 
-#     logging.info("Running P(True) by Monte Carlo generation") 
-#     p_true_results: list[ModelOutputs] = model.run_generation(p_true_prompt_collection)
+    # Build all prompts once, track which cluster each prompt belongs to
+    all_prompts: list[str] = []
+    prompt_cluster_indices: list[int] = []
 
-#     # Each ModelOutputs in p_true_results holds responses for the same set of
-#     # questions; accumulate counts per question across all rounds.
-#     num_questions = len(outputs.context_texts)
-#     counts_a = [0] * num_questions
-#     counts_b = [0] * num_questions
+    for q_idx, cluster in enumerate(clusters):
+        if not cluster:
+            selected_answers.append("")
+            cluster_beta_dists[q_idx] = BetaDistribution(mu=0.5, sigma=0.0)
+            continue
 
-#     for result in p_true_results:
-#         logging.debug(f"Monte Carlo generation result: {result}")
-#         for idx, output in enumerate(result.output_texts):
-#             # Extract last occurrence of ANSWER: (A)/(B) or ANSWER IS: (A)/(B)
-#             match = None
-#             for pattern in [r'ANSWER\s*IS\s*:*\s*\(([AB])\)', r'ANSWER\s*:*\s*\(([AB])\)', r'\s*\(([AB])\)']:
-#                 matches = list(re.finditer(pattern, output.upper()))
-#                 if matches:
-#                     match = matches[-1]  # Get last occurrence
-#                     break
-            
-#             if match:
-#                 choice = match.group(1)
-#                 if choice == 'A':
-#                     counts_a[idx] += 1
-#                 elif choice == 'B':
-#                     counts_b[idx] += 1
-#             else:
-#                 # Fallback to simpler token matching
-#                 upper = output.upper()
-#                 if any(token in upper for token in ["(A)", "A", "TRUE"]):
-#                     counts_a[idx] += 1
-#                 elif any(token in upper for token in ["(B)", "B", "FALSE"]):
-#                     counts_b[idx] += 1
+        selected_answers.append(cluster[0])
 
-#     extracted_true_probs_dists: list[BetaDistribution | None] = []
-#     for a_count, b_count in zip(counts_a, counts_b):
-#         try:
-#             alpha_param = a_count + 1
-#             beta_param = b_count + 1
-#             mu = alpha_param / (alpha_param + beta_param)
-#             sigma = np.sqrt((alpha_param * beta_param) / ((alpha_param + beta_param)**2 * (alpha_param + beta_param + 1)))
-#             extracted_true_probs_dists.append(BetaDistribution(mu, sigma))
-#         except:
-#             extracted_true_probs_dists.append(None)
-    
-#     return OrganisedOutputs(
-#         extracted_answers=[outputs.output_texts],
-#         extracted_confidences=[extracted_true_probs_dists],
-#     )
+        question_text = prompts.context_texts[q_idx] if hasattr(prompts, "context_texts") else ""
+        for resp in cluster:
+            ctx = p_true_prompt_template.format(question=question_text, model_answer=resp)
+            all_prompts.append(ctx)
+            prompt_cluster_indices.append(q_idx)
+
+    if not all_prompts:
+        cluster_beta_dists = [beta_dist if beta_dist is not None else BetaDistribution(mu=0.5, sigma=0.0) for beta_dist in cluster_beta_dists]
+        return OrganisedOutputs(
+            extracted_answers=[selected_answers],
+            extracted_confidences=[cluster_beta_dists],
+        )
+
+    cont_map = {ctx: [" A"] for ctx in all_prompts}
+    p_true_prompt_collection = PromptCollection(context_texts=all_prompts, continuation_texts=cont_map)
+
+    try:
+        cont_results = model.run_continuation(p_true_prompt_collection)
+        cont_out = cont_results[0]
+    except Exception:
+        cluster_beta_dists = [beta_dist if beta_dist is not None else BetaDistribution(mu=0.5, sigma=0.0) for beta_dist in cluster_beta_dists]
+        return OrganisedOutputs(
+            extracted_answers=[selected_answers],
+            extracted_confidences=[cluster_beta_dists],
+        )
+
+    p_trues_by_cluster: list[list[float]] = [[] for _ in clusters]
+
+    for logprob, cluster_idx in zip(cont_out.output_logprobs, prompt_cluster_indices):
+        try:
+            mean_a = np.mean(logprob)
+            p_a = float(np.exp(mean_a))
+        except Exception:
+            p_a = 0.5
+        p_a = float(np.clip(p_a, 1e-6, 1 - 1e-6))
+        p_trues_by_cluster[cluster_idx].append(p_a)
+
+    for q_idx, p_trues in enumerate(p_trues_by_cluster):
+        if cluster_beta_dists[q_idx] is not None:
+            continue
+        if p_trues:
+            mu = float(np.mean(p_trues))
+            sigma = float(np.std(p_trues)) if len(p_trues) > 1 else 0.0
+        else:
+            mu = 0.5
+            sigma = 0.0
+        cluster_beta_dists[q_idx] = BetaDistribution(mu=mu, sigma=sigma)
+
+    return OrganisedOutputs(
+        extracted_answers=[selected_answers],
+        extracted_confidences=[cluster_beta_dists],
+    )
 
