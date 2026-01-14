@@ -208,3 +208,6 @@ __marimo__/
 .vscode
 *.pkl
 results*/
+
+linguistic_confidence_lexicon/*.pkl
+linguistic_confidence_lexicon/*.csv
