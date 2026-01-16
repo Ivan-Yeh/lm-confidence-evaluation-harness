@@ -88,7 +88,7 @@ def ece_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
 
 
 @register_metric(name="dECE_point_mass")
-def dECE_scalar(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+def dECE_point_mass(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     confidence_dists: list[BetaDistribution] = extracted_output.extracted_confidences[0]  # list[BetaDistribution]
     confs = [bd.mu for bd in confidence_dists]
     dECE_point_mass = ece_scalar(cfg, OrganisedOutputs(
