@@ -2,8 +2,6 @@ import pandas as pd
 from scipy.stats import wasserstein_distance
 from scipy.stats import beta
 
-lexicon_df = pd.read_pickle("hedging_word_scores.pkl")
-
 def find_closest_hedging_words(target_alpha, target_beta, lexicon_df, top_k=10) -> pd.DataFrame:
     """
     Find the top K closest hedging words to a target beta distribution.
