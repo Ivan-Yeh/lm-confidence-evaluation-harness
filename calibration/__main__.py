@@ -136,6 +136,8 @@ if __name__ == "__main__":
         "original_response": graded_outputs.extracted_answers[0]
     })
 
+    output_df.dropna(inplace=True)
+
     # apply numerical post hoc calibration
     calibrated_confidences = numerical_post_post_hoc_calibration(
         np.array(output_df["original_numerical_confidence"]),

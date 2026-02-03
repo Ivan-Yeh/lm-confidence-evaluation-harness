@@ -11,11 +11,15 @@ def exact_match(cfg: dict, extracted_output: OrganisedOutputs, prompts: PromptCo
     for round_outputs in extracted_output.extracted_answers:
         round_matches = []
         for pred, ref in zip(round_outputs, answer_keys):
-            if pred is None:
-                round_matches.append(None)
-            elif pred.strip().lower() == ref.strip().lower():
-                round_matches.append(1)
-            else:
+            try:
+                if pred is None:
+                    round_matches.append(None)
+                # take first character match as correct
+                elif pred.strip().upper()[0] == ref.strip().upper()[0]:
+                    round_matches.append(1)
+                else:
+                    round_matches.append(0)
+            except:
                 round_matches.append(0)
         exact_matches.append(round_matches)
     return exact_matches

@@ -40,7 +40,7 @@ class vLLMModel(AbstractModel):
 
         model_outputs_list = []
         for _ in range(self.repeat):
-            logging.info(f"vLLM Generation Round {_ + 1}/{self.repeat}")
+            logging.info(f"vLLM [{self.model_name}] Generation Round {_ + 1}/{self.repeat}")
             # Generate responses using vLLM chat
             try:
                 chat_template_kwargs={"reasoning_effort": self.cfg.get("reasoning_effort")}

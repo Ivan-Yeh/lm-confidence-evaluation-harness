@@ -1,0 +1,212 @@
+from sklearn.isotonic import IsotonicRegression
+from sklearn.linear_model import LogisticRegression
+import numpy as np
+import pandas as pd
+import re
+import gc
+from vllm import LLM, SamplingParams
+from multiprocessing import Pool, cpu_count
+from linguistic_confidence_lexicon.linguistic_calibrator import find_closest_hedging_words
+from lm_conf.confidence_metrics.distributionals import BetaDistribution
+
+LINGUISTIC_LEXICON_PATH = "linguistic_confidence_lexicon/hedging_word_scores.pkl"
+LEXICON = pd.read_pickle(LINGUISTIC_LEXICON_PATH)
+
+
+REWRITE_PROMPT = """
+Given the following sentence and a list of target hedging words, rewrite the response to appropriately reflect the confidence level indicated by the set of target hedging words. Ensure the new sentence sounds natural and fluent. 
+You may use words or expressions other than the provided hedging words, but the overall level of confidence expressed in the sentence must align with the target hedging words. 
+If the original sentence is empty, return "No answer provided". 
+If the original sentence suggests random guesses, abstention, or inability to answer already, return "I am not sure". 
+If the hedging words list suggest high confidence, you may state the answer directly without hedging. 
+You are encouraged to use first-person phrasing where appropriate. 
+
+Original sentence: {response}
+Target hedging words: {hedges}
+
+Please return only the rewritten sentence without any explanation.
+New sentence: 
+""".strip()
+
+
+LINGUISTIC_EVALUATOR_PROMPT = """
+Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence (without using any external or prior knowledge). 
+Please pay attention to the hedging language used and the overall assertiveness of the statement. Do not consider the factual accuracy of the content or context outside the sentence itself.
+If the sentence contains random guesses or abstention, the score should be towards 0. 
+If the sentence does not contain any hedging expressions the score should be towards 100. 
+
+Here is the sentence: {sentence} 
+
+Confidence Score: [Return only a number between 0 and 100]
+""".strip()
+
+
+def obtain_hedging_words(conf: BetaDistribution) -> list[str] | None:
+    if conf is None or not conf.is_valid():
+        return None
+    return find_closest_hedging_words(
+        conf.alpha_param,
+        conf.beta_param,
+        LEXICON,
+    )["hedging_word"].tolist()
+
+
+evaluator_list = [
+    "openai/gpt-oss-20b",
+    "meta-llama/Llama-3.1-8B-Instruct",
+    "qwen/Qwen3-8B",
+]
+
+
+def in_domain_numerical_post_hoc_calibration(confidences, accuracies, method="isotonic"):
+    """
+    Calibrate beta distributions using first 10% for training, last 90% for prediction.
+    
+    Args:
+        confidences: list of BetaDistribution objects
+        accuracies: list of accuracy scores (0 or 1)
+        method: "isotonic" or "platt"
+    
+    Returns:
+        list of calibrated BetaDistribution objects (90% of input)
+    """
+    # Extract mu values from BetaDistributions
+    mu_values = np.array([c.mu for c in confidences], dtype=float)
+    acc_values = np.array([acc if acc != "" else 0 for acc in accuracies], dtype=float)
+    
+    n = len(mu_values)
+    train_size = max(1, int(np.ceil(0.10 * n)))
+    
+    # Split: first 10% for training
+    X_train = mu_values[:train_size]
+    y_train = acc_values[:train_size]
+    
+    # Last 90% for prediction
+    X_test = mu_values[train_size:]
+    test_confidences = confidences[train_size:]
+    
+    # Fit calibration model
+    if method == "isotonic":
+        calibrator = IsotonicRegression(out_of_bounds='clip')
+        calibrator.fit(X_train, y_train)
+        calibrated_means = calibrator.predict(X_test)
+    elif method == "platt":
+        calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
+        calibrator.fit(X_train.reshape(-1, 1), y_train)
+        calibrated_means = calibrator.predict_proba(X_test.reshape(-1, 1))[:, 1]
+    else:
+        raise ValueError(f"Unknown post-hoc calibration method: {method}")
+    
+    # Rebuild beta distributions with calibrated means, preserving original sigma
+    calibrated_betas = []
+    
+    # Fill training set (first 10%) with None
+    calibrated_betas.extend([None] * train_size)
+    
+    # Add calibrated betas for test set (last 90%)
+    for calibrated_mu, original_beta in zip(calibrated_means, test_confidences):
+        calibrated_betas.append(
+            BetaDistribution(mu=float(calibrated_mu), sigma=original_beta.sigma)
+        )
+    
+    return calibrated_betas
+
+def cross_domain_numerical_post_hoc_calibration(confidences_train, accuracies_train, raw_confidences, method="isotonic"):
+    """
+    Calibrate beta distributions using data from one domain for training, apply to another domain.
+    
+    Args:
+        confidences_train: list of BetaDistribution objects for training
+        accuracies_train: list of accuracy scores (0 or 1) for training
+        raw_confidences: list of BetaDistribution objects to be calibrated
+        method: "isotonic" or "platt"
+    
+    Returns:
+        list of calibrated BetaDistribution objects (same length as raw_confidences)
+    """
+    # Extract mu values from BetaDistributions for training
+    mu_train = np.array([c.mu for c in confidences_train], dtype=float)
+    acc_train = np.array([acc if acc != "" else 0 for acc in accuracies_train], dtype=float)
+    
+    # Extract mu values from raw confidences to be calibrated
+    mu_raw = np.array([c.mu for c in raw_confidences], dtype=float)
+    
+    # Fit calibration model on training data
+    if method == "isotonic":
+        calibrator = IsotonicRegression(out_of_bounds='clip')
+        calibrator.fit(mu_train, acc_train)
+        calibrated_means = calibrator.predict(mu_raw)
+    elif method == "platt":
+        calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
+        calibrator.fit(mu_train.reshape(-1, 1), acc_train)
+        calibrated_means = calibrator.predict_proba(mu_raw.reshape(-1, 1))[:, 1]
+    else:
+        raise ValueError(f"Unknown post-hoc calibration method: {method}")
+    
+    # Rebuild beta distributions with calibrated means, preserving original sigma
+    calibrated_betas = []
+    for calibrated_mu, original_beta in zip(calibrated_means, raw_confidences):
+        calibrated_betas.append(
+            BetaDistribution(mu=float(calibrated_mu), sigma=original_beta.sigma)
+        )
+    
+    return calibrated_betas
+
+def estimate_linguistic_confidence(responses: list[str]) -> list[BetaDistribution | None]:
+    prompts = [LINGUISTIC_EVALUATOR_PROMPT.format(sentence=response) for response in responses]
+
+    def extract_score(text: str) -> float:
+        match = re.search(r'(\d+(?:\.\d+)?)', text)
+        if match:
+            score = float(match.group(1))
+            score = min(max(score, 0.0), 100.0) / 100.0  # Normalize to [0, 1]
+        else:
+            score = np.nan
+        return score
+
+    scores_collection: list[list[float]] = [[] for _ in responses]
+
+    for evaluator in evaluator_list:
+        llm = LLM(max_model_len=4000, model=evaluator, trust_remote_code=True)
+        sampling_params = SamplingParams(temperature=1, max_tokens=256)
+        
+        for run in range(5):  # Run each prompt 5 times
+            message_list = [[{"role": "user", "content": r}] for r in prompts]
+
+            outputs = llm.chat(
+                messages=message_list,
+                sampling_params=sampling_params,
+                chat_template_kwargs={
+                    "reasoning_effort": "low",  # for gpt-oss
+                    "enable_thinking": False,  # for qwen 3
+                },
+            )
+
+            for i, output in enumerate(outputs):
+                score = extract_score(output.outputs[0].text)
+                if not np.isnan(score):
+                    scores_collection[i].append(score)
+        llm.llm_engine.engine_core.shutdown()
+        del llm
+        gc.collect()
+
+    confidence_dists = []
+    for text_idx, _ in enumerate(responses):
+        try:
+            # Get all scores from all evaluators for this specific text
+            all_scores = scores_collection[text_idx]
+            valid_scores = [s for s in all_scores if not np.isnan(s)]
+            
+            if valid_scores:
+                mu = float(np.mean(valid_scores))
+                sigma = float(np.std(valid_scores)) if len(valid_scores) > 1 else 1e-6
+            else:
+                mu = 0.5
+                sigma = 1e-6
+            
+            confidence_dists.append(BetaDistribution(mu=mu, sigma=sigma))
+        except Exception as e:
+            print(f"Error processing text index {text_idx}: {e}")
+            confidence_dists.append(None)
+    
+    return confidence_dists

@@ -15,11 +15,36 @@ confidence_metrics: distributional_linguistic_confidence
 qa_model:
   repeat: 1
 
+evaluator_list:
+  - linguistic_confidence_judge_model_0
+  - linguistic_confidence_judge_model_1
+  - linguistic_confidence_judge_model_2
 
-linguistic_confidence_judge_model:
+linguistic_confidence_judge_model_0:
   backend: vllm 
   name: openai/gpt-oss-20b
-  repeat: 10
-  temperature: 1.2
-  max_tokens: 512
+  repeat: 5
+  temperature: 1
+  max_tokens: 2048
+  logprobs: 1
   reasoning_effort: low
+
+
+linguistic_confidence_judge_model_1:
+  backend: vllm 
+  name: meta-llama/Llama-3.1-8B-Instruct
+  repeat: 5
+  temperature: 1
+  max_tokens: 2048
+  logprobs: 1
+  reasoning_effort: low
+
+
+linguistic_confidence_judge_model_2:
+  backend: vllm 
+  name: qwen/Qwen3-8B
+  repeat: 5
+  temperature: 1
+  max_tokens: 2048
+  logprobs: 1
+  reasoning_effort: null

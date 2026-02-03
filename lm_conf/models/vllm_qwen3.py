@@ -130,7 +130,7 @@ class vLLMQwen3(AbstractModel):
                 output_logprobs=output_logprobs,
                 top_k_tokens=all_top_k_tokens,
             ))
-
+        vllm_model.llm_engine.engine_core.shutdown()
         del vllm_model
         del self.tokenizer
         gc.collect()
@@ -213,6 +213,7 @@ class vLLMQwen3(AbstractModel):
                     continuation_candidates=all_candidates
                 )
             )
+        llm.llm_engine.engine_core.shutdown()
         del llm
         del tokenizer
         del self.tokenizer

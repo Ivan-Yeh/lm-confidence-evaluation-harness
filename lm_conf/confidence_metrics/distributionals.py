@@ -77,34 +77,65 @@ def distributional_semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs
     confidence_dists: list[BetaDistribution] = []
     selected_responses: list[str] = []
 
+    selected_responses = []
+    confidence_dists = []
+
     for responses in tqdm(response_lists, desc="Processing Entailments (Entailment Probability)"):
         n = len(responses)
+        # ------------------------------------------------------------------
+        # Edge case: only one response
+        # ------------------------------------------------------------------
+        if n == 1:
+            selected_responses.append(responses[0])
+            confidence_dists.append(BetaDistribution(mu=0.5, sigma=1e-6))
+            continue
+
+        # ------------------------------------------------------------------
+        # 1. Build all ordered (premise, hypothesis) pairs, i != j
+        # ------------------------------------------------------------------
         premises: list[str] = []
         hypotheses: list[str] = []
+
         for i in range(n):
             for j in range(n):
                 if i != j:
                     premises.append(responses[i])
                     hypotheses.append(responses[j])
 
-        preds = entailment_model.entailment_probability_batch(premises, hypotheses) if premises else []
-        preds = np.clip(np.array(preds), 1e-6, 1 - 1e-6)
-        
-        # Compute mean entailment probability for each response (as premise)
+        # ------------------------------------------------------------------
+        # 2. Run entailment model
+        # ------------------------------------------------------------------
+        preds = entailment_model.entailment_probability_batch(premises, hypotheses)
+        preds = np.clip(np.asarray(preds), 1e-6, 1 - 1e-6)
+
+        # ------------------------------------------------------------------
+        # 3. Compute mean entailment per response (as premise)
+        # ------------------------------------------------------------------
         mean_entailment_per_response = []
-        for i in range(n):
-            # Get entailment probs where response i is the premise
-            idx_start = i * (n - 1)
-            idx_end = idx_start + (n - 1)
-            response_preds = preds[idx_start:idx_end] if preds else []
-            mean_ent = np.mean(response_preds) if len(response_preds) > 0 else 0.0
-            mean_entailment_per_response.append(mean_ent)
-        
-        # Select response with highest mean entailment probability
-        best_idx = np.argmax(mean_entailment_per_response) if mean_entailment_per_response else 0
+        offset = 0
+
+        for _ in range(n):
+            response_preds = preds[offset : offset + (n - 1)]
+            mean_entailment_per_response.append(np.mean(response_preds))
+            offset += (n - 1)
+
+        # ------------------------------------------------------------------
+        # 4. Select response with highest entailment centrality
+        # ------------------------------------------------------------------
+        best_idx = int(np.argmax(mean_entailment_per_response))
         selected_responses.append(responses[best_idx])
-        
-        confidence_dists.append(BetaDistribution(mu=np.mean(preds), sigma=np.std(preds, ddof=1)))
+
+        # ------------------------------------------------------------------
+        # 5. Estimate confidence distribution over ALL pairwise entailments
+        #    (latent hypothesis uncertainty)
+        # ------------------------------------------------------------------
+        mu = float(np.mean(preds))
+        sigma = float(np.std(preds)) if len(preds) > 1 else 1e-6
+
+        confidence_dists.append(
+            BetaDistribution(mu=mu, sigma=sigma)
+        )
+
 
     entailment_model.model.to("cpu")
     del entailment_model.model
@@ -122,47 +153,70 @@ def distributional_semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs
 @register_confidence(name="distributional_linguistic_confidence")
 def distributional_linguistic_confidence(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
     # use llm judge to rate how decisive the model's answer is
-    model_manager: ModelManager = ModelManager(master_cfg=cfg, model_config_type="linguistic_confidence_judge_model")
-    def per_round_estimator(output: ModelOutputs):
-        def extract_score(text: str) -> float:
-            match = re.search(r'(\d+(?:\.\d+)?)', text)
-            if match:
-                score = float(match.group(1))
-                score = min(max(score, 0.0), 100.0) / 100.0  # Normalize to [0, 1]
-            else:
-                score = np.nan
-            return score
-        
-        DIRECT_PROMPT = """
-        Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence (without using any external or prior knowledge). \
-            Please pay attention to the hedging language used and the overall assertiveness of the statement. \
-                If the sentence contains random guesses or abstention, the score should be towards 0. If the sentence is stated with strong certainty or no hedging, the score should be towards 100. \
-                    If the sentence does not contain any linguistic cues or is a succinct, decisive short answer, the score should be towards 100, too.
-
-        Here is the sentence:
-        {sentence}
-
-        Confidence Score: [Return only a number between 0 and 100]
-        """.strip()
-        prompt_collection = PromptCollection(context_texts=[DIRECT_PROMPT.format(sentence=response) for response in output.output_texts])
-        judge_outputs: list[ModelOutputs] = model_manager.run_generation(prompt_collection)
-        confidences: list[list[float]] = [[extract_score(text) for text in out.output_texts] for out in judge_outputs]
-        # Transpose confidences: from [num_judge_outputs][num_texts] to [num_texts][num_judge_outputs]
-        confidences = list(map(list, zip(*confidences)))
-        # Average scores from different judge outputs
-        confidence_dists = [BetaDistribution(mu=float(np.nanmean(scores)), sigma=float(np.nanstd(scores, ddof=1))) for scores in confidences]
-        return confidence_dists
+    evaluator_lst = cfg.get("evaluator_list", ["linguistic_confidence_judge_model_0"])
     
-    all_confidences = []
-    all_answers = []
-    for output in output_lst:
-        confidences = per_round_estimator(output)
-        all_confidences.append(confidences)
-        all_answers.append(output.output_texts)
+    # Take only the first output item
+    model_output: ModelOutputs = output_lst[0]
+    
+    def extract_score(text: str) -> float:
+        match = re.search(r'(\d+(?:\.\d+)?)', text)
+        if match:
+            score = float(match.group(1))
+            score = min(max(score, 0.0), 100.0) / 100.0  # Normalize to [0, 1]
+        else:
+            score = np.nan
+        return score
+    
+    DIRECT_PROMPT = """
+    Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence (without using any external or prior knowledge). \
+        Please pay attention to the hedging language used and the overall assertiveness of the statement. \
+            If the sentence contains random guesses or abstention, the score should be towards 0. If the sentence is stated with strong certainty or no hedging, the score should be towards 100. \
+                If the sentence does not contain any linguistic cues or is a succinct, decisive short answer, the score should be towards 100, too.
+
+    Here is the sentence:
+    {sentence}
+
+    Confidence Score: [Return only a number between 0 and 100]
+    """.strip()
+    
+    # Initialize scores collection: scores_collection[text_idx] = list of scores from all evaluators
+    scores_collection: list[list[float]] = [[] for _ in model_output.output_texts]
+    
+    # Loop through each evaluator
+    for evaluator in evaluator_lst:
+        model_manager: ModelManager = ModelManager(master_cfg=cfg, model_config_type=evaluator)
+        
+        # Generate prompts for all responses
+        prompt_collection = PromptCollection(context_texts=[DIRECT_PROMPT.format(sentence=response) for response in model_output.output_texts])
+        judge_outputs: list[ModelOutputs] = model_manager.run_generation(prompt_collection)
+        
+        # Extract scores for each text
+        for judge_out in judge_outputs:
+            for text_idx, judge_text in enumerate(judge_out.output_texts):
+                score = extract_score(judge_text)
+                if np.isnan(score):
+                    continue
+                scores_collection[text_idx].append(score)
+    
+    # Fit beta distributions from all collected scores
+    confidence_dists = []
+    for text_idx, _ in enumerate(model_output.output_texts):
+        # Get all scores from all evaluators for this specific text
+        all_scores = scores_collection[text_idx]
+        valid_scores = [s for s in all_scores if not np.isnan(s)]
+        
+        if valid_scores:
+            mu = float(np.mean(valid_scores))
+            sigma = float(np.std(valid_scores)) if len(valid_scores) > 1 else 1e-6
+        else:
+            mu = 0.5
+            sigma = 1e-6
+        
+        confidence_dists.append(BetaDistribution(mu=mu, sigma=sigma))
 
     return OrganisedOutputs(
-        extracted_answers=all_answers,
-        extracted_confidences=all_confidences,
+        extracted_answers=[model_output.output_texts],
+        extracted_confidences=[confidence_dists],
     )
 
 
