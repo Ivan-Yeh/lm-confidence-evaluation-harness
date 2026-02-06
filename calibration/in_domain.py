@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import pandas as pd
 import pickle
@@ -7,7 +8,7 @@ from tqdm import tqdm
 from vllm import LLM, SamplingParams
 from multiprocessing import Pool, cpu_count
 from lm_conf.default_utils.custom_types import OrganisedOutputs
-from lm_conf.post_processing.metrics import dECE, dECE_point_mass, AUROC_point_mass
+from lm_conf.post_processing.metrics import dECE, dECE_point_mass, AUROC_point_mass, dAUROC
 from calibration.utils import *
 
 argparser = argparse.ArgumentParser(description="Calibrate linguistic confidence lexicon using empirical data.")
@@ -147,8 +148,8 @@ if __name__ == "__main__":
         output_df.to_pickle(os.path.join(args.results_path, "linguistic_calibration_outputs_rewrites.pkl"))
 
     # evaluate linguistic confidence on original and calibrated responses
-    if os.path.exists(os.path.join(args.results_path, "linguistic_calibration_outputs.csv")):
-        output_df = pd.read_csv(os.path.join(args.results_path, "linguistic_calibration_outputs.csv"))
+    if os.path.exists(os.path.join(args.results_path, "linguistic_calibration_outputs.pkl")):
+        output_df = pd.read_pickle(os.path.join(args.results_path, "linguistic_calibration_outputs.pkl"))
     else:
         original_linguistic_confidences = estimate_linguistic_confidence(
             output_df["original_response"].tolist()
@@ -166,8 +167,18 @@ if __name__ == "__main__":
         output_df.to_csv(os.path.join(args.results_path, "linguistic_calibration_outputs.csv"), index=False)
         output_df.to_pickle(os.path.join(args.results_path, "linguistic_calibration_outputs.pkl"))
 
+    # print("LLM inference cache saved.")
+    # sys.exit()
+    # try:   
+    #     llm = LLM(max_model_len=4000, model=args.model, trust_remote_code=True)
+    #     sampling_params = SamplingParams(temperature=1, max_tokens=256)
+    #     llm.chat([[{"role": "user", "content": "place holder"}]], sampling_params=sampling_params)
+    #     print("Prepare to compute metrics...")
+    # except:
+    #     pass
 
     # compute and save calibration metrics
+    print("Computing calibration metrics...")
     original_organised_output = OrganisedOutputs(
         accuracy_scores=[output_df["accuracy"].tolist()],
         extracted_confidences=[output_df["original_numerical_confidence"].tolist()],
@@ -190,23 +201,34 @@ if __name__ == "__main__":
         "metric": [
             "original_dECE",
             "original_dECE_pt",
+            "original_dAUROC",
             "original_auroc_pt",
+            
             "original_linguistic_dECE",
             "original_linguistic_dECE_pt",
+            "original_linguistic_dAUROC",
             "original_linguistic_auroc_pt",
+
             "calibrated_linguistic_dECE",
             "calibrated_linguistic_dECE_pt",
+            "calibrated_linguistic_dAUROC",
             "calibrated_linguistic_auroc_pt",
         ],
+
         "value": [
             dECE({"results_path": args.results_path}, original_organised_output)[0],                # original method dECE 
             dECE_point_mass({"results_path": args.results_path}, original_organised_output)[0],
+            dAUROC({"results_path": args.results_path}, original_organised_output)[0],
             AUROC_point_mass({"results_path": args.results_path}, original_organised_output)[0],
+
             dECE({"results_path": args.results_path}, original_linguistic_output)[0],               # original linguistic dECE 
             dECE_point_mass({"results_path": args.results_path}, original_linguistic_output)[0],
+            dAUROC({"results_path": args.results_path}, original_linguistic_output)[0],
             AUROC_point_mass({"results_path": args.results_path}, original_linguistic_output)[0],
+            
             dECE({"results_path": args.results_path}, calibrated_linguistic_output)[0],             # calibrated linguistic dECE 
             dECE_point_mass({"results_path": args.results_path}, calibrated_linguistic_output)[0],
+            dAUROC({"results_path": args.results_path}, calibrated_linguistic_output)[0],
             AUROC_point_mass({"results_path": args.results_path}, calibrated_linguistic_output)[0],
         ],
     })

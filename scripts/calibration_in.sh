@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-GPU=3
+GPU=1
 MODEL="openai/gpt-oss-20b"
 
 # MMLU
@@ -12,10 +12,10 @@ CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method plat
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --answer-prepend "The answer is " --results_path /hdd/ivny/results/mmlu/dist_lnll/mistralai/Mistral-7B-Instruct-v0.3/2026-01-12_20-11-42
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --answer-prepend "The answer is " --results_path /hdd/ivny/results/mmlu/dist_lnll/openai/gpt-oss-20b/2026-01-12_05-33-45
 
-# mmlu - lc 
+# # mmlu - lc 
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/mmlu/dist_linguistic_confidence/meta-llama/Llama-3.1-8B-Instruct/2026-01-31_03-17-58
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/mmlu/dist_linguistic_confidence/meta-llama/Meta-Llama-3-8B-Instruct/2026-01-31_00-21-17
-CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/mmlu/dist_linguistic_confidence/qwen/Qwen2.5-7B-Instruct/2026-01-31_08-40-42
+CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/mmlu/dist_linguistic_confidence/mistralai/Mistral-7B-Instruct-v0.3/2026-02-03_03-31-59 # !!! need to rerun
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/mmlu/dist_linguistic_confidence/qwen/Qwen2.5-7B-Instruct/2026-02-03_00-53-50
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/mmlu/dist_linguistic_confidence/qwen/Qwen3-8B/2026-01-31_10-43-10
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/mmlu/dist_linguistic_confidence/openai/gpt-oss-20b/2026-01-31_06-12-32
@@ -25,6 +25,7 @@ CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method plat
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --answer-prepend "The answer is " --results_path /hdd/ivny/results/mmlu/dist_semantic_uncertainty/meta-llama/Meta-Llama-3-8B-Instruct/2026-01-27_10-46-40
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --answer-prepend "The answer is " --results_path /hdd/ivny/results/mmlu/dist_semantic_uncertainty/qwen/Qwen2.5-7B-Instruct/2026-01-27_09-02-39
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --answer-prepend "The answer is " --results_path /hdd/ivny/results/mmlu/dist_semantic_uncertainty/qwen/Qwen3-8B/2026-01-27_00-51-25
+CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --answer-prepend "The answer is " --results_path /hdd/ivny/results/mmlu/dist_semantic_uncertainty/openai/gpt-oss-20b/2026-02-03_06-08-17
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --answer-prepend "The answer is " --results_path /hdd/ivny/results/mmlu/dist_semantic_uncertainty/mistralai/Mistral-7B-Instruct-v0.3/2026-01-26_23-53-54
 
 # TRIVIA QA
@@ -48,6 +49,9 @@ CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method plat
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/trivia_qa/dist_semantic_uncertainty/meta-llama/Llama-3.1-8B-Instruct/2026-01-26_22-42-25
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/trivia_qa/dist_semantic_uncertainty/mistralai/Mistral-7B-Instruct-v0.3/2026-01-27_06-19-36
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/trivia_qa/dist_semantic_uncertainty/openai/gpt-oss-20b/2026-01-27_18-43-47
+CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/trivia_qa/dist_semantic_uncertainty/meta-llama/Meta-Llama-3-8B-Instruct/2026-02-04_07-57-46
+CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/trivia_qa/dist_semantic_uncertainty/qwen/Qwen2.5-7B-Instruct/2026-02-04_14-41-59
+CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain --post-hoc-method platt --model $MODEL --results_path /hdd/ivny/results/trivia_qa/dist_semantic_uncertainty/qwen/Qwen3-8B/2026-02-03_08-50-11
 
 
 # SQUAD v2

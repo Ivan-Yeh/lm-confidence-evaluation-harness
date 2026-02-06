@@ -6,6 +6,7 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import beta, wasserstein_distance
+from concurrent.futures import ProcessPoolExecutor
 from sklearn.metrics import roc_auc_score
 from tqdm import tqdm
 
@@ -98,74 +99,130 @@ def dECE_point_mass(cfg: dict, extracted_output: OrganisedOutputs) -> list[float
     ))
     return dECE_point_mass
 
+def precompute_stats_worker(args):
+    samples, bins = args
+    B = len(bins) - 1
+
+    bin_idx = np.digitize(samples, bins) - 1
+    bin_probs = np.zeros(B)
+    bin_means = np.zeros(B)
+    bin_values = [None] * B
+
+    for m in range(B):
+        mask = bin_idx == m
+        if np.any(mask):
+            vals = samples[mask]
+            bin_probs[m] = vals.size / samples.size
+            bin_means[m] = vals.mean()
+            bin_values[m] = vals
+        else:
+            bin_values[m] = np.empty(0)
+
+    return bin_probs, bin_means, bin_values
 
 @register_metric(name="dECE")
 def dECE(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+    logging.info("Computing dECE.")
+    # ------------------------------------------------------------
+    # Step 0: Clean inputs (same as your original logic)
+    # ------------------------------------------------------------
     accuracies = []
-    confidence_dists: list[BetaDistribution] = [] 
+    confidence_dists = []
 
-    # --- Existing sanity check and data cleaning ---
-    for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
+    for acc, conf in zip(
+        extracted_output.accuracy_scores[0],
+        extracted_output.extracted_confidences[0],
+    ):
         try:
-            if acc is None or conf is None or conf.is_valid() is False:
+            if acc is None or conf is None or not conf.is_valid():
                 continue
             accuracies.append(float(acc))
             confidence_dists.append(conf)
-        except:
+        except Exception:
             continue
 
+    accuracies = np.asarray(accuracies)
     N = len(accuracies)
+
+    # ------------------------------------------------------------
+    # Step 1: Sample once per distribution
+    # ------------------------------------------------------------
     num_bins = cfg.get("num_bins", 10)
-    num_samples = cfg.get("num_wasserstein_samples", 100000)
+    num_samples = cfg.get("num_wasserstein_samples", 10000)
+
+    bins = np.linspace(0.0, 1.0, num_bins + 1)
     samples_list = [bd.sample(size=num_samples) for bd in confidence_dists]
-    bins = np.linspace(0, 1, num_bins + 1)
 
-    dECE_bins = []
-    bin_total_weights = []
-    bin_accuracies = []
-    bin_confidences = []
+    # ------------------------------------------------------------
+    # Step 2: Precompute per-distribution bin statistics
+    # ------------------------------------------------------------
+    with ProcessPoolExecutor() as executor:
+        dist_stats = list(
+            tqdm(
+                executor.map(
+                    precompute_stats_worker,
+                    [(s, bins) for s in samples_list],
+                ),
+                total=len(samples_list),
+                desc="Precomputing bin statistics",
+            )
+        )
 
-    for m in range(len(bins) - 1):
-        s_min, s_max = bins[m], bins[m + 1]
-        weighted_W = []
-        total_weight = 0.0
-        weighted_correct_sum = 0.0
-        weighted_conf_sum = 0.0
+    # ------------------------------------------------------------
+    # Step 3: Compute bin accuracy & confidence (vectorized)
+    # ------------------------------------------------------------
+    B = num_bins
+    bin_total_weights = np.zeros(B)
+    bin_accuracies = np.zeros(B)
+    bin_confidences = np.zeros(B)
 
-        for samples, y in zip(samples_list, accuracies):
-            # Soft membership weight for this distribution in this bin
-            w = np.mean((samples >= s_min) & (samples < s_max))
-            if w == 0: continue
-            
-            weighted_correct_sum += w * y
-            # Mean of samples that actually fell into this bin
-            weighted_conf_sum += w * np.mean(samples[(samples >= s_min) & (samples < s_max)])
-            total_weight += w
+    for m in range(B):
+        weights = np.array([stats[0][m] for stats in dist_stats])
+        total_w = weights.sum()
 
-        # Step 2: Bin Metrics
-        bin_acc = weighted_correct_sum / total_weight if total_weight > 0 else 0.0
-        bin_conf = weighted_conf_sum / total_weight if total_weight > 0 else (s_min + s_max) / 2
-        
-        bin_accuracies.append(bin_acc)
-        bin_confidences.append(bin_conf)
+        if total_w == 0:
+            bin_confidences[m] = 0.5 * (bins[m] + bins[m + 1])
+            continue
 
-        # Step 3: Wasserstein calculation (from your original code)
-        for samples in samples_list:
-            mask = (samples >= s_min) & (samples < s_max)
-            w = np.mean(mask)
-            if w == 0: continue
-            samples_bin = samples[mask]
-            acc_samples = np.full(len(samples_bin), bin_acc)
-            W = wasserstein_distance(samples_bin, acc_samples)
-            weighted_W.append(w * W)
+        bin_total_weights[m] = total_w
+        bin_accuracies[m] = np.dot(weights, accuracies) / total_w
+        bin_confidences[m] = np.dot(
+            weights,
+            [stats[1][m] for stats in dist_stats],
+        ) / total_w
 
-        dECE_bin = np.sum(weighted_W) / total_weight if total_weight > 0 else 0.0
-        dECE_bins.append(dECE_bin)
-        bin_total_weights.append(total_weight)
+    # ------------------------------------------------------------
+    # Step 4: Exact 1-Wasserstein dECE (NO SciPy)
+    # ------------------------------------------------------------
+    dECE_bins = np.zeros(B)
 
-    # Calculate final dECE
-    bin_total_weights = np.array(bin_total_weights)
-    dataset_dECE = np.sum(np.array(dECE_bins) * bin_total_weights) / bin_total_weights.sum() if bin_total_weights.sum() > 0 else float("nan")
+    for m in range(B):
+        if bin_total_weights[m] == 0:
+            continue
+
+        bin_acc = bin_accuracies[m]
+        total_w = bin_total_weights[m]
+        W_sum = 0.0
+
+        for stats in dist_stats:
+            w = stats[0][m]
+            if w == 0:
+                continue
+
+            vals = stats[2][m]
+            W = np.mean(np.abs(vals - bin_acc))
+            W_sum += w * W
+
+        dECE_bins[m] = W_sum / total_w
+
+    # ------------------------------------------------------------
+    # Step 5: Final dataset-level dECE
+    # ------------------------------------------------------------
+    dataset_dECE = (
+        np.sum(dECE_bins * bin_total_weights) / bin_total_weights.sum()
+        if bin_total_weights.sum() > 0
+        else float("nan")
+    )
 
     # --- NEW: Plotting Logic with Bootstrap Confidence Interval and Confidence Violins ---
     plot_path = cfg.get("results_path")
@@ -388,6 +445,20 @@ def AUROC_point_mass(cfg: dict, extracted_output: OrganisedOutputs) -> list[floa
     return [float(dauroc_point_mass)]
 
 
+def compute_batch_wins(args):
+    batch_idx, pos_dists_batch, neg_dists_batch, batch_size_batch = args
+    batch_wins = 0
+    pos_samples = np.array([
+        pos_dists_batch[random.randrange(len(pos_dists_batch))].sample(1)[0]
+        for _ in range(batch_size_batch)
+    ])
+    neg_samples = np.array([
+        neg_dists_batch[random.randrange(len(neg_dists_batch))].sample(1)[0]
+        for _ in range(batch_size_batch)
+    ])
+    batch_wins = np.sum(pos_samples > neg_samples)
+    return batch_wins
+
 @register_metric(name="dAUROC")
 def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     logging.info("Computing dAUROC")
@@ -413,25 +484,30 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
 
     num_dauroc_mc = cfg.get("num_dauroc_mc", 1000000)
     seed = cfg.get("seed", None)
+    batch_size = 100000
 
     if seed is not None:
         random.seed(seed)
         np.random.seed(seed)
 
-    wins = 0
-    comparisons = 0
-    batch_size = 100000
+    # Generate batch arguments
+    num_batches = (num_dauroc_mc + batch_size - 1) // batch_size
+    batch_args = [
+        (i, pos_dists, neg_dists, min(batch_size, num_dauroc_mc - i * batch_size))
+        for i in range(num_batches)
+    ]
 
-    for _ in tqdm(range(0, num_dauroc_mc, batch_size), desc="Computing dAUROC with global Monte Carlo sampling"):
-        pos_samples = np.array([
-            pos_dists[random.randrange(len(pos_dists))].sample(1)[0]
-            for _ in range(batch_size)
-        ])
-        neg_samples = np.array([
-            neg_dists[random.randrange(len(neg_dists))].sample(1)[0]
-            for _ in range(batch_size)
-        ])
-        wins += np.sum(pos_samples > neg_samples)
-        comparisons += batch_size
+    # Compute wins in parallel
+    with ProcessPoolExecutor() as executor:
+        batch_wins_list = list(
+            tqdm(
+                executor.map(compute_batch_wins, batch_args),
+                total=num_batches,
+                desc="Computing dAUROC with parallel Monte Carlo sampling"
+            )
+        )
 
-    return [float(wins / comparisons)]
+    total_wins = sum(batch_wins_list)
+    total_comparisons = num_dauroc_mc
+
+    return [float(total_wins / total_comparisons)]

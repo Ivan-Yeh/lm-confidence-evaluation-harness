@@ -124,9 +124,22 @@ def cross_domain_numerical_post_hoc_calibration(confidences_train, accuracies_tr
     Returns:
         list of calibrated BetaDistribution objects (same length as raw_confidences)
     """
-    # Extract mu values from BetaDistributions for training
-    mu_train = np.array([c.mu for c in confidences_train], dtype=float)
-    acc_train = np.array([acc if acc != "" else 0 for acc in accuracies_train], dtype=float)
+    # Filter to keep only valid pairs where both confidence and accuracy are valid
+    valid_pairs = []
+    for conf, acc in zip(confidences_train, accuracies_train):
+        # Check if confidence is valid (not None and has valid mu)
+        if conf is not None and hasattr(conf, 'mu') and not np.isnan(conf.mu):
+            # Check if accuracy is valid (not empty string and not NaN)
+            acc_value = acc if acc != "" else np.nan
+            if not np.isnan(float(acc_value) if acc_value != "" else np.nan):
+                valid_pairs.append((conf, float(acc_value)))
+    
+    if not valid_pairs:
+        raise ValueError("No valid confidence-accuracy pairs found in training data")
+    
+    # Extract mu values and accuracies from valid pairs
+    mu_train = np.array([c.mu for c, _ in valid_pairs], dtype=float)
+    acc_train = np.array([acc for _, acc in valid_pairs], dtype=float)
     
     # Extract mu values from raw confidences to be calibrated
     mu_raw = np.array([c.mu for c in raw_confidences], dtype=float)
@@ -196,7 +209,7 @@ def estimate_linguistic_confidence(responses: list[str]) -> list[BetaDistributio
             # Get all scores from all evaluators for this specific text
             all_scores = scores_collection[text_idx]
             valid_scores = [s for s in all_scores if not np.isnan(s)]
-            
+            print(valid_scores)
             if valid_scores:
                 mu = float(np.mean(valid_scores))
                 sigma = float(np.std(valid_scores)) if len(valid_scores) > 1 else 1e-6
