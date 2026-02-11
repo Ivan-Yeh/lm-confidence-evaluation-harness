@@ -459,6 +459,21 @@ def compute_batch_wins(args):
     batch_wins = np.sum(pos_samples > neg_samples)
     return batch_wins
 
+
+def compute_wins(pos_vals_flat, neg_vals_flat):
+    """
+    Compute total wins for AUROC given flattened sampled values.
+    Vectorized using broadcasting.
+    """
+    # Shape (n_pos, 1) - (1, n_neg) broadcasting
+    diff = pos_vals_flat[:, None] - neg_vals_flat[None, :]
+    wins = np.sum(diff > 0) + 0.5 * np.sum(diff == 0)
+    return wins
+
+def compute_wins_wrapper(args):
+    pos_vals_flat, neg_vals_flat = args
+    return compute_wins(pos_vals_flat, neg_vals_flat)
+
 @register_metric(name="dAUROC")
 def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     logging.info("Computing dAUROC")
@@ -477,37 +492,37 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
             continue
 
     pos_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 1]
-    neg_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 0]
+    neg_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 0 or y == ""]
 
     if not pos_dists or not neg_dists:
         return [float("nan")]
 
-    num_dauroc_mc = cfg.get("num_dauroc_mc", 1000000)
-    seed = cfg.get("seed", None)
-    batch_size = 100000
+    num_samples = 100
+    num_iter = 10000000
 
-    if seed is not None:
-        random.seed(seed)
-        np.random.seed(seed)
+    # Sample from all distributions upfront
+    # Shape: (len(pos_dists), num_samples)
+    pos_samples = np.array([d.sample(num_samples) for d in pos_dists])
+    neg_samples = np.array([d.sample(num_samples) for d in neg_dists])
 
-    # Generate batch arguments
-    num_batches = (num_dauroc_mc + batch_size - 1) // batch_size
-    batch_args = [
-        (i, pos_dists, neg_dists, min(batch_size, num_dauroc_mc - i * batch_size))
-        for i in range(num_batches)
-    ]
+    wins = 0
+    total = 0
 
-    # Compute wins in parallel
-    with ProcessPoolExecutor() as executor:
-        batch_wins_list = list(
-            tqdm(
-                executor.map(compute_batch_wins, batch_args),
-                total=num_batches,
-                desc="Computing dAUROC with parallel Monte Carlo sampling"
-            )
-        )
+    # Calculate expected win rate via random pairwise comparisons
+    for _ in tqdm(range(num_iter), desc="Computing dAUROC"):
+        # Pick random distribution indices
+        p_idx = np.random.randint(0, len(pos_samples))
+        n_idx = np.random.randint(0, len(neg_samples))
 
-    total_wins = sum(batch_wins_list)
-    total_comparisons = num_dauroc_mc
+        # Pick random samples from those distributions
+        s_p = np.random.choice(pos_samples[p_idx])
+        s_n = np.random.choice(neg_samples[n_idx])
 
-    return [float(total_wins / total_comparisons)]
+        # Compare
+        if s_p > s_n:
+            wins += 1
+        elif s_p == s_n:
+            wins += 0.5
+        total += 1
+
+    return [float(wins / total)]

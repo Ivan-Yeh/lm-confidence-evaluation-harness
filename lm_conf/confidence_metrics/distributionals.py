@@ -72,72 +72,145 @@ def distributional_length_normalised_log_likelihood(cfg: dict, output_lst: list[
 
 @register_confidence(name="distributional_semantic_uncertainty")
 def distributional_semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
-    response_lists: list[tuple[str]] = list(zip(*[outputs.output_texts for outputs in output_lst]))
+    """
+    Process 30 rounds of responses per question.
+    Fix the first response as final answer, then:
+    - Repeat 10 times: subsample 9 random responses from remaining 29
+    - Calculate semantic cluster proportion for fixed response
+    - Average confidences across 10 subsamples
+    """
+    # Extract responses: response_lists[question_idx] = tuple of 30 responses (one per round)
+    response_lists: list[tuple[str]] = list(zip(*[output.output_texts for output in output_lst]))
+    
     entailment_model = EntailmentDeberta()
-    confidence_dists: list[BetaDistribution] = []
-    selected_responses: list[str] = []
-
     selected_responses = []
     confidence_dists = []
+    strict_entailment = False
+    
+    for responses in tqdm(
+        response_lists,
+        desc="Processing Entailments (Semantic Uncertainty - Subsampling)"
+    ):
+        responses = list(responses)
+        N = len(responses)  # should be 30
 
-    for responses in tqdm(response_lists, desc="Processing Entailments (Entailment Probability)"):
-        n = len(responses)
-        # ------------------------------------------------------------------
-        # Edge case: only one response
-        # ------------------------------------------------------------------
-        if n == 1:
-            selected_responses.append(responses[0])
-            confidence_dists.append(BetaDistribution(mu=0.5, sigma=1e-6))
-            continue
+        # -------------------------------
+        # Cache entailment results globally for this question
+        # -------------------------------
+        entail_cache = {}
 
-        # ------------------------------------------------------------------
-        # 1. Build all ordered (premise, hypothesis) pairs, i != j
-        # ------------------------------------------------------------------
-        premises: list[str] = []
-        hypotheses: list[str] = []
+        # -------------------------------
+        # Build all bidirectional entailment pairs (once)
+        # -------------------------------
+        left, right = [], []
+        pair_keys = []  # (i, j, direction)
 
-        for i in range(n):
-            for j in range(n):
-                if i != j:
-                    premises.append(responses[i])
-                    hypotheses.append(responses[j])
+        for i in range(N):
+            for j in range(i + 1, N):
+                for direction, (txt1, txt2) in [
+                    ("ij", (responses[i], responses[j])),
+                    ("ji", (responses[j], responses[i])),
+                ]:
+                    cache_key = (txt1, txt2)
+                    if cache_key not in entail_cache:
+                        left.append(txt1)
+                        right.append(txt2)
+                        pair_keys.append((i, j, direction))
 
-        # ------------------------------------------------------------------
-        # 2. Run entailment model
-        # ------------------------------------------------------------------
-        preds = entailment_model.entailment_probability_batch(premises, hypotheses)
-        preds = np.clip(np.asarray(preds), 1e-6, 1 - 1e-6)
+        if left:
+            try:
+                if cfg.get("dataset_name") == "mmlu":
+                    batch_size = 1024
+                else:
+                    batch_size = 256
+                results = entailment_model.check_implication_batch(
+                    left, right, batch_size=batch_size
+                )
+            except Exception as e:
+                print(f"Error occurred: {e}. Falling back to smaller batch size.")
+                results = entailment_model.check_implication_batch(
+                    left, right, batch_size=16
+                )
 
-        # ------------------------------------------------------------------
-        # 3. Compute mean entailment per response (as premise)
-        # ------------------------------------------------------------------
-        mean_entailment_per_response = []
-        offset = 0
+            for (i, j, direction), res in zip(pair_keys, results):
+                if direction == "ij":
+                    cache_key = (responses[i], responses[j])
+                else:
+                    cache_key = (responses[j], responses[i])
+                entail_cache[cache_key] = res
 
-        for _ in range(n):
-            response_preds = preds[offset : offset + (n - 1)]
-            mean_entailment_per_response.append(np.mean(response_preds))
-            offset += (n - 1)
+        # -------------------------------
+        # Build entailment map
+        # -------------------------------
+        entail_map = {}
+        for i in range(N):
+            for j in range(i + 1, N):
+                ij = entail_cache[(responses[i], responses[j])]
+                ji = entail_cache[(responses[j], responses[i])]
+                entail_map[(i, j)] = {"ij": ij, "ji": ji}
 
-        # ------------------------------------------------------------------
-        # 4. Select response with highest entailment centrality
-        # ------------------------------------------------------------------
-        best_idx = int(np.argmax(mean_entailment_per_response))
-        selected_responses.append(responses[best_idx])
+        # -------------------------------
+        # Semantic equivalence (paper logic)
+        # -------------------------------
+        def are_equivalent(i, j):
+            ij = entail_map[(i, j)]["ij"]
+            ji = entail_map[(i, j)]["ji"]
 
-        # ------------------------------------------------------------------
-        # 5. Estimate confidence distribution over ALL pairwise entailments
-        #    (latent hypothesis uncertainty)
-        # ------------------------------------------------------------------
-        mu = float(np.mean(preds))
-        sigma = float(np.std(preds)) if len(preds) > 1 else 1e-6
+            if strict_entailment:
+                return ij == 2 and ji == 2
+            else:
+                return (ij != 0) and (ji != 0) and not (ij == 1 and ji == 1)
 
+        # -------------------------------
+        # Cluster all 30 responses ONCE
+        # -------------------------------
+        semantic_ids = [-1] * N
+        next_id = 0
+
+        for i in range(N):
+            if semantic_ids[i] == -1:
+                semantic_ids[i] = next_id
+                for j in range(i + 1, N):
+                    if are_equivalent(i, j):
+                        semantic_ids[j] = next_id
+                next_id += 1
+
+        assert -1 not in semantic_ids
+
+        # -------------------------------
+        # Identify majority class
+        # -------------------------------
+        counts = np.bincount(semantic_ids)
+        majority_cluster = int(np.argmax(counts))
+        # majority_prop_30 = counts[majority_cluster] / N
+
+        # -------------------------------
+        # Subsampling: measure support for FIXED majority class
+        # -------------------------------
+        subsample_confidences = []
+
+        indices = np.arange(N)
+
+        for _ in range(50):
+            sampled = np.random.choice(indices, size=10, replace=False)
+            support = np.mean(
+                [semantic_ids[i] == majority_cluster for i in sampled]
+            )
+            subsample_confidences.append(support)
+
+        # -------------------------------
+        # Fit distribution
+        # -------------------------------
+        avg_confidence = float(np.mean(subsample_confidences))
+        std_confidence = float(np.std(subsample_confidences)) if len(subsample_confidences) > 1 else 1e-6
+
+        selected_responses.append(responses[np.where(np.array(semantic_ids) == majority_cluster)[0][0]])
         confidence_dists.append(
-            BetaDistribution(mu=mu, sigma=sigma)
+            BetaDistribution(mu=avg_confidence, sigma=std_confidence)
         )
 
-
-    entailment_model.model.to("cpu")
+    
+    # entailment_model.model.to("cpu")
     del entailment_model.model
     del entailment_model.tokenizer
     del entailment_model

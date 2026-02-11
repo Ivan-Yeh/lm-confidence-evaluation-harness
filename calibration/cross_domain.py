@@ -242,6 +242,12 @@ if __name__ == "__main__":
         extracted_answers=[test_df["original_response"].tolist()]
     )
 
+    calibrated_organised_output = OrganisedOutputs(
+        accuracy_scores=[test_df["accuracy"].tolist()],
+        extracted_confidences=[test_df["calibrated_numerical_confidence"].tolist()],
+        extracted_answers=[test_df["original_response"].tolist()]
+    )
+
     original_linguistic_output = OrganisedOutputs(
         accuracy_scores=[test_df["accuracy"].tolist()],
         extracted_confidences=[test_df["original_linguistic_confidence"].tolist()],
@@ -256,10 +262,15 @@ if __name__ == "__main__":
 
     metrics_df = pd.DataFrame({
         "metric": [
-            "original_dECE",
-            "original_dECE_pt",
-            "original_dAUROC",
-            "original_auroc_pt",
+            "original_signal_dECE",
+            "original_signal_dECE_pt",
+            "original_signal_dAUROC",
+            "original_signal_auroc_pt",
+            
+            "calibrated_signal_dECE",
+            "calibrated_signal_dECE_pt",
+            "calibrated_signal_dAUROC",
+            "calibrated_signal_auroc_pt",
             
             "original_linguistic_dECE",
             "original_linguistic_dECE_pt",
@@ -271,21 +282,31 @@ if __name__ == "__main__":
             "calibrated_linguistic_dAUROC",
             "calibrated_linguistic_auroc_pt",
         ],
+
         "value": [
-            dECE({"results_path": results_path}, original_organised_output)[0],                # original method dECE 
-            dECE_point_mass({"results_path": results_path}, original_organised_output)[0],
-            dAUROC({"results_path": results_path}, original_organised_output)[0],
-            AUROC_point_mass({"results_path": results_path}, original_organised_output)[0],
+            # original signal space metrics
+            dECE({"results_path": args.results_path}, original_organised_output)[0],
+            dECE_point_mass({"results_path": args.results_path}, original_organised_output)[0],
+            dAUROC({"results_path": args.results_path}, original_organised_output)[0],
+            AUROC_point_mass({"results_path": args.results_path}, original_organised_output)[0],
 
-            dECE({"results_path": results_path}, original_linguistic_output)[0],               # original linguistic dECE 
-            dECE_point_mass({"results_path": results_path}, original_linguistic_output)[0],
-            dAUROC({"results_path": results_path}, original_linguistic_output)[0],
-            AUROC_point_mass({"results_path": results_path}, original_linguistic_output)[0],
+            # calibrated signal space metrics 
+            dECE({"results_path": args.results_path}, calibrated_organised_output)[0],
+            dECE_point_mass({"results_path": args.results_path}, calibrated_organised_output)[0],
+            dAUROC({"results_path": args.results_path}, calibrated_organised_output)[0],
+            AUROC_point_mass({"results_path": args.results_path}, calibrated_organised_output)[0],
 
-            dECE({"results_path": results_path}, calibrated_linguistic_output)[0],             # calibrated linguistic dECE 
-            dECE_point_mass({"results_path": results_path}, calibrated_linguistic_output)[0],
-            dAUROC({"results_path": results_path}, calibrated_linguistic_output)[0],
-            AUROC_point_mass({"results_path": results_path}, calibrated_linguistic_output)[0],
+            # original linguistic space metrics
+            dECE({"results_path": args.results_path}, original_linguistic_output)[0],
+            dECE_point_mass({"results_path": args.results_path}, original_linguistic_output)[0],
+            dAUROC({"results_path": args.results_path}, original_linguistic_output)[0],
+            AUROC_point_mass({"results_path": args.results_path}, original_linguistic_output)[0],
+            
+            # calibrated linguistic space metrics
+            dECE({"results_path": args.results_path}, calibrated_linguistic_output)[0],
+            dECE_point_mass({"results_path": args.results_path}, calibrated_linguistic_output)[0],
+            dAUROC({"results_path": args.results_path}, calibrated_linguistic_output)[0],
+            AUROC_point_mass({"results_path": args.results_path}, calibrated_linguistic_output)[0],
         ],
     })
     metrics_path = os.path.join(results_path, "linguistic_calibration_metrics.csv")

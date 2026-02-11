@@ -6,5 +6,5 @@ output_filters: null
 confidence_metrics: distributional_semantic_uncertainty
 
 qa_model:
-  repeat: 10
+  repeat: 30
   temperature: 1

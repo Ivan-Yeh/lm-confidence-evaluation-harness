@@ -13,8 +13,9 @@ from calibration.utils import *
 
 argparser = argparse.ArgumentParser(description="Calibrate linguistic confidence lexicon using empirical data.")
 argparser.add_argument("--results_path", type=str, required=True, help="Path to empirical results pickle file.")
+argparser.add_argument("--save_path", type=str, required=True, help="Path to save calibrated results pickle file.")
 argparser.add_argument("--model", type=str, required=True, help="LLM evaluator/calibrator name.")
-argparser.add_argument("--post-hoc-method", type=str, choices=["isotonic", "platt"], default="isotonic", help="Post-hoc calibration method.")
+argparser.add_argument("--post-hoc-method", type=str, choices=["isotonic", "platt_bi", "platt_uni"], default="platt_bi", help="Post-hoc calibration method.")
 argparser.add_argument("--answer-prepend", type=str, required=False, help="Prefix to prepend to answers.", default="")
 
 
@@ -40,8 +41,13 @@ if __name__ == "__main__":
         print(f"Results path {args.results_path} does not exist. Using newest directory: {newest_dir}")
         args.results_path = newest_dir
 
+    save_dir = os.path.dirname(args.results_path.replace("/hdd/ivny/results", args.save_path))
+
+    os.makedirs(save_dir, exist_ok=True)
+
     # Load empirical results
     with open(os.path.join(args.results_path, "graded_outputs_0.pkl"), "rb") as f:
+        print(f"Loading graded_outputs_0.pkl from {args.results_path}")
         graded_outputs: OrganisedOutputs = pickle.load(f)
 
     # truncate for debugging
@@ -70,7 +76,7 @@ if __name__ == "__main__":
     output_df.dropna(inplace=True)  # Remove training set rows with None
 
     # find closest hedging words for calibrated confidences using multiprocessing
-    hedging_words_cache = os.path.join(args.results_path, "hedging_words_cache.pkl")
+    hedging_words_cache = os.path.join(save_dir, "hedging_words_cache.pkl")
 
 
     if os.path.exists(hedging_words_cache):
@@ -97,8 +103,8 @@ if __name__ == "__main__":
     output_df["target_hedging_words"] = hedging_words
 
     # rewrite outputs with target hedging words
-    if os.path.exists(os.path.join(args.results_path, "linguistic_calibration_outputs_rewrites.pkl")):
-        output_df = pd.read_pickle(os.path.join(args.results_path, "linguistic_calibration_outputs_rewrites.pkl"))
+    if os.path.exists(os.path.join(save_dir, "linguistic_calibration_outputs_rewrites.pkl")):
+        output_df = pd.read_pickle(os.path.join(save_dir, "linguistic_calibration_outputs_rewrites.pkl"))
         print("Rewritten outputs already exist, skipping rewriting step.")
     else:
         print("Rewriting outputs with target hedging words...")
@@ -145,11 +151,11 @@ if __name__ == "__main__":
         del llm
         gc.collect()
 
-        output_df.to_pickle(os.path.join(args.results_path, "linguistic_calibration_outputs_rewrites.pkl"))
+        output_df.to_pickle(os.path.join(save_dir, "linguistic_calibration_outputs_rewrites.pkl"))
 
     # evaluate linguistic confidence on original and calibrated responses
-    if os.path.exists(os.path.join(args.results_path, "linguistic_calibration_outputs.pkl")):
-        output_df = pd.read_pickle(os.path.join(args.results_path, "linguistic_calibration_outputs.pkl"))
+    if os.path.exists(os.path.join(save_dir, "linguistic_calibration_outputs.pkl")):
+        output_df = pd.read_pickle(os.path.join(save_dir, "linguistic_calibration_outputs.pkl"))
     else:
         original_linguistic_confidences = estimate_linguistic_confidence(
             output_df["original_response"].tolist()
@@ -164,8 +170,8 @@ if __name__ == "__main__":
 
         output_df.dropna(inplace=True)
 
-        output_df.to_csv(os.path.join(args.results_path, "linguistic_calibration_outputs.csv"), index=False)
-        output_df.to_pickle(os.path.join(args.results_path, "linguistic_calibration_outputs.pkl"))
+        output_df.to_csv(os.path.join(save_dir, "linguistic_calibration_outputs.csv"), index=False)
+        output_df.to_pickle(os.path.join(save_dir, "linguistic_calibration_outputs.pkl"))
 
     # print("LLM inference cache saved.")
     # sys.exit()
@@ -177,11 +183,20 @@ if __name__ == "__main__":
     # except:
     #     pass
 
+    print("Confidence cached.")
+    sys.exit()
+
     # compute and save calibration metrics
     print("Computing calibration metrics...")
     original_organised_output = OrganisedOutputs(
         accuracy_scores=[output_df["accuracy"].tolist()],
         extracted_confidences=[output_df["original_numerical_confidence"].tolist()],
+        extracted_answers=[output_df["original_response"].tolist()]
+    )
+
+    calibrated_organised_output = OrganisedOutputs(
+        accuracy_scores=[output_df["accuracy"].tolist()],
+        extracted_confidences=[output_df["calibrated_numerical_confidence"].tolist()],
         extracted_answers=[output_df["original_response"].tolist()]
     )
 
@@ -199,10 +214,15 @@ if __name__ == "__main__":
 
     metrics_df = pd.DataFrame({
         "metric": [
-            "original_dECE",
-            "original_dECE_pt",
-            "original_dAUROC",
-            "original_auroc_pt",
+            "original_signal_dECE",
+            "original_signal_dECE_pt",
+            "original_signal_dAUROC",
+            "original_signal_auroc_pt",
+            
+            "calibrated_signal_dECE",
+            "calibrated_signal_dECE_pt",
+            "calibrated_signal_dAUROC",
+            "calibrated_signal_auroc_pt",
             
             "original_linguistic_dECE",
             "original_linguistic_dECE_pt",
@@ -216,21 +236,30 @@ if __name__ == "__main__":
         ],
 
         "value": [
-            dECE({"results_path": args.results_path}, original_organised_output)[0],                # original method dECE 
-            dECE_point_mass({"results_path": args.results_path}, original_organised_output)[0],
-            dAUROC({"results_path": args.results_path}, original_organised_output)[0],
-            AUROC_point_mass({"results_path": args.results_path}, original_organised_output)[0],
+            # original signal space metrics
+            dECE({"results_path": save_dir}, original_organised_output)[0],
+            dECE_point_mass({"results_path": save_dir}, original_organised_output)[0],
+            dAUROC({"results_path": save_dir}, original_organised_output)[0],
+            AUROC_point_mass({"results_path": save_dir}, original_organised_output)[0],
 
-            dECE({"results_path": args.results_path}, original_linguistic_output)[0],               # original linguistic dECE 
-            dECE_point_mass({"results_path": args.results_path}, original_linguistic_output)[0],
-            dAUROC({"results_path": args.results_path}, original_linguistic_output)[0],
-            AUROC_point_mass({"results_path": args.results_path}, original_linguistic_output)[0],
+            # calibrated signal space metrics 
+            dECE({"results_path": save_dir}, calibrated_organised_output)[0],
+            dECE_point_mass({"results_path": save_dir}, calibrated_organised_output)[0],
+            dAUROC({"results_path": save_dir}, calibrated_organised_output)[0],
+            AUROC_point_mass({"results_path": save_dir}, calibrated_organised_output)[0],
+
+            # original linguistic space metrics
+            dECE({"results_path": save_dir}, original_linguistic_output)[0],
+            dECE_point_mass({"results_path": save_dir}, original_linguistic_output)[0],
+            dAUROC({"results_path": save_dir}, original_linguistic_output)[0],
+            AUROC_point_mass({"results_path": save_dir}, original_linguistic_output)[0],
             
-            dECE({"results_path": args.results_path}, calibrated_linguistic_output)[0],             # calibrated linguistic dECE 
-            dECE_point_mass({"results_path": args.results_path}, calibrated_linguistic_output)[0],
-            dAUROC({"results_path": args.results_path}, calibrated_linguistic_output)[0],
-            AUROC_point_mass({"results_path": args.results_path}, calibrated_linguistic_output)[0],
+            # calibrated linguistic space metrics
+            dECE({"results_path": save_dir}, calibrated_linguistic_output)[0],
+            dECE_point_mass({"results_path": save_dir}, calibrated_linguistic_output)[0],
+            dAUROC({"results_path": save_dir}, calibrated_linguistic_output)[0],
+            AUROC_point_mass({"results_path": save_dir}, calibrated_linguistic_output)[0],
         ],
     })
-    metrics_df.to_csv(os.path.join(args.results_path, "linguistic_calibration_metrics.csv"), index=False)
+    metrics_df.to_csv(os.path.join(save_dir, "linguistic_calibration_metrics.csv"), index=False)
     print(metrics_df)

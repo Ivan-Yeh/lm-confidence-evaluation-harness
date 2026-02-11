@@ -14,6 +14,7 @@ output_filters:
         - (?i)\bcorrect\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
         - (?i)\bbest\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
         - (?i)\s*([A-D])
+        - (?i)\banswer\s+is\s+([A-D])\b
 confidence_metrics: distributional_p_true_cont
 grader: exact_match
 

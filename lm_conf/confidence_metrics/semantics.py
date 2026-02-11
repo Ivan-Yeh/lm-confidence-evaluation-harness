@@ -12,7 +12,7 @@ class EntailmentDeberta():
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = AutoTokenizer.from_pretrained("microsoft/deberta-v2-xlarge-mnli")
         self.model = AutoModelForSequenceClassification.from_pretrained(
-            "microsoft/deberta-v2-xlarge-mnli").to(device)
+            "microsoft/deberta-v2-xlarge-mnli", load_in_8bit=True, device_map="auto")
 
     def check_implication(self, text1, text2):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -31,7 +31,7 @@ class EntailmentDeberta():
         self,
         texts1,
         texts2,
-        batch_size: int = 256,
+        batch_size: int = 512,
         max_length: int = 256,
     ):
         """
@@ -50,7 +50,8 @@ class EntailmentDeberta():
         """
         preds = []
         device = next(self.model.parameters()).device
-        with torch.no_grad():
+        
+        with torch.inference_mode():
             n = len(texts1)
             for i in range(0, n, batch_size):
                 batch1 = texts1[i : i + batch_size]
@@ -64,71 +65,18 @@ class EntailmentDeberta():
                     truncation=True,
                     max_length=max_length,
                     return_tensors="pt",
-                ).to(device)
+                )
+                
+                # Move to device only once per batch
+                enc = {k: v.to(device) for k, v in enc.items()}
 
-                # Forward pass: logits shape [B, 3]
+                # Forward pass
                 logits = self.model(**enc).logits
 
                 # Predicted class indices.
                 pred = torch.argmax(logits, dim=1)  # shape [B]
 
                 preds.extend(pred.cpu().tolist())
-
-        return preds
-    
-    def entailment_probability_batch(
-        self,
-        texts1,
-        texts2,
-        batch_size: int = 256,
-        max_length: int = 256,
-    ):
-        """
-        Batched inference for pairs (premise -> hypothesis).
-
-        Args:
-            texts1: List[str] of premises.
-            texts2: List[str] of hypotheses (same length as texts1).
-            batch_size: Mini-batch size to control memory usage.
-            max_length: Truncation length for the tokenizer.
-            return_probs: If True, also return entailment probabilities.
-
-        Returns:
-            preds: List[float] with entailment probabilities (class 2) for each pair.
-        """
-        preds = []
-        device = next(self.model.parameters()).device
-        with torch.no_grad():
-            n = len(texts1)
-            for i in range(0, n, batch_size):
-                batch1 = texts1[i : i + batch_size]
-                batch2 = texts2[i : i + batch_size]
-
-                # Tokenize a batch of (premise, hypothesis) pairs.
-                enc = self.tokenizer(
-                    batch1,
-                    batch2,
-                    padding=True,
-                    truncation=True,
-                    max_length=max_length,
-                    return_tensors="pt",
-                ).to(device)
-
-                # Forward pass: logits shape [B, 3]
-                logits = self.model(**enc).logits
-
-                # Convert logits to probabilities over classes.
-                probs = F.softmax(logits, dim=1)   # 0:contra, 1:neutral, 2:entail
-
-                # Get entailment probability (class 2) for each pair
-                # pred = probs[:, 2]  # shape [B]
-
-                p_contra = probs[:, 0]
-                p_entail = probs[:, 2]
-
-                score = p_entail / (p_entail + p_contra)
-
-                preds.extend(score.cpu().tolist())
 
         return preds
 
@@ -140,33 +88,52 @@ def semantic_uncertainty_selection(output_lst: list[ModelOutputs], **kwargs) -> 
     selected_responses = []
     confidences = []
     for response_set in tqdm(response_lists, desc="Processing Entailments (Semantic Groups)"):
-        # Step 1: Compute semantic IDs
         n = len(response_set)
+
         if n == 1:
             semantic_ids = [0]
         else:
-            # Build all unique pairs
-            left = []
-            right = []
+            # -------------------------------
+            # Build bidirectional entailment pairs
+            # -------------------------------
+            left, right = [], []
+            pair_keys = []
+
             for i in range(n):
-                for j in range(i+1, n):
+                for j in range(i + 1, n):
+                    # i -> j
                     left.append(response_set[i])
                     right.append(response_set[j])
-            
-            # Check semantic equivalence
-            batch_results = entailment_model.check_implication_batch(left, right)
-            
-            # Map results to boolean equivalence
-            def are_equivalent(idx1, idx2):
-                pair_idx = idx1 * (n - 1) - (idx1 * (idx1 + 1)) // 2 + (idx2 - idx1 - 1)
-                i1 = batch_results[pair_idx]
-                i2 = batch_results[pair_idx]  # symmetric
-                if strict_entailment:
-                    return i1 == 2 and i2 == 2
-                else:
-                    return i1 != 0 and i2 != 0 and not (i1 == 1 and i2 == 1)
+                    pair_keys.append((i, j, "ij"))
 
+                    # j -> i
+                    left.append(response_set[j])
+                    right.append(response_set[i])
+                    pair_keys.append((i, j, "ji"))
+
+            # Run batch entailment
+            batch_results = entailment_model.check_implication_batch(left, right)
+
+            # Map results to dictionary
+            entail_map = {}
+            for (i, j, direction), res in zip(pair_keys, batch_results):
+                entail_map.setdefault((i, j), {})[direction] = res
+
+            # -------------------------------
+            # Semantic equivalence
+            # -------------------------------
+            def are_equivalent(i, j):
+                ij = entail_map[(i, j)]["ij"]
+                ji = entail_map[(i, j)]["ji"]
+                if strict_entailment:
+                    return ij == 2 and ji == 2
+                else:
+                    # Paper non-strict: no contradiction, not both neutral
+                    return (ij != 0) and (ji != 0) and not (ij == 1 and ji == 1)
+
+            # -------------------------------
             # Assign semantic IDs
+            # -------------------------------
             semantic_ids = [-1] * n
             next_id = 0
             for i in range(n):
@@ -177,16 +144,21 @@ def semantic_uncertainty_selection(output_lst: list[ModelOutputs], **kwargs) -> 
                             semantic_ids[j] = next_id
                     next_id += 1
 
+        # -------------------------------
         # Step 2: Find most frequent semantic ID
+        # -------------------------------
         most_freq_id = max(set(semantic_ids), key=semantic_ids.count)
-        confidence = semantic_ids.count(most_freq_id) / len(semantic_ids)
+        confidence = semantic_ids.count(most_freq_id) / n
         confidences.append(confidence)
 
-        # Step 3: Pick the first response with that semantic ID
+        # -------------------------------
+        # Step 3: Pick first response with that semantic ID
+        # -------------------------------
         selected_response = response_set[semantic_ids.index(most_freq_id)]
         selected_responses.append(selected_response)
+
         
-    entailment_model.model.to("cpu")
+    # entailment_model.model.to("cpu")
     del entailment_model.model
     del entailment_model.tokenizer
     del entailment_model

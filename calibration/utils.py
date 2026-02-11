@@ -72,6 +72,7 @@ def in_domain_numerical_post_hoc_calibration(confidences, accuracies, method="is
     """
     # Extract mu values from BetaDistributions
     mu_values = np.array([c.mu for c in confidences], dtype=float)
+    sigma_values = np.array([c.sigma for c in confidences], dtype=float)
     acc_values = np.array([acc if acc != "" else 0 for acc in accuracies], dtype=float)
     
     n = len(mu_values)
@@ -90,10 +91,17 @@ def in_domain_numerical_post_hoc_calibration(confidences, accuracies, method="is
         calibrator = IsotonicRegression(out_of_bounds='clip')
         calibrator.fit(X_train, y_train)
         calibrated_means = calibrator.predict(X_test)
-    elif method == "platt":
+    elif method == "platt_uni":
         calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
         calibrator.fit(X_train.reshape(-1, 1), y_train)
         calibrated_means = calibrator.predict_proba(X_test.reshape(-1, 1))[:, 1]
+    elif method == "platt_bi":
+        # Use both mu and sigma as features
+        X_train_features = np.column_stack([X_train, sigma_values[:train_size]])
+        X_test_features = np.column_stack([X_test, sigma_values[train_size:]])
+        calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
+        calibrator.fit(X_train_features, y_train)
+        calibrated_means = calibrator.predict_proba(X_test_features)[:, 1]
     else:
         raise ValueError(f"Unknown post-hoc calibration method: {method}")
     
@@ -137,22 +145,31 @@ def cross_domain_numerical_post_hoc_calibration(confidences_train, accuracies_tr
     if not valid_pairs:
         raise ValueError("No valid confidence-accuracy pairs found in training data")
     
-    # Extract mu values and accuracies from valid pairs
+    # Extract mu and sigma values and accuracies from valid pairs
     mu_train = np.array([c.mu for c, _ in valid_pairs], dtype=float)
+    sigma_train = np.array([c.sigma for c, _ in valid_pairs], dtype=float)
     acc_train = np.array([acc for _, acc in valid_pairs], dtype=float)
     
-    # Extract mu values from raw confidences to be calibrated
+    # Extract mu and sigma values from raw confidences to be calibrated
     mu_raw = np.array([c.mu for c in raw_confidences], dtype=float)
+    sigma_raw = np.array([c.sigma for c in raw_confidences], dtype=float)
     
     # Fit calibration model on training data
     if method == "isotonic":
         calibrator = IsotonicRegression(out_of_bounds='clip')
         calibrator.fit(mu_train, acc_train)
         calibrated_means = calibrator.predict(mu_raw)
-    elif method == "platt":
+    elif method == "platt_uni":
         calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
         calibrator.fit(mu_train.reshape(-1, 1), acc_train)
         calibrated_means = calibrator.predict_proba(mu_raw.reshape(-1, 1))[:, 1]
+    elif method == "platt_bi":
+        # Use both mu and sigma as features
+        X_train_features = np.column_stack([mu_train, sigma_train])
+        X_test_features = np.column_stack([mu_raw, sigma_raw])
+        calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
+        calibrator.fit(X_train_features, acc_train)
+        calibrated_means = calibrator.predict_proba(X_test_features)[:, 1]
     else:
         raise ValueError(f"Unknown post-hoc calibration method: {method}")
     
