@@ -4,9 +4,9 @@ from vllm import LLM, SamplingParams
 from tqdm import tqdm
 
 # Read the hedging lexicon CSV
-df = pd.read_csv("linguistic_confidence_lexicon/hedging_lexicon.csv")
+df = pd.read_csv("llm_evaluator_test/annotated_confidence_data.csv")
 
-print(f"Loaded {len(df)} sentences from hedging_lexicon.csv")
+print(f"Loaded {len(df)} sentences from annotated_confidence_data.csv")
 print(f"Columns: {df.columns.tolist()}")
 print(f"Sample:\n{df.head()}\n")
 
@@ -66,14 +66,13 @@ def evaluate_sentences_with_model(model_name, sentences, num_repeats=10):
     prompt_data = []  # (sentence_text, hedging_word, repeat_idx)
     
     for idx, row in df.iterrows():
-        sentence = row['example_sentence']
-        hedging_word = row['hedging_word']
+        sentence = row['uncertainty_expression']
         for repeat in range(num_repeats):
-            prompt_data.append((sentence, hedging_word, repeat))
+            prompt_data.append((sentence, repeat))
     
     # Build chat messages
     messages_batch = []
-    for sentence, hedging_word, repeat in prompt_data:
+    for sentence, repeat in prompt_data:
         prompt = f"""Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence (without using any external or prior knowledge).
                     Please pay attention to the hedging language used and the overall assertiveness of the statement.
                     If the sentence contains random guesses or abstention, the score should be towards 0. If the sentence is stated with strong certainty or no hedging, the score should be towards 100.
@@ -91,7 +90,7 @@ def evaluate_sentences_with_model(model_name, sentences, num_repeats=10):
         ]
         messages_batch.append(messages)
     
-    print(f"Evaluating {len(messages_batch)} sentence evaluations ({len(df)} sentences × {num_repeats} repeats)")
+    print(f"Evaluating {len(messages_batch)} sentence evaluations ({len(df)} sentences x {num_repeats} repeats)")
     
     # Generate all chat completions at once
     outputs = llm.chat(messages_batch, sampling_params, use_tqdm=True, chat_template_kwargs={"reasoning_effort": "low"})
@@ -99,10 +98,9 @@ def evaluate_sentences_with_model(model_name, sentences, num_repeats=10):
     # Process outputs and group by sentence
     scores_by_sentence = {}
     
-    for (sentence, hedging_word, repeat), output in zip(prompt_data, outputs):
+    for (sentence, repeat), output in zip(prompt_data, outputs):
         if sentence not in scores_by_sentence:
             scores_by_sentence[sentence] = {
-                'hedging_word': hedging_word,
                 'scores': []
             }
         
@@ -117,7 +115,6 @@ def evaluate_sentences_with_model(model_name, sentences, num_repeats=10):
     for sentence, data in scores_by_sentence.items():
         results.append({
             'sentence': sentence,
-            'hedging_word': data['hedging_word'],
             'model': model_name,
             'scores': data['scores'],
             'num_scores': len(data['scores']),
@@ -137,7 +134,7 @@ if __name__ == "__main__":
         print(f"Evaluating with model: {model}")
         print(f"{'='*80}")
         
-        result_df = evaluate_sentences_with_model(model, df['example_sentence'].tolist(), num_repeats=5)
+        result_df = evaluate_sentences_with_model(model, df['uncertainty_expression'].tolist(), num_repeats=3)
         all_results.append(result_df)
         
         print(f"\nResults for {model}:")
@@ -149,9 +146,9 @@ if __name__ == "__main__":
     combined_df = pd.concat(all_results, ignore_index=True)
     
     # Save to CSV
-    output_path = "linguistic_confidence_lexicon/"
-    combined_df.to_csv(output_path + "confidence_scores.csv", index=False)
-    combined_df.to_pickle(output_path + "confidence_scores.pkl")
+    output_path = "llm_evaluator_test/"
+    combined_df.to_csv(output_path + "local_eval_results.csv", index=False)
+    combined_df.to_pickle(output_path + "local_eval_results.pkl")
     print(f"\nSaved all results to {output_path}")
     
     print(f"\nTotal rows: {len(combined_df)}")
