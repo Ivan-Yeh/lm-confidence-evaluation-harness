@@ -183,8 +183,8 @@ if __name__ == "__main__":
     # except:
     #     pass
 
-    print("Confidence cached.")
-    sys.exit()
+    # print("Confidence cached.")
+    # sys.exit()
 
     # compute and save calibration metrics
     print("Computing calibration metrics...")

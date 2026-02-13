@@ -479,8 +479,8 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     logging.info("Computing dAUROC")
     accuracies = []
     confidence_dists = []
-
-    # sanity check
+    
+    # Collect valid pairs
     for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
         try:
             if acc is None or conf is None or conf.is_valid() is False:
@@ -490,39 +490,28 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
             confidence_dists.append(conf)
         except:
             continue
-
-    pos_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 1]
-    neg_dists = [bd for y, bd in zip(accuracies, confidence_dists) if y == 0 or y == ""]
-
-    if not pos_dists or not neg_dists:
+    
+    # Get indices of positive and negative examples
+    pos_idxs = [i for i, y in enumerate(accuracies) if y == 1]
+    neg_idxs = [i for i, y in enumerate(accuracies) if y == 0 or y == ""]
+    
+    if not pos_idxs or not neg_idxs:
         return [float("nan")]
-
-    num_samples = 100
-    num_iter = 10000000
-
-    # Sample from all distributions upfront
-    # Shape: (len(pos_dists), num_samples)
-    pos_samples = np.array([d.sample(num_samples) for d in pos_dists])
-    neg_samples = np.array([d.sample(num_samples) for d in neg_dists])
-
-    wins = 0
-    total = 0
-
-    # Calculate expected win rate via random pairwise comparisons
-    for _ in tqdm(range(num_iter), desc="Computing dAUROC"):
-        # Pick random distribution indices
-        p_idx = np.random.randint(0, len(pos_samples))
-        n_idx = np.random.randint(0, len(neg_samples))
-
-        # Pick random samples from those distributions
-        s_p = np.random.choice(pos_samples[p_idx])
-        s_n = np.random.choice(neg_samples[n_idx])
-
-        # Compare
-        if s_p > s_n:
-            wins += 1
-        elif s_p == s_n:
-            wins += 0.5
-        total += 1
-
-    return [float(wins / total)]
+    
+    num_iterations = 1_000_000
+    batch_size = 100_000
+    total_wins = 0.0
+    
+    for _ in tqdm(range(num_iterations // batch_size), desc="Computing dAUROC using Monte Carlo"):
+        # Sample INDICES of predictions (not distributions)
+        p_idxs_batch = np.random.choice(pos_idxs, size=batch_size, replace=True)
+        n_idxs_batch = np.random.choice(neg_idxs, size=batch_size, replace=True)
+        
+        # Draw one sample from each selected prediction's distribution
+        s_p = np.array([confidence_dists[i].sample() for i in p_idxs_batch]).flatten()
+        s_n = np.array([confidence_dists[i].sample() for i in n_idxs_batch]).flatten()
+        
+        # Vectorized comparison
+        total_wins += np.sum(s_p > s_n) + 0.5 * np.sum(s_p == s_n)
+    
+    return [float(total_wins / num_iterations)]
