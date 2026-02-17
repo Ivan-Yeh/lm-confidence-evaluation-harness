@@ -515,3 +515,72 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
         total_wins += np.sum(s_p > s_n) + 0.5 * np.sum(s_p == s_n)
     
     return [float(total_wins / num_iterations)]
+
+
+
+# https://arxiv.org/pdf/2410.04315
+@register_metric(name="generalised_ece")
+def generalised_ece(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+    logging.info("Computing generalised ECE")
+    # 1. Data Cleaning
+    accuracies = []
+    confidence_dists = []
+    
+    # Collect valid pairs
+    for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
+        try:
+            if acc is None or conf is None or conf.is_valid() is False:
+                continue
+            if acc == "":
+                acc = 0
+            cleaned_acc = float(acc)
+            accuracies.append(cleaned_acc)
+            confidence_dists.append(conf)
+        except:
+            continue
+
+    y = np.array(accuracies)
+    N = len(y)
+    
+    num_bins = cfg.get("num_bins", 10)
+    num_samples = cfg.get("num_samples", 1000) # Balanced for speed/accuracy
+    bins = np.linspace(0.0, 1.0, num_bins + 1)
+
+    # 2. Vectorized Sampling
+    # Shape: (N, num_samples)
+    all_samples = np.array([dist.sample(size=num_samples) for dist in confidence_dists])
+
+    # 3. Compute Probabilities and Expectations (Vectorized across N and Samples)
+    # We use broadcasting to find which bin every sample falls into
+    # bin_indices shape: (N, num_samples) -> values from 0 to num_bins-1
+    bin_indices = np.digitize(all_samples, bins) - 1
+    bin_indices = np.clip(bin_indices, 0, num_bins - 1)
+
+    rm = np.zeros(num_bins)
+    pm = np.zeros(num_bins)
+    gm = np.zeros(num_bins)
+
+    for m in range(num_bins):
+        # Create a boolean mask for samples in bin m
+        mask = (bin_indices == m)
+        
+        # P(S in Im | X = xn) for each n (Shape: N,)
+        p_nm = np.mean(mask, axis=1)
+        
+        # Calculate pm: Sum over all n
+        pm[m] = np.sum(p_nm)
+
+        if pm[m] > 0:
+            # Calculate rm: Weighted average of labels y
+            rm[m] = np.sum(p_nm * y) / pm[m]
+            
+            # Calculate gm: Expected value of samples within the bin
+            # We sum only the samples that fell in the bin and divide by total samples in bin
+            bin_samples_mask = all_samples[mask]
+            gm[m] = np.mean(bin_samples_mask) if bin_samples_mask.size > 0 else 0.0
+
+    # 4. Final gECE
+    # gECE = \sum (pm / N) * |rm - gm|
+    gece_value = np.sum((pm / N) * np.abs(rm - gm))
+
+    return [float(gece_value)]

@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 from tqdm import tqdm
 
-from lm_conf.post_processing.metrics import dECE_point_mass, AUROC_point_mass, dECE, dAUROC, accuracy_scalar_with_abstention
+from lm_conf.post_processing.metrics import dECE_point_mass, AUROC_point_mass, dECE, dAUROC, accuracy_scalar_with_abstention, generalised_ece
 from lm_conf.confidence_metrics.distributionals import BetaDistribution
 from lm_conf.default_utils.custom_types import OrganisedOutputs
 
@@ -22,6 +22,9 @@ def compute_metrics(organised_output: OrganisedOutputs) -> dict:
     
     dece_pm_result = dECE_point_mass(cfg, organised_output)
     dece_pm = dece_pm_result[0] if dece_pm_result else None
+
+    generalised_ece_result = generalised_ece(cfg, organised_output)
+    generalised_ece_val = generalised_ece_result[0] if generalised_ece_result else None
     
     dauroc_result = dAUROC(cfg, organised_output)
     dauroc = dauroc_result[0] if dauroc_result else None
@@ -30,17 +33,18 @@ def compute_metrics(organised_output: OrganisedOutputs) -> dict:
     auroc_pm = auroc_pm_result[0] if auroc_pm_result else None
     
     results = {
-        "accuracy_scalar_with_abstention": accuracy,
+        "accuracy": accuracy,
+        "generalised_ece": generalised_ece_val,
         "dECE": dece,
         "dECE_point_mass": dece_pm,
         "dAUROC": dauroc,
-        "auroc_point_mass": auroc_pm,
+        "AUROC_point_mass": auroc_pm,
     }
     return results
 
 
 if __name__ == "__main__":
-    base_path = "/hdd/ivny/results/mmlu/dist_semantic_uncertainty"
+    base_path = "/hdd/ivny/results/"
     
     # Find all leaf nodes
     leaf_nodes = []
@@ -54,6 +58,9 @@ if __name__ == "__main__":
     
     # Process each leaf node
     for leaf_node in tqdm(leaf_nodes, desc="Processing leaf nodes"):
+
+        print("Processing leaf node:", leaf_node)
+
         results_list = []
         
         # Check for graded_outputs_0.pkl and graded_outputs_1.pkl

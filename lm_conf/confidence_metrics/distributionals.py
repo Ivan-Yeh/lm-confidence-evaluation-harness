@@ -1,5 +1,7 @@
 import gc
 import logging
+import os
+import pickle
 import numpy as np
 import torch
 from tqdm import tqdm
@@ -82,140 +84,159 @@ def distributional_semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs
     # Extract responses: response_lists[question_idx] = tuple of 30 responses (one per round)
     response_lists: list[tuple[str]] = list(zip(*[output.output_texts for output in output_lst]))
     
-    entailment_model = EntailmentDeberta()
     selected_responses = []
     confidence_dists = []
-    strict_entailment = False
     
-    for responses in tqdm(
-        response_lists,
-        desc="Processing Entailments (Semantic Uncertainty - Subsampling)"
-    ):
-        responses = list(responses)
-        N = len(responses)  # should be 30
+    cache_path = cfg.get("filtered_output_path")
+    response_cache = os.path.join(cache_path, "selected_responses.pkl")
+    conf_cache = os.path.join(cache_path, "confidence_cache.pkl")
+    if os.path.exists(response_cache) and os.path.exists(conf_cache):
+        with open(response_cache, "rb") as f:
+            selected_responses = pickle.load(f)
+        with open(conf_cache, "rb") as f:
+            confidence_dists = pickle.load(f)
+        logging.info(f"Loaded cached responses and confidences from {cache_path}")
+    else:
+        entailment_model = EntailmentDeberta()
+        strict_entailment = False
+        
+        for responses in tqdm(
+            response_lists,
+            desc="Processing Entailments (Semantic Uncertainty - Subsampling)"
+        ):
+            responses = list(responses)
+            N = len(responses)  # should be 30
 
-        # -------------------------------
-        # Cache entailment results globally for this question
-        # -------------------------------
-        entail_cache = {}
+            # -------------------------------
+            # Cache entailment results globally for this question
+            # -------------------------------
+            entail_cache = {}
 
-        # -------------------------------
-        # Build all bidirectional entailment pairs (once)
-        # -------------------------------
-        left, right = [], []
-        pair_keys = []  # (i, j, direction)
+            # -------------------------------
+            # Build all bidirectional entailment pairs (once)
+            # -------------------------------
+            left, right = [], []
+            pair_keys = []  # (i, j, direction)
 
-        for i in range(N):
-            for j in range(i + 1, N):
-                for direction, (txt1, txt2) in [
-                    ("ij", (responses[i], responses[j])),
-                    ("ji", (responses[j], responses[i])),
-                ]:
-                    cache_key = (txt1, txt2)
-                    if cache_key not in entail_cache:
-                        left.append(txt1)
-                        right.append(txt2)
-                        pair_keys.append((i, j, direction))
-
-        if left:
-            try:
-                if cfg.get("dataset_name") == "mmlu":
-                    batch_size = 1024
-                else:
-                    batch_size = 256
-                results = entailment_model.check_implication_batch(
-                    left, right, batch_size=batch_size
-                )
-            except Exception as e:
-                print(f"Error occurred: {e}. Falling back to smaller batch size.")
-                results = entailment_model.check_implication_batch(
-                    left, right, batch_size=16
-                )
-
-            for (i, j, direction), res in zip(pair_keys, results):
-                if direction == "ij":
-                    cache_key = (responses[i], responses[j])
-                else:
-                    cache_key = (responses[j], responses[i])
-                entail_cache[cache_key] = res
-
-        # -------------------------------
-        # Build entailment map
-        # -------------------------------
-        entail_map = {}
-        for i in range(N):
-            for j in range(i + 1, N):
-                ij = entail_cache[(responses[i], responses[j])]
-                ji = entail_cache[(responses[j], responses[i])]
-                entail_map[(i, j)] = {"ij": ij, "ji": ji}
-
-        # -------------------------------
-        # Semantic equivalence (paper logic)
-        # -------------------------------
-        def are_equivalent(i, j):
-            ij = entail_map[(i, j)]["ij"]
-            ji = entail_map[(i, j)]["ji"]
-
-            if strict_entailment:
-                return ij == 2 and ji == 2
-            else:
-                return (ij != 0) and (ji != 0) and not (ij == 1 and ji == 1)
-
-        # -------------------------------
-        # Cluster all 30 responses ONCE
-        # -------------------------------
-        semantic_ids = [-1] * N
-        next_id = 0
-
-        for i in range(N):
-            if semantic_ids[i] == -1:
-                semantic_ids[i] = next_id
+            for i in range(N):
                 for j in range(i + 1, N):
-                    if are_equivalent(i, j):
-                        semantic_ids[j] = next_id
-                next_id += 1
+                    for direction, (txt1, txt2) in [
+                        ("ij", (responses[i], responses[j])),
+                        ("ji", (responses[j], responses[i])),
+                    ]:
+                        cache_key = (txt1, txt2)
+                        if cache_key not in entail_cache:
+                            left.append(txt1)
+                            right.append(txt2)
+                            pair_keys.append((i, j, direction))
 
-        assert -1 not in semantic_ids
+            if left:
+                try:
+                    if cfg.get("dataset_name") == "mmlu":
+                        batch_size = 1024
+                    else:
+                        batch_size = 256
+                    results = entailment_model.check_implication_batch(
+                        left, right, batch_size=batch_size
+                    )
+                except Exception as e:
+                    print(f"Error occurred: {e}. Falling back to smaller batch size.")
+                    results = entailment_model.check_implication_batch(
+                        left, right, batch_size=16
+                    )
 
-        # -------------------------------
-        # Identify majority class
-        # -------------------------------
-        counts = np.bincount(semantic_ids)
-        majority_cluster = int(np.argmax(counts))
-        # majority_prop_30 = counts[majority_cluster] / N
+                for (i, j, direction), res in zip(pair_keys, results):
+                    if direction == "ij":
+                        cache_key = (responses[i], responses[j])
+                    else:
+                        cache_key = (responses[j], responses[i])
+                    entail_cache[cache_key] = res
 
-        # -------------------------------
-        # Subsampling: measure support for FIXED majority class
-        # -------------------------------
-        subsample_confidences = []
+            # -------------------------------
+            # Build entailment map
+            # -------------------------------
+            entail_map = {}
+            for i in range(N):
+                for j in range(i + 1, N):
+                    ij = entail_cache[(responses[i], responses[j])]
+                    ji = entail_cache[(responses[j], responses[i])]
+                    entail_map[(i, j)] = {"ij": ij, "ji": ji}
 
-        indices = np.arange(N)
+            # -------------------------------
+            # Semantic equivalence (paper logic)
+            # -------------------------------
+            def are_equivalent(i, j):
+                ij = entail_map[(i, j)]["ij"]
+                ji = entail_map[(i, j)]["ji"]
 
-        for _ in range(50):
-            sampled = np.random.choice(indices, size=10, replace=False)
-            support = np.mean(
-                [semantic_ids[i] == majority_cluster for i in sampled]
+                if strict_entailment:
+                    return ij == 2 and ji == 2
+                else:
+                    return (ij != 0) and (ji != 0) and not (ij == 1 and ji == 1)
+
+            # -------------------------------
+            # Cluster all 30 responses ONCE
+            # -------------------------------
+            semantic_ids = [-1] * N
+            next_id = 0
+
+            for i in range(N):
+                if semantic_ids[i] == -1:
+                    semantic_ids[i] = next_id
+                    for j in range(i + 1, N):
+                        if are_equivalent(i, j):
+                            semantic_ids[j] = next_id
+                    next_id += 1
+
+            assert -1 not in semantic_ids
+
+            # -------------------------------
+            # Identify majority class
+            # -------------------------------
+            counts = np.bincount(semantic_ids)
+            majority_cluster = int(np.argmax(counts))
+            # majority_prop_30 = counts[majority_cluster] / N
+
+            # -------------------------------
+            # Subsampling: measure support for FIXED majority class
+            # -------------------------------
+            subsample_confidences = []
+
+            indices = np.arange(N)
+
+            for _ in range(50):
+                sampled = np.random.choice(indices, size=10, replace=False)
+                support = np.mean(
+                    [semantic_ids[i] == majority_cluster for i in sampled]
+                )
+                subsample_confidences.append(support)
+
+            # -------------------------------
+            # Fit distribution
+            # -------------------------------
+            avg_confidence = float(np.mean(subsample_confidences))
+            std_confidence = float(np.std(subsample_confidences)) if len(subsample_confidences) > 1 else 1e-6
+
+            selected_responses.append(responses[np.where(np.array(semantic_ids) == majority_cluster)[0][0]])
+            confidence_dists.append(
+                BetaDistribution(mu=avg_confidence, sigma=std_confidence)
             )
-            subsample_confidences.append(support)
 
-        # -------------------------------
-        # Fit distribution
-        # -------------------------------
-        avg_confidence = float(np.mean(subsample_confidences))
-        std_confidence = float(np.std(subsample_confidences)) if len(subsample_confidences) > 1 else 1e-6
+        # entailment_model.model.to("cpu")
+        del entailment_model.model
+        del entailment_model.tokenizer
+        del entailment_model
+        gc.collect()
+        torch.cuda.empty_cache()
 
-        selected_responses.append(responses[np.where(np.array(semantic_ids) == majority_cluster)[0][0]])
-        confidence_dists.append(
-            BetaDistribution(mu=avg_confidence, sigma=std_confidence)
-        )
-
-    
-    # entailment_model.model.to("cpu")
-    del entailment_model.model
-    del entailment_model.tokenizer
-    del entailment_model
-    gc.collect()
-    torch.cuda.empty_cache()
+    # pickle selected responses and confidence dists for this question
+    response_cache = os.path.join(cfg.get("results_path"), "selected_responses.pkl")
+    conf_cache = os.path.join(cfg.get("results_path"), "confidence_cache.pkl")
+    with open(response_cache, "wb") as f:
+        pickle.dump(selected_responses, f)
+    with open(conf_cache, "wb") as f:
+        pickle.dump(confidence_dists, f)
+    logging.info(f"Cached responses and confidences saved to {cfg.get('results_path')}")
 
     return OrganisedOutputs(
         extracted_answers=[selected_responses],

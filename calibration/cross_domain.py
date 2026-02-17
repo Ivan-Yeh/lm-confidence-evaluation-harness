@@ -3,6 +3,7 @@ import pandas as pd
 import pickle
 import argparse
 import os
+import sys
 from tqdm import tqdm
 from vllm import LLM, SamplingParams
 from multiprocessing import Pool, cpu_count
@@ -21,14 +22,15 @@ argparser.add_argument("--test_dataset", type=str, required=True) # mmlu, trivia
 argparser.add_argument("--model", type=str, required=True, help="Target Model") # meta-llama/Llama-3.1-8B-Instruct
 argparser.add_argument("--estimation_method", type=str, required=True, help="Estimation Method") # dist_lnll, dist_linguistic_confidence, dist_semantic_uncertainty
 argparser.add_argument("--modifier", type=str, required=True, help="LLM calibrator (for rewriting raw responses).")
-argparser.add_argument("--post-hoc-method", type=str, choices=["isotonic", "platt"], default="isotonic", help="Post-hoc calibration method.")
+argparser.add_argument("--post-hoc-method", type=str, choices=["isotonic", "platt_uni", "platt_bi"], default="isotonic", help="Post-hoc calibration method.")
 argparser.add_argument("--answer-prepend-test", type=str, required=False, help="Prefix to prepend to answers.", default="")
-
+argparser.add_argument("--breakpoint", type=str, choices=["hedge", "eval", "metrics"])
 
 if __name__ == "__main__":
     
     args = argparser.parse_args()
-    
+    print("Breakpoint set to:", args.breakpoint)
+
     # Construct cache paths from cache_parent_path
     # cache_parent_path is like /hdd/ivny/results/
     train_cache_path = os.path.join(args.cache_parent_path, args.train_dataset, args.estimation_method, args.model)
@@ -155,6 +157,10 @@ if __name__ == "__main__":
     
     test_df["target_hedging_words"] = hedging_words
 
+    if args.breakpoint == "hedge":
+        print("Hedging words obtained. Breaking here for debugging.")
+        sys.exit()
+
     # rewrite outputs with target hedging words
     rewrites_pkl_path = os.path.join(results_path, "linguistic_calibration_outputs_rewrites.pkl")
     if os.path.exists(rewrites_pkl_path):
@@ -230,9 +236,9 @@ if __name__ == "__main__":
         test_df.to_csv(outputs_csv_path, index=False)
         test_df.to_pickle(outputs_pkl_path)
 
-    print(f"All calibration cache files saved to {results_path}")
-    import sys
-    sys.exit()
+    if args.breakpoint == "eval":
+        print("Hedging words obtained. Breaking here for debugging.")
+        sys.exit()
 
     # compute and save calibration metrics
     print("Computing calibration metrics...")

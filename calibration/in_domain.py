@@ -17,10 +17,13 @@ argparser.add_argument("--save_path", type=str, required=True, help="Path to sav
 argparser.add_argument("--model", type=str, required=True, help="LLM evaluator/calibrator name.")
 argparser.add_argument("--post-hoc-method", type=str, choices=["isotonic", "platt_bi", "platt_uni"], default="platt_bi", help="Post-hoc calibration method.")
 argparser.add_argument("--answer-prepend", type=str, required=False, help="Prefix to prepend to answers.", default="")
+argparser.add_argument("--breakpoint", type=str, choices=["hedge", "eval", "metrics"], help="Whether to set a breakpoint after loading results for debugging.")
 
 
 if __name__ == "__main__":
     args = argparser.parse_args()
+
+    print("Breakpoint set to:", args.breakpoint)
 
     # check if results path exists
     if not os.path.exists(args.results_path):
@@ -101,6 +104,10 @@ if __name__ == "__main__":
         print(f"Saved hedging words to {hedging_words_cache}")
     
     output_df["target_hedging_words"] = hedging_words
+
+    if args.breakpoint == "hedge":
+        print("Hedging words obtained. Breaking here for debugging.")
+        sys.exit()
 
     # rewrite outputs with target hedging words
     if os.path.exists(os.path.join(save_dir, "linguistic_calibration_outputs_rewrites.pkl")):
@@ -183,8 +190,9 @@ if __name__ == "__main__":
     # except:
     #     pass
 
-    # print("Confidence cached.")
-    # sys.exit()
+    if args.breakpoint == "eval":
+        print("Evaluation completed. Breaking here for debugging.")
+        sys.exit()
 
     # compute and save calibration metrics
     print("Computing calibration metrics...")
