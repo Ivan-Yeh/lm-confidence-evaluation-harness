@@ -8,7 +8,7 @@ from tqdm import tqdm
 from vllm import LLM, SamplingParams
 from multiprocessing import Pool, cpu_count
 from lm_conf.default_utils.custom_types import OrganisedOutputs
-from lm_conf.post_processing.metrics import dECE, dECE_point_mass, AUROC_point_mass, dAUROC
+from lm_conf.post_processing.metrics import dECE, dECE_point_mass, AUROC_point_mass, dAUROC, generalised_ece
 from calibration.utils import *
 
 argparser = argparse.ArgumentParser(description="Calibrate linguistic confidence lexicon using empirical data.")
@@ -220,23 +220,30 @@ if __name__ == "__main__":
         extracted_answers=[output_df["calibrated_response"].tolist()]
     )
 
+    # cfg = {"results_path": save_dir}
+    cfg = {}
+
     metrics_df = pd.DataFrame({
         "metric": [
+            "original_signal_generalised_ECE",
             "original_signal_dECE",
             "original_signal_dECE_pt",
             "original_signal_dAUROC",
             "original_signal_auroc_pt",
             
+            "calibrated_signal_generalised_ECE",
             "calibrated_signal_dECE",
             "calibrated_signal_dECE_pt",
             "calibrated_signal_dAUROC",
             "calibrated_signal_auroc_pt",
             
+            "original_linguistic_generalised_ECE",
             "original_linguistic_dECE",
             "original_linguistic_dECE_pt",
             "original_linguistic_dAUROC",
             "original_linguistic_auroc_pt",
-
+    
+            "calibrated_linguistic_generalised_ECE",
             "calibrated_linguistic_dECE",
             "calibrated_linguistic_dECE_pt",
             "calibrated_linguistic_dAUROC",
@@ -245,28 +252,32 @@ if __name__ == "__main__":
 
         "value": [
             # original signal space metrics
-            dECE({"results_path": save_dir}, original_organised_output)[0],
-            dECE_point_mass({"results_path": save_dir}, original_organised_output)[0],
-            dAUROC({"results_path": save_dir}, original_organised_output)[0],
-            AUROC_point_mass({"results_path": save_dir}, original_organised_output)[0],
+            generalised_ece(cfg, original_organised_output)[0],
+            dECE(cfg, original_organised_output)[0],
+            dECE_point_mass(cfg, original_organised_output)[0],
+            dAUROC(cfg, original_organised_output)[0],
+            AUROC_point_mass(cfg, original_organised_output)[0],
 
             # calibrated signal space metrics 
-            dECE({"results_path": save_dir}, calibrated_organised_output)[0],
-            dECE_point_mass({"results_path": save_dir}, calibrated_organised_output)[0],
-            dAUROC({"results_path": save_dir}, calibrated_organised_output)[0],
-            AUROC_point_mass({"results_path": save_dir}, calibrated_organised_output)[0],
+            generalised_ece(cfg, calibrated_organised_output)[0],
+            dECE(cfg, calibrated_organised_output)[0],
+            dECE_point_mass(cfg, calibrated_organised_output)[0],
+            dAUROC(cfg, calibrated_organised_output)[0],
+            AUROC_point_mass(cfg, calibrated_organised_output)[0],
 
             # original linguistic space metrics
-            dECE({"results_path": save_dir}, original_linguistic_output)[0],
-            dECE_point_mass({"results_path": save_dir}, original_linguistic_output)[0],
-            dAUROC({"results_path": save_dir}, original_linguistic_output)[0],
-            AUROC_point_mass({"results_path": save_dir}, original_linguistic_output)[0],
+            generalised_ece(cfg, original_linguistic_output)[0],
+            dECE(cfg, original_linguistic_output)[0],
+            dECE_point_mass(cfg, original_linguistic_output)[0],
+            dAUROC(cfg, original_linguistic_output)[0],
+            AUROC_point_mass(cfg, original_linguistic_output)[0],
             
             # calibrated linguistic space metrics
-            dECE({"results_path": save_dir}, calibrated_linguistic_output)[0],
-            dECE_point_mass({"results_path": save_dir}, calibrated_linguistic_output)[0],
-            dAUROC({"results_path": save_dir}, calibrated_linguistic_output)[0],
-            AUROC_point_mass({"results_path": save_dir}, calibrated_linguistic_output)[0],
+            generalised_ece(cfg, calibrated_linguistic_output)[0],
+            dECE(cfg, calibrated_linguistic_output)[0],
+            dECE_point_mass(cfg, calibrated_linguistic_output)[0],
+            dAUROC(cfg, calibrated_linguistic_output)[0],
+            AUROC_point_mass(cfg, calibrated_linguistic_output)[0],
         ],
     })
     metrics_df.to_csv(os.path.join(save_dir, "linguistic_calibration_metrics.csv"), index=False)
