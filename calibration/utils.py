@@ -54,7 +54,7 @@ def obtain_hedging_words(conf: BetaDistribution) -> list[str] | None:
 evaluator_list = [
     "openai/gpt-oss-20b",
     "meta-llama/Llama-3.1-8B-Instruct",
-    "qwen/Qwen3-8B",
+    "mistralai/Mistral-7B-Instruct-v0.3",
 ]
 
 
@@ -198,9 +198,9 @@ def estimate_linguistic_confidence(responses: list[str]) -> list[BetaDistributio
 
     for evaluator in evaluator_list:
         llm = LLM(max_model_len=4000, model=evaluator, trust_remote_code=True)
-        sampling_params = SamplingParams(temperature=1, max_tokens=256)
+        sampling_params = SamplingParams(temperature=1, max_tokens=512)
         
-        for run in range(5):  # Run each prompt 5 times
+        for run in range(3):  # Run each prompt 3 times
             message_list = [[{"role": "user", "content": r}] for r in prompts]
 
             outputs = llm.chat(

@@ -139,6 +139,7 @@ if __name__ == "__main__":
         with open(hedging_words_cache, "rb") as f:
             hedging_words = pickle.load(f)
     else:
+        print("Processing", results_path)
         with Pool(cpu_count() - 1) as pool:
             hedging_words = list(
                 tqdm(
@@ -184,7 +185,7 @@ if __name__ == "__main__":
             max_model_len=5096,
         )
 
-        sampling_params = SamplingParams(temperature=1, max_tokens=512)
+        sampling_params = SamplingParams(temperature=1, max_tokens=1024)
 
         rewrite_outputs = llm.chat(
             messages=[
