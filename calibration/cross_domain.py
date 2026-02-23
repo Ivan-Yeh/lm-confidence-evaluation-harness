@@ -179,7 +179,7 @@ if __name__ == "__main__":
         ]
 
         llm = LLM(
-            model=args.model,
+            model=args.modifier,
             dtype="bfloat16",
             trust_remote_code=True,
             max_model_len=5096,
