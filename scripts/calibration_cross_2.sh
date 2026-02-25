@@ -3,7 +3,7 @@
 
 GPU=2
 MODIFIER="openai/gpt-oss-20b"
-BREAKPOINT="eval"
+BREAKPOINT="metrics"
 
 MODELS=(
     "openai/gpt-oss-20b"

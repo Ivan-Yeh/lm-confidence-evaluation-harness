@@ -238,7 +238,7 @@ if __name__ == "__main__":
         test_df.to_pickle(outputs_pkl_path)
 
     if args.breakpoint == "eval":
-        print("Hedging words obtained. Breaking here for debugging.")
+        print("Eval complete. Breaking here for debugging.")
         sys.exit()
 
     # compute and save calibration metrics
