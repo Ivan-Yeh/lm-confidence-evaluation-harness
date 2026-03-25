@@ -2,6 +2,7 @@ import gc
 import logging
 import os
 import pickle
+from collections import Counter
 import numpy as np
 import torch
 from tqdm import tqdm
@@ -14,6 +15,9 @@ from ..models.model_manager import ModelManager
 
 class BetaDistribution:
     def __init__(self, mu: float, sigma: float):
+
+        __slots__ = ["mu", "sigma", "alpha_param", "beta_param"]
+
         self.mu = np.clip(mu, 1e-6, 1 - 1e-6)
 
         max_sigma2 = self.mu * (1 - self.mu)
@@ -55,15 +59,199 @@ class BetaDistribution:
         return f"BetaDistribution(alpha={self.alpha_param}, beta={self.beta_param}, mu={self.mu}, sigma={self.sigma})"
 
 
+def _cache_file_candidates(cfg: dict, filename: str) -> list[str]:
+    candidates: list[str] = []
+    for base_path in [cfg.get("filtered_output_path"), cfg.get("results_path")]:
+        if base_path:
+            candidates.append(os.path.join(base_path, filename))
+    return candidates
+
+
+def _load_first_existing_pickle(paths: list[str]):
+    for path in paths:
+        if os.path.exists(path):
+            with open(path, "rb") as f:
+                return pickle.load(f)
+    return None
+
+
+def _save_pickle_to_results(cfg: dict, filename: str, payload) -> None:
+    results_path = cfg.get("results_path")
+    if not results_path:
+        return
+    os.makedirs(results_path, exist_ok=True)
+    cache_file = os.path.join(results_path, filename)
+    with open(cache_file, "wb") as f:
+        pickle.dump(payload, f)
+
+
+def _is_valid_majority_cluster_cache(cached_clusters, response_lists: list[tuple[str]]) -> bool:
+    if not isinstance(cached_clusters, list) or len(cached_clusters) != len(response_lists):
+        return False
+
+    for cluster, responses in zip(cached_clusters, response_lists):
+        if not isinstance(cluster, list):
+            return False
+
+        response_counts = Counter(list(responses))
+        for text in cluster:
+            if response_counts.get(text, 0) <= 0:
+                return False
+            response_counts[text] -= 1
+
+    return True
+
+
+def _load_or_build_majority_clusters(cfg: dict, response_lists: list[tuple[str]]) -> tuple[list[list[str]], list[str]]:
+    cluster_cache_candidates = _cache_file_candidates(cfg, "majority_cluster_responses.pkl")
+    cached_clusters = _load_first_existing_pickle(cluster_cache_candidates)
+
+    if _is_valid_majority_cluster_cache(cached_clusters, response_lists):
+        largest_clusters = cached_clusters
+        selected_responses = [cluster[0] if cluster else "" for cluster in largest_clusters]
+        _save_pickle_to_results(cfg, "majority_cluster_responses.pkl", largest_clusters)
+        return largest_clusters, selected_responses
+
+    if cached_clusters is not None:
+        logging.warning("Ignoring incompatible majority_cluster_responses cache; recomputing semantic clusters.")
+
+    _, largest_clusters, selected_responses = _build_semantic_majority_clusters(cfg, response_lists)
+    _save_pickle_to_results(cfg, "majority_cluster_responses.pkl", largest_clusters)
+    return largest_clusters, selected_responses
+
+
+def _build_semantic_majority_clusters(cfg: dict, response_lists: list[tuple[str]]) -> tuple[list[list[int]], list[list[str]], list[str]]:
+    semantic_ids_by_question: list[list[int]] = []
+    largest_clusters: list[list[str]] = []
+    selected_responses: list[str] = []
+
+    entailment_model = EntailmentDeberta()
+    strict_entailment = False
+
+    for responses in tqdm(
+        response_lists,
+        desc="Processing Entailments (Semantic Clusters)"
+    ):
+        responses = list(responses)
+        N = len(responses)
+
+        entail_cache = {}
+
+        def are_equivalent_from_scores(ij, ji):
+            if strict_entailment:
+                return ij == 2 and ji == 2
+            return (ij != 0) and (ji != 0) and not (ij == 1 and ji == 1)
+
+        # Assign each response by checking only one representative per existing cluster.
+        # Under transitivity assumption, this avoids building a full O(N^2) entailment graph.
+        semantic_ids = [-1] * N
+        cluster_representatives: list[int] = []
+
+        for i in range(N):
+            if not cluster_representatives:
+                semantic_ids[i] = 0
+                cluster_representatives.append(i)
+                continue
+
+            left, right = [], []
+            pair_keys = []
+            for rep_idx in cluster_representatives:
+                pairs = [
+                    (responses[i], responses[rep_idx]),
+                    (responses[rep_idx], responses[i]),
+                ]
+                for cache_key in pairs:
+                    if cache_key not in entail_cache:
+                        left.append(cache_key[0])
+                        right.append(cache_key[1])
+                        pair_keys.append(cache_key)
+
+            if left:
+                try:
+                    batch_size = 256
+                    results = entailment_model.check_implication_batch(
+                        left, right, batch_size=batch_size
+                    )
+                except Exception as e:
+                    print(f"Error occurred: {e}. Falling back to smaller batch size.")
+                    results = entailment_model.check_implication_batch(
+                        left, right, batch_size=16
+                    )
+
+                for cache_key, res in zip(pair_keys, results):
+                    entail_cache[cache_key] = res
+
+            assigned_cluster = None
+            for cluster_id, rep_idx in enumerate(cluster_representatives):
+                ij = entail_cache[(responses[i], responses[rep_idx])]
+                ji = entail_cache[(responses[rep_idx], responses[i])]
+                if are_equivalent_from_scores(ij, ji):
+                    assigned_cluster = cluster_id
+                    break
+
+            if assigned_cluster is None:
+                assigned_cluster = len(cluster_representatives)
+                cluster_representatives.append(i)
+
+            semantic_ids[i] = assigned_cluster
+
+        assert -1 not in semantic_ids
+
+        counts = np.bincount(semantic_ids)
+        majority_cluster = int(np.argmax(counts))
+        majority_indices = np.where(np.array(semantic_ids) == majority_cluster)[0]
+        majority_cluster_responses = [responses[idx] for idx in majority_indices]
+
+        semantic_ids_by_question.append(semantic_ids)
+        largest_clusters.append(majority_cluster_responses)
+        selected_responses.append(majority_cluster_responses[0] if majority_cluster_responses else "")
+
+    del entailment_model.model
+    del entailment_model.tokenizer
+    del entailment_model
+    gc.collect()
+    torch.cuda.empty_cache()
+
+    return semantic_ids_by_question, largest_clusters, selected_responses
+
+
 @register_confidence(name="distributional_length_normalised_log_likelihood")
 def distributional_length_normalised_log_likelihood(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
-    best_cluster_str, best_cluster_logprobs = semantic_cluster_selection(output_lst)
-    selected_responses: list[str] = [cluster[0] for cluster in best_cluster_str]
+    response_lists: list[tuple[str]] = list(zip(*[output.output_texts for output in output_lst]))
+    logprob_lists: list[tuple] = list(zip(*[output.output_logprobs for output in output_lst]))
+    largest_clusters, selected_responses = _load_or_build_majority_clusters(cfg, response_lists)
+
     cluster_token_probs_dist = []
-    for cluster_logprobs in best_cluster_logprobs:
-        cluster_probs = [np.exp(np.mean(x)) for x in cluster_logprobs if x is not None and len(x) > 0]
-        mu = np.mean(cluster_probs) if len(cluster_probs) > 0 else 0.0
-        sigma = np.std(cluster_probs) if len(cluster_probs) > 1 else 0.0
+    for q_idx, (responses, response_logprobs) in enumerate(zip(response_lists, logprob_lists)):
+        largest_cluster_responses = largest_clusters[q_idx] if q_idx < len(largest_clusters) else []
+
+        if not largest_cluster_responses:
+            cluster_token_probs_dist.append(BetaDistribution(mu=0.5, sigma=1e-6))
+            continue
+
+        # Match cached cluster texts to response/logprob pairs while preserving multiplicity for duplicates.
+        remaining = {}
+        for text in largest_cluster_responses:
+            remaining[text] = remaining.get(text, 0) + 1
+
+        largest_cluster_logprobs = []
+        for text, logprob in zip(responses, response_logprobs):
+            if remaining.get(text, 0) <= 0:
+                continue
+            remaining[text] -= 1
+
+            if logprob is None:
+                continue
+            try:
+                if len(logprob) == 0:
+                    continue
+            except TypeError:
+                logprob = [logprob]
+            largest_cluster_logprobs.append(logprob)
+
+        cluster_probs = [np.exp(np.mean(x)) for x in largest_cluster_logprobs]
+        mu = float(np.mean(cluster_probs)) if len(cluster_probs) > 0 else 0.5
+        sigma = float(np.std(cluster_probs)) if len(cluster_probs) > 1 else 1e-6
         cluster_token_probs_dist.append(BetaDistribution(mu=mu, sigma=sigma))
 
     return OrganisedOutputs(
@@ -86,156 +274,46 @@ def distributional_semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs
     
     selected_responses = []
     confidence_dists = []
-    
-    cache_path = cfg.get("filtered_output_path")
-    response_cache = os.path.join(cache_path, "selected_responses.pkl")
-    conf_cache = os.path.join(cache_path, "confidence_cache.pkl")
-    if os.path.exists(response_cache) and os.path.exists(conf_cache):
-        with open(response_cache, "rb") as f:
-            selected_responses = pickle.load(f)
-        with open(conf_cache, "rb") as f:
-            confidence_dists = pickle.load(f)
-        logging.info(f"Loaded cached responses and confidences from {cache_path}")
+
+    response_cache_candidates = _cache_file_candidates(cfg, "selected_responses.pkl")
+    conf_cache_candidates = _cache_file_candidates(cfg, "confidence_cache.pkl")
+    cached_selected = _load_first_existing_pickle(response_cache_candidates)
+    cached_conf = _load_first_existing_pickle(conf_cache_candidates)
+
+    largest_clusters, _ = _load_or_build_majority_clusters(cfg, response_lists)
+
+    if cached_selected is not None and cached_conf is not None:
+        selected_responses = cached_selected
+        confidence_dists = cached_conf
+        logging.info("Loaded cached responses and confidences for semantic uncertainty")
     else:
-        entailment_model = EntailmentDeberta()
-        strict_entailment = False
-        
-        for responses in tqdm(
-            response_lists,
-            desc="Processing Entailments (Semantic Uncertainty - Subsampling)"
-        ):
-            responses = list(responses)
-            N = len(responses)  # should be 30
+        semantic_ids_by_question, majority_clusters, selected_responses = _build_semantic_majority_clusters(cfg, response_lists)
+        _save_pickle_to_results(cfg, "majority_cluster_responses.pkl", majority_clusters)
 
-            # -------------------------------
-            # Cache entailment results globally for this question
-            # -------------------------------
-            entail_cache = {}
-
-            # -------------------------------
-            # Build all bidirectional entailment pairs (once)
-            # -------------------------------
-            left, right = [], []
-            pair_keys = []  # (i, j, direction)
-
-            for i in range(N):
-                for j in range(i + 1, N):
-                    for direction, (txt1, txt2) in [
-                        ("ij", (responses[i], responses[j])),
-                        ("ji", (responses[j], responses[i])),
-                    ]:
-                        cache_key = (txt1, txt2)
-                        if cache_key not in entail_cache:
-                            left.append(txt1)
-                            right.append(txt2)
-                            pair_keys.append((i, j, direction))
-
-            if left:
-                try:
-                    if cfg.get("dataset_name") == "mmlu":
-                        batch_size = 1024
-                    else:
-                        batch_size = 256
-                    results = entailment_model.check_implication_batch(
-                        left, right, batch_size=batch_size
-                    )
-                except Exception as e:
-                    print(f"Error occurred: {e}. Falling back to smaller batch size.")
-                    results = entailment_model.check_implication_batch(
-                        left, right, batch_size=16
-                    )
-
-                for (i, j, direction), res in zip(pair_keys, results):
-                    if direction == "ij":
-                        cache_key = (responses[i], responses[j])
-                    else:
-                        cache_key = (responses[j], responses[i])
-                    entail_cache[cache_key] = res
-
-            # -------------------------------
-            # Build entailment map
-            # -------------------------------
-            entail_map = {}
-            for i in range(N):
-                for j in range(i + 1, N):
-                    ij = entail_cache[(responses[i], responses[j])]
-                    ji = entail_cache[(responses[j], responses[i])]
-                    entail_map[(i, j)] = {"ij": ij, "ji": ji}
-
-            # -------------------------------
-            # Semantic equivalence (paper logic)
-            # -------------------------------
-            def are_equivalent(i, j):
-                ij = entail_map[(i, j)]["ij"]
-                ji = entail_map[(i, j)]["ji"]
-
-                if strict_entailment:
-                    return ij == 2 and ji == 2
-                else:
-                    return (ij != 0) and (ji != 0) and not (ij == 1 and ji == 1)
-
-            # -------------------------------
-            # Cluster all 30 responses ONCE
-            # -------------------------------
-            semantic_ids = [-1] * N
-            next_id = 0
-
-            for i in range(N):
-                if semantic_ids[i] == -1:
-                    semantic_ids[i] = next_id
-                    for j in range(i + 1, N):
-                        if are_equivalent(i, j):
-                            semantic_ids[j] = next_id
-                    next_id += 1
-
-            assert -1 not in semantic_ids
-
-            # -------------------------------
-            # Identify majority class
-            # -------------------------------
-            counts = np.bincount(semantic_ids)
+        for semantic_ids in semantic_ids_by_question:
+            semantic_ids_arr = np.array(semantic_ids)
+            counts = np.bincount(semantic_ids_arr)
             majority_cluster = int(np.argmax(counts))
-            # majority_prop_30 = counts[majority_cluster] / N
 
-            # -------------------------------
-            # Subsampling: measure support for FIXED majority class
-            # -------------------------------
             subsample_confidences = []
-
-            indices = np.arange(N)
+            indices = np.arange(len(semantic_ids_arr))
 
             for _ in range(50):
                 sampled = np.random.choice(indices, size=10, replace=False)
-                support = np.mean(
-                    [semantic_ids[i] == majority_cluster for i in sampled]
-                )
+                support = np.mean([semantic_ids_arr[i] == majority_cluster for i in sampled])
                 subsample_confidences.append(support)
 
-            # -------------------------------
-            # Fit distribution
-            # -------------------------------
             avg_confidence = float(np.mean(subsample_confidences))
             std_confidence = float(np.std(subsample_confidences)) if len(subsample_confidences) > 1 else 1e-6
+            confidence_dists.append(BetaDistribution(mu=avg_confidence, sigma=std_confidence))
 
-            selected_responses.append(responses[np.where(np.array(semantic_ids) == majority_cluster)[0][0]])
-            confidence_dists.append(
-                BetaDistribution(mu=avg_confidence, sigma=std_confidence)
-            )
-
-        # entailment_model.model.to("cpu")
-        del entailment_model.model
-        del entailment_model.tokenizer
-        del entailment_model
-        gc.collect()
-        torch.cuda.empty_cache()
+    # Keep selected answers aligned with the validated majority-cluster cache.
+    if len(selected_responses) != len(largest_clusters):
+        selected_responses = [cluster[0] if cluster else "" for cluster in largest_clusters]
 
     # pickle selected responses and confidence dists for this question
-    response_cache = os.path.join(cfg.get("results_path"), "selected_responses.pkl")
-    conf_cache = os.path.join(cfg.get("results_path"), "confidence_cache.pkl")
-    with open(response_cache, "wb") as f:
-        pickle.dump(selected_responses, f)
-    with open(conf_cache, "wb") as f:
-        pickle.dump(confidence_dists, f)
+    _save_pickle_to_results(cfg, "selected_responses.pkl", selected_responses)
+    _save_pickle_to_results(cfg, "confidence_cache.pkl", confidence_dists)
     logging.info(f"Cached responses and confidences saved to {cfg.get('results_path')}")
 
     return OrganisedOutputs(
@@ -248,9 +326,10 @@ def distributional_semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs
 def distributional_linguistic_confidence(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
     # use llm judge to rate how decisive the model's answer is
     evaluator_lst = cfg.get("evaluator_list", ["linguistic_confidence_judge_model_0"])
-    
-    # Take only the first output item
-    model_output: ModelOutputs = output_lst[0]
+
+    # Extract responses per question across rounds.
+    response_lists: list[tuple[str]] = list(zip(*[output.output_texts for output in output_lst]))
+    largest_clusters, _ = _load_or_build_majority_clusters(cfg, response_lists)
     
     def extract_score(text: str) -> float:
         match = re.search(r'(\d+(?:\.\d+)?)', text)
@@ -273,32 +352,58 @@ def distributional_linguistic_confidence(cfg: dict, output_lst: list[ModelOutput
     Confidence Score: [Return only a number between 0 and 100]
     """.strip()
     
-    # Initialize scores collection: scores_collection[text_idx] = list of scores from all evaluators
-    scores_collection: list[list[float]] = [[] for _ in model_output.output_texts]
+    # Flatten prompts while keeping the owning question index.
+    all_cluster_responses: list[str] = []
+    response_question_indices: list[int] = []
+    selected_answers: list[str] = []
+
+    for q_idx, cluster in enumerate(largest_clusters):
+        if not cluster:
+            selected_answers.append("")
+            continue
+        selected_answers.append(cluster[0])
+        for response in cluster:
+            all_cluster_responses.append(response)
+            response_question_indices.append(q_idx)
+
+    if not all_cluster_responses:
+        default_conf = [BetaDistribution(mu=0.5, sigma=1e-6) for _ in selected_answers]
+        return OrganisedOutputs(
+            extracted_answers=[selected_answers],
+            extracted_confidences=[default_conf],
+        )
+
+    # scores_collection[question_idx] = list of scores pooled across all cluster responses and evaluators
+    scores_collection: list[list[float]] = [[] for _ in selected_answers]
     
     # Loop through each evaluator
     for evaluator in evaluator_lst:
         model_manager: ModelManager = ModelManager(master_cfg=cfg, model_config_type=evaluator)
         
-        # Generate prompts for all responses
-        prompt_collection = PromptCollection(context_texts=[DIRECT_PROMPT.format(sentence=response) for response in model_output.output_texts])
+        # Generate prompts for every response in each question's largest semantic cluster.
+        prompt_collection = PromptCollection(context_texts=[DIRECT_PROMPT.format(sentence=response) for response in all_cluster_responses])
         judge_outputs: list[ModelOutputs] = model_manager.run_generation(prompt_collection)
-        
-        # Extract scores for each text
+
+        generated_scores_texts: list[str] = []
         for judge_out in judge_outputs:
-            for text_idx, judge_text in enumerate(judge_out.output_texts):
-                score = extract_score(judge_text)
-                if np.isnan(score):
-                    continue
-                scores_collection[text_idx].append(score)
-    
-    # Fit beta distributions from all collected scores
+            generated_scores_texts.extend(judge_out.output_texts)
+
+        # Assign judge outputs back to their question index via prompt order.
+        for q_idx, judge_text in zip(response_question_indices, generated_scores_texts):
+            score = extract_score(judge_text)
+            if np.isnan(score):
+                continue
+            scores_collection[q_idx].append(score)
+        del model_manager
+        gc.collect()
+        torch.cuda.empty_cache()
+
+    # Fit beta distributions from all collected scores for each question's largest cluster.
     confidence_dists = []
-    for text_idx, _ in enumerate(model_output.output_texts):
-        # Get all scores from all evaluators for this specific text
-        all_scores = scores_collection[text_idx]
+    for q_idx, _ in enumerate(selected_answers):
+        all_scores = scores_collection[q_idx]
         valid_scores = [s for s in all_scores if not np.isnan(s)]
-        
+
         if valid_scores:
             mu = float(np.mean(valid_scores))
             sigma = float(np.std(valid_scores)) if len(valid_scores) > 1 else 1e-6
@@ -309,90 +414,7 @@ def distributional_linguistic_confidence(cfg: dict, output_lst: list[ModelOutput
         confidence_dists.append(BetaDistribution(mu=mu, sigma=sigma))
 
     return OrganisedOutputs(
-        extracted_answers=[model_output.output_texts],
-        extracted_confidences=[confidence_dists],
-    )
-
-
-@register_confidence(name="distributional_p_true_cont")
-def distributional_p_true_mc(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
-    p_true_prompt_template = """
-    Question: {question}
-    Proposed Answer: {model_answer}
-    Is the proposed answer:
-    A) True
-    B) False
-    Return only A or B. The proposed answer is:
-    """.strip()
-    model = ModelManager(master_cfg=cfg, model_config_type="p_true_cont_model")
-    # Get clusters per question (list[list[str]]) and ignore logprobs here
-    clusters, _ = semantic_cluster_selection(output_lst)
-
-    selected_answers: list[str] = []
-    cluster_beta_dists: list[BetaDistribution | None] = [None for _ in clusters]
-
-    # Build all prompts once, track which cluster each prompt belongs to
-    all_prompts: list[str] = []
-    prompt_cluster_indices: list[int] = []
-
-    for q_idx, cluster in enumerate(clusters):
-        if not cluster:
-            selected_answers.append("")
-            cluster_beta_dists[q_idx] = BetaDistribution(mu=0.5, sigma=0.0)
-            continue
-
-        selected_answers.append(cluster[0])
-
-        question_text = prompts.context_texts[q_idx] if hasattr(prompts, "context_texts") else ""
-        for resp in cluster:
-            ctx = p_true_prompt_template.format(question=question_text, model_answer=resp)
-            all_prompts.append(ctx)
-            prompt_cluster_indices.append(q_idx)
-
-    if not all_prompts:
-        cluster_beta_dists = [beta_dist if beta_dist is not None else BetaDistribution(mu=0.5, sigma=0.0) for beta_dist in cluster_beta_dists]
-        return OrganisedOutputs(
-            extracted_answers=[selected_answers],
-            extracted_confidences=[cluster_beta_dists],
-        )
-
-    cont_map = {ctx: [" A"] for ctx in all_prompts}
-    p_true_prompt_collection = PromptCollection(context_texts=all_prompts, continuation_texts=cont_map)
-
-    try:
-        cont_results = model.run_continuation(p_true_prompt_collection)
-        cont_out = cont_results[0]
-    except Exception:
-        cluster_beta_dists = [beta_dist if beta_dist is not None else BetaDistribution(mu=0.5, sigma=0.0) for beta_dist in cluster_beta_dists]
-        return OrganisedOutputs(
-            extracted_answers=[selected_answers],
-            extracted_confidences=[cluster_beta_dists],
-        )
-
-    p_trues_by_cluster: list[list[float]] = [[] for _ in clusters]
-
-    for logprob, cluster_idx in zip(cont_out.output_logprobs, prompt_cluster_indices):
-        try:
-            mean_a = np.mean(logprob)
-            p_a = float(np.exp(mean_a))
-        except Exception:
-            p_a = 0.5
-        p_a = float(np.clip(p_a, 1e-6, 1 - 1e-6))
-        p_trues_by_cluster[cluster_idx].append(p_a)
-
-    for q_idx, p_trues in enumerate(p_trues_by_cluster):
-        if cluster_beta_dists[q_idx] is not None:
-            continue
-        if p_trues:
-            mu = float(np.mean(p_trues))
-            sigma = float(np.std(p_trues)) if len(p_trues) > 1 else 0.0
-        else:
-            mu = 0.5
-            sigma = 0.0
-        cluster_beta_dists[q_idx] = BetaDistribution(mu=mu, sigma=sigma)
-
-    return OrganisedOutputs(
         extracted_answers=[selected_answers],
-        extracted_confidences=[cluster_beta_dists],
+        extracted_confidences=[confidence_dists],
     )
 

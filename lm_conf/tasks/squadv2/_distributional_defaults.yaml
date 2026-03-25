@@ -28,6 +28,7 @@ confidence_metrics: null
 grader: llm_grader
 performance_metrics:
   - accuracy_scalar_with_abstention
+  - generalised_ece
   - dECE
   - dECE_point_mass
   - AUROC_point_mass
@@ -36,10 +37,10 @@ performance_metrics:
 qa_model:
   backend: vllm 
   name: openai/gpt-oss-20b
-  repeat: 10
+  repeat: 30
   stop_sequences: []
   temperature: 1
-  max_tokens: 512
+  max_tokens: 256
   max_model_len: 2048
   reasoning_effort: low
 
