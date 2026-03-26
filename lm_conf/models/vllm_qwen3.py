@@ -24,7 +24,9 @@ class vLLMQwen3(AbstractModel):
     def run_generation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
         stop_seq = self.cfg.get("stop_sequences", [])
         vllm_model = LLM(model=self.model_name,
-                         max_model_len=self.cfg.get("max_model_len", 4096))
+                         max_model_len=self.cfg.get("max_model_len", 4096),
+                         gpu_memory_utilization=0.8,
+                         trust_remote_code=True)
 
         model_outputs_list = []
         for _ in range(self.repeat):

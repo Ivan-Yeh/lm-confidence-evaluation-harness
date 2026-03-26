@@ -53,3 +53,14 @@ grader_model:
   max_tokens: 512
   max_model_len: 4096
   reasoning_effort: low
+
+
+clustering_model:
+  backend: vllm
+  name: openai/gpt-oss-20b
+  repeat: 1
+  stop_sequences: []
+  temperature: 0
+  max_tokens: 1024
+  max_model_len: 10240
+  reasoning_effort: low

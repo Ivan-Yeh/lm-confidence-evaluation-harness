@@ -1,4 +1,6 @@
 import gc
+import json
+import csv
 import logging
 import os
 import pickle
@@ -125,25 +127,43 @@ def _build_semantic_majority_clusters(cfg: dict, response_lists: list[tuple[str]
     largest_clusters: list[list[str]] = []
     selected_responses: list[str] = []
 
-    entailment_model = EntailmentDeberta()
-    strict_entailment = False
+    def _parse_semantic_ids(text: str, expected_len: int) -> list[int] | None:
+        if not text:
+            return None
 
-    for responses in tqdm(
-        response_lists,
-        desc="Processing Entailments (Semantic Clusters)"
-    ):
-        responses = list(responses)
+        stripped = text.strip()
+
+        # Prefer a semantic_ids/cluster_ids list if present, otherwise fall back to the first list.
+        key_match = re.search(
+            r'"(?:semantic_ids|cluster_ids)"\s*:\s*\[([^\]]*)\]',
+            stripped,
+            flags=re.S,
+        )
+        list_match = key_match or re.search(r'\[([^\]]*)\]', stripped, flags=re.S)
+        if not list_match:
+            return None
+
+        items = re.findall(r"-?\d+", list_match.group(1))
+        if not items:
+            return None
+
+        ids = [int(x) for x in items]
+
+        if len(ids) != expected_len or any(i < 0 for i in ids):
+            return None
+
+        return ids
+
+    def _deberta_semantic_ids(entailment_model: EntailmentDeberta, responses: list[str]) -> list[int]:
+        strict_entailment = False
         N = len(responses)
+        entail_cache: dict[tuple[str, str], int] = {}
 
-        entail_cache = {}
-
-        def are_equivalent_from_scores(ij, ji):
+        def are_equivalent_from_scores(ij: int, ji: int) -> bool:
             if strict_entailment:
                 return ij == 2 and ji == 2
             return (ij != 0) and (ji != 0) and not (ij == 1 and ji == 1)
 
-        # Assign each response by checking only one representative per existing cluster.
-        # Under transitivity assumption, this avoids building a full O(N^2) entailment graph.
         semantic_ids = [-1] * N
         cluster_representatives: list[int] = []
 
@@ -153,8 +173,7 @@ def _build_semantic_majority_clusters(cfg: dict, response_lists: list[tuple[str]
                 cluster_representatives.append(i)
                 continue
 
-            left, right = [], []
-            pair_keys = []
+            left, right, pair_keys = [], [], []
             for rep_idx in cluster_representatives:
                 pairs = [
                     (responses[i], responses[rep_idx]),
@@ -168,9 +187,8 @@ def _build_semantic_majority_clusters(cfg: dict, response_lists: list[tuple[str]
 
             if left:
                 try:
-                    batch_size = 256
                     results = entailment_model.check_implication_batch(
-                        left, right, batch_size=batch_size
+                        left, right, batch_size=256
                     )
                 except Exception as e:
                     print(f"Error occurred: {e}. Falling back to smaller batch size.")
@@ -196,6 +214,54 @@ def _build_semantic_majority_clusters(cfg: dict, response_lists: list[tuple[str]
             semantic_ids[i] = assigned_cluster
 
         assert -1 not in semantic_ids
+        return semantic_ids
+
+    model_config_type = cfg.get("semantic_cluster_model_config", "clustering_model")
+    model_manager: ModelManager = ModelManager(master_cfg=cfg, model_config_type=model_config_type)
+
+    prompt_texts: list[str] = []
+    for responses in response_lists:
+        response_lines = [f"    {idx}: {text}" for idx, text in enumerate(responses)]
+        prompt_texts.append(
+            """
+You are a strict JSON generator. Group semantically equivalent responses to the same question. Ignore any linguistic markers of uncertainty or hedging and focus solely on the core meaning of the responses. 
+
+Return a JSON object with a single key `semantic_ids`, a list of integers aligned with the response order. Responses that are semantically equivalent (bidirectional entailment) must share the same integer id. Use 0-based ids. 
+Semantic ids represent the semantic cluster assignment for each response.
+Return ONLY the JSON object, no extra text.
+
+Responses:
+{responses}
+
+
+{{"semantic_ids": [...]}}
+""".strip().format(responses="\n".join(response_lines))
+        )
+
+    prompt_collection = PromptCollection(
+        system_prompt="You are a careful assistant.",
+        context_texts=prompt_texts,
+    )
+
+    llm_outputs = model_manager.run_generation(prompt_collection)
+    llm_texts = llm_outputs[0].output_texts if llm_outputs else []
+
+    entailment_model = None
+
+    for idx, responses in tqdm(
+        list(enumerate(response_lists)),
+        desc="Processing Semantic Clusters (LLM)",
+    ):
+        responses = list(responses)
+        llm_text = llm_texts[idx] if idx < len(llm_texts) else ""
+        parsed_ids = _parse_semantic_ids(llm_text, len(responses))
+
+        if parsed_ids is None:
+            if entailment_model is None:
+                entailment_model = EntailmentDeberta()
+            semantic_ids = _deberta_semantic_ids(entailment_model, responses)
+        else:
+            semantic_ids = parsed_ids
 
         counts = np.bincount(semantic_ids)
         majority_cluster = int(np.argmax(counts))
@@ -206,9 +272,14 @@ def _build_semantic_majority_clusters(cfg: dict, response_lists: list[tuple[str]
         largest_clusters.append(majority_cluster_responses)
         selected_responses.append(majority_cluster_responses[0] if majority_cluster_responses else "")
 
-    del entailment_model.model
-    del entailment_model.tokenizer
-    del entailment_model
+    if entailment_model is not None:
+        del entailment_model.model
+        del entailment_model.tokenizer
+        del entailment_model
+        gc.collect()
+        torch.cuda.empty_cache()
+
+    del model_manager
     gc.collect()
     torch.cuda.empty_cache()
 
@@ -307,9 +378,8 @@ def distributional_semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs
             std_confidence = float(np.std(subsample_confidences)) if len(subsample_confidences) > 1 else 1e-6
             confidence_dists.append(BetaDistribution(mu=avg_confidence, sigma=std_confidence))
 
-    # Keep selected answers aligned with the validated majority-cluster cache.
-    if len(selected_responses) != len(largest_clusters):
-        selected_responses = [cluster[0] if cluster else "" for cluster in largest_clusters]
+    # Always select the first response from each largest cluster.
+    selected_responses = [cluster[0] if cluster else "" for cluster in largest_clusters]
 
     # pickle selected responses and confidence dists for this question
     _save_pickle_to_results(cfg, "selected_responses.pkl", selected_responses)
@@ -362,9 +432,8 @@ def distributional_linguistic_confidence(cfg: dict, output_lst: list[ModelOutput
             selected_answers.append("")
             continue
         selected_answers.append(cluster[0])
-        for response in cluster:
-            all_cluster_responses.append(response)
-            response_question_indices.append(q_idx)
+        all_cluster_responses.append(cluster[0])
+        response_question_indices.append(q_idx)
 
     if not all_cluster_responses:
         default_conf = [BetaDistribution(mu=0.5, sigma=1e-6) for _ in selected_answers]
@@ -375,28 +444,86 @@ def distributional_linguistic_confidence(cfg: dict, output_lst: list[ModelOutput
 
     # scores_collection[question_idx] = list of scores pooled across all cluster responses and evaluators
     scores_collection: list[list[float]] = [[] for _ in selected_answers]
+
+    def _load_cached_scores(cache_path: str, expected_len: int) -> list[float] | None:
+        try:
+            scores: list[float | None] = [None] * expected_len
+            with open(cache_path, newline="") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    idx = int(row["response_index"])
+                    score = float(row["score"])
+                    if 0 <= idx < expected_len:
+                        scores[idx] = score
+            if any(s is None for s in scores):
+                return None
+            return [float(s) for s in scores]
+        except Exception:
+            return None
+
+    def _save_cached_scores(cache_path: str, judge_outputs: list[ModelOutputs]) -> None:
+        with open(cache_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["response_index", "score"])
+            writer.writeheader()
+            response_index = 0
+            for judge_out in judge_outputs:
+                for judge_text in judge_out.output_texts:
+                    score = extract_score(judge_text)
+                    writer.writerow({"response_index": response_index, "score": score})
+                    response_index += 1
+        logging.info(f"Cached scores saved to {cache_path}")
     
     # Loop through each evaluator
+    results_path = cfg.get("results_path")
+
     for evaluator in evaluator_lst:
+        cache_path = None
+        if results_path:
+            os.makedirs(results_path, exist_ok=True)
+            cache_path = os.path.join(results_path, f"linguistic_confidence_scores_{evaluator.split('/')[-1]}.csv")
+
+        if cache_path and os.path.exists(cache_path):
+            cached_scores = _load_cached_scores(cache_path, len(all_cluster_responses))
+            if cached_scores is not None:
+                continue
+            logging.warning(
+                "Cached scores found but invalid for evaluator %s; recomputing.",
+                evaluator,
+            )
+
         model_manager: ModelManager = ModelManager(master_cfg=cfg, model_config_type=evaluator)
         
         # Generate prompts for every response in each question's largest semantic cluster.
         prompt_collection = PromptCollection(context_texts=[DIRECT_PROMPT.format(sentence=response) for response in all_cluster_responses])
         judge_outputs: list[ModelOutputs] = model_manager.run_generation(prompt_collection)
 
-        generated_scores_texts: list[str] = []
-        for judge_out in judge_outputs:
-            generated_scores_texts.extend(judge_out.output_texts)
+        if cache_path:
+            _save_cached_scores(cache_path, judge_outputs)
+        else:
+            logging.warning(
+                "No results_path configured; cannot cache scores for evaluator %s.",
+                evaluator,
+            )
 
-        # Assign judge outputs back to their question index via prompt order.
-        for q_idx, judge_text in zip(response_question_indices, generated_scores_texts):
-            score = extract_score(judge_text)
-            if np.isnan(score):
-                continue
-            scores_collection[q_idx].append(score)
         del model_manager
         gc.collect()
         torch.cuda.empty_cache()
+
+    # Load cached scores after loop to avoid holding them in memory during evaluation.
+    if results_path:
+        for evaluator in evaluator_lst:
+            cache_path = os.path.join(results_path, f"linguistic_confidence_scores_{evaluator.split('/')[-1]}.csv")
+            cached_scores = _load_cached_scores(cache_path, len(all_cluster_responses))
+            if cached_scores is None:
+                logging.warning(
+                    "Missing or invalid cached scores for evaluator %s; skipping.",
+                    evaluator,
+                )
+                continue
+            for q_idx, score in zip(response_question_indices, cached_scores):
+                if np.isnan(score):
+                    continue
+                scores_collection[q_idx].append(score)
 
     # Fit beta distributions from all collected scores for each question's largest cluster.
     confidence_dists = []
