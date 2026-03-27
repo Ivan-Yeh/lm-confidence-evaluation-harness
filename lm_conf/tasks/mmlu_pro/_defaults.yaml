@@ -1,3 +1,4 @@
+rounds: 1
 seed: 42
 dataset_name: mmlu_pro # must match the folder name under tasks/
 dataset_path: TIGER-Lab/MMLU-Pro
@@ -6,7 +7,8 @@ split: test
 few_shot_split: test
 few_shot_examples: 0
 limit: 200
-
+cache_path: null
+results_path: null
 # multiple choice: "question: str", "choices : list", and "answer_index: int"
 dataset_preprocessor: task_utils.preprocess_dataset
 

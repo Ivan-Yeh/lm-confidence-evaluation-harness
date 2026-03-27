@@ -53,7 +53,7 @@ class TogetherAIModel(AbstractModel):
             if not max_workers:
                 max_workers = min(8, max(1, len(prompt_collection.context_texts)))
 
-            with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = []
                 for idx, context_text in enumerate(prompt_collection.context_texts):
                     futures.append(
@@ -106,7 +106,7 @@ class TogetherAIModel(AbstractModel):
 
     def _request_choices(
         self,
-        client,
+        client: Together,
         system_prompt: str,
         context_text: str,
         temperature: float,

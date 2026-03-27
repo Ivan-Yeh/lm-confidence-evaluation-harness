@@ -63,7 +63,7 @@ class BetaDistribution:
 
 def _cache_file_candidates(cfg: dict, filename: str) -> list[str]:
     candidates: list[str] = []
-    for base_path in [cfg.get("filtered_output_path"), cfg.get("results_path")]:
+    for base_path in [cfg.get("cache_path"), cfg.get("results_path")]:
         if base_path:
             candidates.append(os.path.join(base_path, filename))
     return candidates

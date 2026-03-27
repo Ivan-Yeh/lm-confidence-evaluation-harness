@@ -13,7 +13,7 @@ confidence_metrics: distributional_linguistic_confidence
 
 
 qa_model:
-  repeat: 30
+  repeat: 20
   temperature: 1
 
 evaluator_list:

@@ -1,3 +1,4 @@
+rounds: 1
 seed: 42
 dataset_name: truthful_qa # must match the folder name under tasks/
 dataset_path: truthfulqa/truthful_qa
@@ -6,7 +7,7 @@ split: validation
 few_shot_split: validation
 few_shot_examples: 0
 limit: 200
-
+cache_path: null
 # multiple choice: "question: str", "choices : list", and "answer_index: int"
 dataset_preprocessor: task_utils.preprocess_dataset
 

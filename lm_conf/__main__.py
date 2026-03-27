@@ -4,6 +4,7 @@ import pkgutil
 import sys
 from hydra import compose, initialize_config_dir
 import os
+import shutil
 import pandas as pd
 from datetime import datetime
 from omegaconf import OmegaConf
@@ -100,8 +101,8 @@ if __name__ == "__main__":
     # load config
     dataset_name, task_name, cfg = get_task_yaml()
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    path = f"/hdd/ivny/results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
-    # path = f"results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
+    # path = f"/hdd/ivny/results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
+    path = f"results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
     os.makedirs(path, exist_ok=True)
     cfg["results_path"] = path
     logger = get_logger(__name__, log_file=f"{path}/task.log")
@@ -139,7 +140,7 @@ if __name__ == "__main__":
 
             # read from cache if exists to skip QA
             # --------------------------------------------------------------------
-            filtered_output_path = cfg.get("filtered_output_path")
+            filtered_output_path = cfg.get("cache_path")
             if filtered_output_path and os.path.exists(os.path.join(filtered_output_path, f"filtered_outputs_{round_idx}.pkl")):
                 logger.info("Cache for filtered_outputs found. Skipping QA generation and filtering.")
                 filtered_outputs_pkl_path = os.path.join(filtered_output_path, f"filtered_outputs_{round_idx}.pkl")
@@ -178,15 +179,38 @@ if __name__ == "__main__":
                 pickle.dump(outputs, f) 
             # --------------------------------------------------------------------
 
-            # read from cache if exists to skip QA
+            # Check for graded outputs cache (skip both confidence extraction and grading)
             # --------------------------------------------------------------------
-            graded_outputs_path = cfg.get("graded_outputs_path")
-            if graded_outputs_path and os.path.exists(os.path.join(graded_outputs_path, f"graded_outputs_{round_idx}.pkl")):
-                logger.info("Cache for graded_outputs found. confidence extraction and grading.")
-                graded_outputs_pkl_path = os.path.join(graded_outputs_path, f"graded_outputs_{round_idx}.pkl")
-                with open(graded_outputs_pkl_path, "rb") as f:
+            cache_path = cfg.get("cache_path")
+            graded_outputs_path = None
+            estimated_outputs_path = None
+            extracted_output = None
+            
+            if cache_path:
+                graded_outputs_path = os.path.join(cache_path, f"graded_outputs_{round_idx}.pkl")
+                estimated_outputs_path = os.path.join(cache_path, f"estimated_outputs_{round_idx}.pkl")
+                
+                if os.path.exists(graded_outputs_path):
+                    logger.info("Cache for graded_outputs found. Skipping confidence extraction and grading.")
+                    with open(graded_outputs_path, "rb") as f:
+                        extracted_output = pickle.load(f)
+                    current_graded_path = f"{path}/graded_outputs_{round_idx}.pkl"
+                    if os.path.abspath(graded_outputs_path) != os.path.abspath(current_graded_path):
+                        shutil.copy2(graded_outputs_path, current_graded_path)
+            
+            # Check for estimated outputs cache (skip confidence extraction only)
+            # --------------------------------------------------------------------
+            if extracted_output is None and estimated_outputs_path and os.path.exists(estimated_outputs_path):
+                logger.info("Cache for estimated_outputs found. Skipping confidence extraction.")
+                with open(estimated_outputs_path, "rb") as f:
                     extracted_output = pickle.load(f)
-            else:
+                current_estimated_path = f"{path}/estimated_outputs_{round_idx}.pkl"
+                if os.path.abspath(estimated_outputs_path) != os.path.abspath(current_estimated_path):
+                    shutil.copy2(estimated_outputs_path, current_estimated_path)
+            
+            # Run confidence extraction if not cached
+            # --------------------------------------------------------------------
+            if extracted_output is None:
                 logger.info(f"Extracting confidence scores and answers [Round {round_idx + 1}/{rounds}]")
                 # extract confidence
                 confidence_extraction_func: ConfidenceExtractorFn = CONFIDENCE_FUNCTIONS.get(
@@ -196,6 +220,15 @@ if __name__ == "__main__":
                 extracted_output: OrganisedOutputs = confidence_extraction_func(
                     cfg, outputs, prompts)
 
+                # pickle estimated_output
+                # --------------------------------------------------------------------
+                with open(f"{path}/estimated_outputs_{round_idx}.pkl", "wb") as f:
+                    pickle.dump(extracted_output, f)
+                # --------------------------------------------------------------------
+            
+            # Run grading if graded_outputs does not exist in cache
+            # --------------------------------------------------------------------
+            if not graded_outputs_path or not os.path.exists(graded_outputs_path):
                 logger.info(f"Grading responses [Round {round_idx + 1}/{rounds}]")
                 # grade response
                 grader_func: GraderFn = GRADER_FUNCTIONS.get(
@@ -205,11 +238,11 @@ if __name__ == "__main__":
                 extracted_output.accuracy_scores = grader_func(
                     cfg, extracted_output, prompts, dataset_manager)
 
-            # pickle extracted_output for later analysis
-            # --------------------------------------------------------------------
-            with open(f"{path}/graded_outputs_{round_idx}.pkl", "wb") as f:
-                pickle.dump(extracted_output, f) 
-            # --------------------------------------------------------------------
+                # pickle graded_output
+                # --------------------------------------------------------------------
+                with open(f"{path}/graded_outputs_{round_idx}.pkl", "wb") as f:
+                    pickle.dump(extracted_output, f)
+                # --------------------------------------------------------------------
 
             logger.info(f"Calculating performance metrics [Round {round_idx + 1}/{rounds}]")
             metrics_df = pd.DataFrame()
