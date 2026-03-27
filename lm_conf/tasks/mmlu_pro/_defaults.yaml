@@ -1,15 +1,12 @@
-rounds: 5
 seed: 42
-dataset_name: mmlu # must match the folder name under tasks/
-dataset_path: cais/mmlu
-subset: "all"
+dataset_name: mmlu_pro # must match the folder name under tasks/
+dataset_path: TIGER-Lab/MMLU-Pro
+subset: default
 split: test
-few_shot_split: dev
+few_shot_split: test
 few_shot_examples: 0
 limit: 200
-results_path: null
-filtered_output_path: null
-graded_outputs_path: null
+
 # multiple choice: "question: str", "choices : list", and "answer_index: int"
 dataset_preprocessor: task_utils.preprocess_dataset
 
@@ -19,35 +16,17 @@ system_prompt: ""
 prompt_formatter: multiple_choice 
 performance_metrics:
   - accuracy_scalar_with_abstention
-  - generalised_ece
-  - dECE
-  - dECE_point_mass
-  - AUROC_point_mass
-  - dAUROC
-
-generation_type: generation
-output_filters: null
-confidence_metrics: null
-grader: llm_grader
+  - ece_scalar
+  - auroc_scalar
 
 qa_model:
   backend: vllm 
   name: openai/gpt-oss-20b
-  repeat: 30
-  stop_sequences: [] 
-  temperature: 1
-  max_tokens: 256
-  max_model_len: 2048
-  reasoning_effort: low
-
-clustering_model:
-  backend: vllm
-  name: openai/gpt-oss-20b
   repeat: 1
   stop_sequences: []
-  temperature: 0
+  temperature: 1
   max_tokens: 1024
-  max_model_len: 10240
+  max_model_len: 2048
   reasoning_effort: low
 
 
@@ -56,6 +35,6 @@ grader_model:
   name: openai/gpt-oss-20b
   repeat: 1
   temperature: 0.0
-  max_tokens: 256
-  max_model_len: 2048
+  max_tokens: 1024
+  logprobs: 1
   reasoning_effort: low

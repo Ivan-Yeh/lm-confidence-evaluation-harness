@@ -1,10 +1,9 @@
-rounds: 5
 seed: 42
-dataset_name: mmlu # must match the folder name under tasks/
-dataset_path: cais/mmlu
-subset: "all"
+dataset_name: mmlu_pro # must match the folder name under tasks/
+dataset_path: TIGER-Lab/MMLU-Pro
+subset: default
 split: test
-few_shot_split: dev
+few_shot_split: test
 few_shot_examples: 0
 limit: 200
 results_path: null

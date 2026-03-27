@@ -3,6 +3,8 @@ from .dream import DreamDLM
 from .vllm_model import vLLMModel
 from .llada import LlaDADLM
 from .vllm_qwen3 import vLLMQwen3
+from .together_ai import TogetherAIModel
+from .together_ai_batch import TogetherAIBatch
 import logging
 
 class ModelManager:
@@ -25,11 +27,14 @@ class ModelManager:
             case "llada":
                 logging.info("Using LlaDA model backend")
                 self.model = LlaDADLM(self.model_cfg)
+            case "together_ai":
+                self.model = TogetherAIModel(self.model_cfg)
+            case "together_ai_batch":
+                self.model = TogetherAIBatch(self.model_cfg)
+                
             case "openai_batch":
                 raise NotImplementedError("Not implemented yet")
             case "claude_batch":
-                raise NotImplementedError("Not implemented yet")
-            case "together_ai_batch":
                 raise NotImplementedError("Not implemented yet")
             case None:
                 raise ValueError(f"Model type not specified in config for {model_config_type}")
