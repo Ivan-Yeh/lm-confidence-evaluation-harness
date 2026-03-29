@@ -184,6 +184,54 @@ def compute_dECE(alpha_list, beta_list, correctness, num_bins=10):
     return bin_dECE, dataset_dECE, bin_stats
 
 
+def compute_ECE_mean(alpha_list, beta_list, correctness, num_bins=10):
+    alpha_arr = np.array(alpha_list)
+    beta_arr = np.array(beta_list)
+    correctness = np.array(correctness)
+
+    mean_conf = alpha_arr / (alpha_arr + beta_arr)
+    bins = np.linspace(0, 1, num_bins + 1)
+
+    ece = 0.0
+    bin_stats = []
+    N = len(mean_conf)
+
+    for m in range(num_bins):
+        in_bin = (mean_conf >= bins[m]) & (mean_conf < bins[m + 1])
+        count = int(np.sum(in_bin))
+        if count == 0:
+            bin_stats.append({
+                "bin_index": m,
+                "bin_start": bins[m],
+                "bin_end": bins[m + 1],
+                "count": 0,
+                "p_m": 0.0,
+                "accuracy": np.nan,
+                "mean_confidence": np.nan,
+                "miscalibration": 0.0,
+            })
+            continue
+
+        acc = float(np.mean(correctness[in_bin]))
+        conf = float(np.mean(mean_conf[in_bin]))
+        p_m = count / N
+        gap = abs(conf - acc)
+        ece += p_m * gap
+
+        bin_stats.append({
+            "bin_index": m,
+            "bin_start": bins[m],
+            "bin_end": bins[m + 1],
+            "count": count,
+            "p_m": p_m,
+            "accuracy": acc,
+            "mean_confidence": conf,
+            "miscalibration": gap,
+        })
+
+    return ece, bin_stats
+
+
 def print_bin_stats(name, stats, include_confidence=False):
     print(f"{name} per-bin stats:")
     if include_confidence:
@@ -243,20 +291,38 @@ def generate_miscalibrated_pairs(N=50):
 
 # ---------- Run ----------
 if __name__ == "__main__":
-    (wa, wb), (na, nb), y = generate_miscalibrated_pairs(200)
+    rng = np.random.default_rng(7)
+    N = 500
     num_bins = 15
-    print("=== Wide Distributions ===")
-    _, gen_w, gen_w_stats = compute_genECE(wa, wb, y, num_bins=num_bins)
-    _, d_w, d_w_stats = compute_dECE(wa, wb, y, num_bins=num_bins)
-    print("genECE:", gen_w)
-    print_bin_stats("genECE", gen_w_stats, include_confidence=True)
-    print("dECE:", d_w)
-    print_bin_stats("dECE", d_w_stats)
 
-    print("\n=== Narrow Distributions ===")
-    _, gen_n, gen_n_stats = compute_genECE(na, nb, y, num_bins=num_bins)
-    _, d_n, d_n_stats = compute_dECE(na, nb, y, num_bins=num_bins)
-    print("genECE:", gen_n)
-    print_bin_stats("genECE", gen_n_stats, include_confidence=True)
-    print("dECE:", d_n)
-    print_bin_stats("dECE", d_n_stats)
+    # Shared means, different variances via concentration k.
+    means = rng.uniform(0.3, 0.6, size=N)
+    correctness = rng.integers(0, 2, size=N)
+
+    k_low_var = 1200.0
+    k_high_var = 20.0
+
+    low_alpha = means * k_low_var
+    low_beta = (1 - means) * k_low_var
+
+    high_alpha = means * k_high_var
+    high_beta = (1 - means) * k_high_var
+
+    ece_low, _ = compute_ECE_mean(low_alpha, low_beta, correctness, num_bins=num_bins)
+    ece_high, _ = compute_ECE_mean(high_alpha, high_beta, correctness, num_bins=num_bins)
+
+    _, gen_low, _ = compute_genECE(low_alpha, low_beta, correctness, num_bins=num_bins)
+    _, gen_high, _ = compute_genECE(high_alpha, high_beta, correctness, num_bins=num_bins)
+
+    _, d_low, _ = compute_dECE(low_alpha, low_beta, correctness, num_bins=num_bins)
+    _, d_high, _ = compute_dECE(high_alpha, high_beta, correctness, num_bins=num_bins)
+
+    print("=== Low Variance Subset ===")
+    print("ECE_mean:", ece_low)
+    print("genECE:", gen_low)
+    print("dECE:", d_low)
+
+    print("\n=== High Variance Subset ===")
+    print("ECE_mean:", ece_high)
+    print("genECE:", gen_high)
+    print("dECE:", d_high)

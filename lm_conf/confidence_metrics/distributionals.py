@@ -90,7 +90,7 @@ class BetaDistribution:
 
 def _cache_file_candidates(cfg: dict, filename: str) -> list[str]:
     candidates: list[str] = []
-    for base_path in [cfg.get("cache_path"), cfg.get("results_path")]:
+    for base_path in [cfg.get("cache_path")]:
         if base_path:
             candidates.append(os.path.join(base_path, filename))
     return candidates
@@ -136,6 +136,18 @@ def _load_or_build_majority_clusters(
     response_lists: list[tuple[str]],
     question_texts: list[str] | None = None,
 ) -> tuple[list[list[str]], list[str]]:
+    cache_path = cfg.get("cache_path")
+    if cache_path:
+        cache_file = os.path.join(cache_path, "majority_cluster_responses.pkl")
+        if os.path.exists(cache_file):
+            logging.info(f"Loading majority cluster responses from cache at {cache_file}")
+            with open(cache_file, "rb") as f:
+                cached_clusters = pickle.load(f)
+            largest_clusters = cached_clusters
+            selected_responses = [cluster[0] if cluster else "" for cluster in largest_clusters]
+            _save_pickle_to_results(cfg, "majority_cluster_responses.pkl", largest_clusters)
+            return largest_clusters, selected_responses
+
     cluster_cache_candidates = _cache_file_candidates(cfg, "majority_cluster_responses.pkl")
     cached_clusters = _load_first_existing_pickle(cluster_cache_candidates)
 
@@ -399,24 +411,18 @@ def distributional_semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs
         confidence_dists = cached_conf
         logging.info("Loaded cached responses and confidences for semantic uncertainty")
     else:
-        semantic_ids_by_question, majority_clusters, selected_responses = _build_semantic_majority_clusters(
-            cfg,
-            response_lists,
-            question_texts=prompts.questions,
-        )
-        _save_pickle_to_results(cfg, "majority_cluster_responses.pkl", majority_clusters)
+        for responses, majority_cluster_responses in zip(response_lists, largest_clusters):
+            if not responses or not majority_cluster_responses:
+                confidence_dists.append(BetaDistribution(mu=0.5, sigma=1e-6))
+                continue
 
-        for semantic_ids in semantic_ids_by_question:
-            semantic_ids_arr = np.array(semantic_ids)
-            counts = np.bincount(semantic_ids_arr)
-            majority_cluster = int(np.argmax(counts))
-
+            majority_texts = set(majority_cluster_responses)
+            indices = np.arange(len(responses))
             subsample_confidences = []
-            indices = np.arange(len(semantic_ids_arr))
 
             for _ in range(50):
                 sampled = np.random.choice(indices, size=10, replace=False)
-                support = np.mean([semantic_ids_arr[i] == majority_cluster for i in sampled])
+                support = np.mean([responses[i] in majority_texts for i in sampled])
                 subsample_confidences.append(support)
 
             avg_confidence = float(np.mean(subsample_confidences))
@@ -461,9 +467,10 @@ def distributional_linguistic_confidence(cfg: dict, output_lst: list[ModelOutput
     
     DIRECT_PROMPT = """
     Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence (without using any external or prior knowledge). \
-        Please pay attention to the hedging language used and the overall assertiveness of the statement. \
-            If the sentence contains random guesses or abstention, the score should be towards 0. If the sentence is stated with strong certainty or no hedging, the score should be towards 100. \
-                If the sentence does not contain any linguistic cues or is a succinct, decisive short answer, the score should be towards 100, too.
+            Please pay attention to the hedging language used and the overall assertiveness of the statement. \
+                If the sentence abstains from answering by pointing out the insufficiency of information with a firm tone, the score should be towards 100. \
+                    If the sentence contains random guesses or abstention, the score should be towards 0. If the sentence is stated with strong certainty or no hedging, the score should be towards 100. \
+                        If the sentence does not contain any hedging language or is a succinct, decisive short answer, the score should be towards 100, too.
 
     Here is the sentence:
     {sentence}

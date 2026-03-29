@@ -193,8 +193,10 @@ if __name__ == "__main__":
             extracted_output = None
             
             if cache_path:
-                graded_outputs_path = os.path.join(cache_path, f"graded_outputs_{round_idx}.pkl")
-                estimated_outputs_path = os.path.join(cache_path, f"estimated_outputs_{round_idx}.pkl")
+                # graded_outputs_path = os.path.join(cache_path, f"graded_outputs_{round_idx}.pkl")
+                # estimated_outputs_path = os.path.join(cache_path, f"estimated_outputs_{round_idx}.pkl")
+                graded_outputs_path = ""
+                estimated_outputs_path = ""
                 
                 if os.path.exists(graded_outputs_path):
                     logger.info("Cache for graded_outputs found. Skipping confidence extraction and grading.")

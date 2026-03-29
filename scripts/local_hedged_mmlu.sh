@@ -5,51 +5,47 @@ limit=null
 rounds=1
 max_model_len=2048
 max_tokens=256
-dataset=truthful_qa
+dataset=mmlu
 backend=vllm
-task=hedged_qa_unified_lc
+
 
 CUDA_VISIBLE_DEVICES=$GPU python -m lm_conf dataset=$dataset \
     rounds=$rounds \
     limit=$limit \
-    task=$task \
+    task=hedged_qa_unified_tp \
     qa_model.name=openai/gpt-oss-20b \
     qa_model.backend=$backend \
     qa_model.reasoning_effort=low \
     qa_model.max_tokens=$max_tokens \
-    qa_model.max_model_len=$max_model_len \
-    cache_path=/hdd/ivny/results/truthful_qa/hedged_qa_unified_tp/openai/gpt-oss-20b/2026-03-29_22-45-12
+    qa_model.max_model_len=$max_model_len 
 
 CUDA_VISIBLE_DEVICES=$GPU python -m lm_conf dataset=$dataset \
     rounds=$rounds \
     limit=$limit \
-    task=$task \
+    task=hedged_qa_unified_tp \
     qa_model.name=meta-llama/Llama-3.1-8B-Instruct \
     qa_model.backend=$backend \
     qa_model.reasoning_effort=low \
     qa_model.max_tokens=$max_tokens \
-    qa_model.max_model_len=$max_model_len \
-    cache_path=/hdd/ivny/results/truthful_qa/hedged_qa_unified_tp/meta-llama/Llama-3.1-8B-Instruct/2026-03-29_22-54-19
+    qa_model.max_model_len=$max_model_len 
 
 CUDA_VISIBLE_DEVICES=$GPU python -m lm_conf dataset=$dataset \
     rounds=$rounds \
     limit=$limit \
-    task=$task \
+    task=hedged_qa_unified_tp \
     qa_model.name=qwen/Qwen3-8B \
     qa_model.backend=$backend \
     qa_model.reasoning_effort=null \
     qa_model.max_tokens=$max_tokens \
-    qa_model.max_model_len=$max_model_len \
-    cache_path=/hdd/ivny/results/truthful_qa/hedged_qa_unified_tp/qwen/Qwen3-8B/2026-03-29_23-05-16
+    qa_model.max_model_len=$max_model_len 
 
 CUDA_VISIBLE_DEVICES=$GPU python -m lm_conf dataset=$dataset \
     rounds=$rounds \
     limit=$limit \
-    task=$task \
+    task=hedged_qa_unified_tp \
     qa_model.name=mistralai/Mistral-7B-Instruct-v0.3 \
     qa_model.backend=$backend \
     qa_model.reasoning_effort=low \
     qa_model.max_tokens=$max_tokens \
-    qa_model.max_model_len=$max_model_len \
-    cache_path=/hdd/ivny/results/truthful_qa/hedged_qa_unified_tp/mistralai/Mistral-7B-Instruct-v0.3/2026-03-29_23-13-14
+    qa_model.max_model_len=$max_model_len 
 
