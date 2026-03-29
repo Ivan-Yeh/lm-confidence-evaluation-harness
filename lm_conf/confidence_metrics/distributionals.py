@@ -15,6 +15,33 @@ from ..default_utils.registry import register_confidence
 from ..default_utils.custom_types import OrganisedOutputs, ModelOutputs, PromptCollection
 from ..models.model_manager import ModelManager
 
+
+SEMANTIC_CLUSTERING_PROMPT = """
+You are a strict JSON generator. Group semantically equivalent candidate responses to the same question. Ignore any linguistic markers of uncertainty or hedging and focus solely on the core meaning of the responses. 
+
+Return a JSON object with a single key `semantic_ids`, a list of integers aligned with the response order. Responses that are semantically equivalent (bidirectional entailment) must share the same integer id. Use 0-based ids. 
+Semantic ids represent the semantic cluster assignment for each response. Return ONLY the JSON object, no extra text.
+
+For instance, given the question and candidate responses:
+Question: What is the capital of France?
+Candidate responses:
+    0: 'I guess Paris is the capital of France.'
+    1: 'Paris is the capital city of France.'
+    2: 'The capital of France is Berlin.' 
+
+The correct JSON output would be:
+{{"semantic_ids": [0, 0, 1]}}
+
+Now, please group the following candidate responses to the given question and return the JSON object:
+Question:
+{question}
+
+Candidate responses:
+{responses}
+
+{{"semantic_ids": [...]}}
+"""
+
 class BetaDistribution:
     def __init__(self, mu: float, sigma: float):
 
@@ -104,7 +131,11 @@ def _is_valid_majority_cluster_cache(cached_clusters, response_lists: list[tuple
     return True
 
 
-def _load_or_build_majority_clusters(cfg: dict, response_lists: list[tuple[str]]) -> tuple[list[list[str]], list[str]]:
+def _load_or_build_majority_clusters(
+    cfg: dict,
+    response_lists: list[tuple[str]],
+    question_texts: list[str] | None = None,
+) -> tuple[list[list[str]], list[str]]:
     cluster_cache_candidates = _cache_file_candidates(cfg, "majority_cluster_responses.pkl")
     cached_clusters = _load_first_existing_pickle(cluster_cache_candidates)
 
@@ -117,12 +148,20 @@ def _load_or_build_majority_clusters(cfg: dict, response_lists: list[tuple[str]]
     if cached_clusters is not None:
         logging.warning("Ignoring incompatible majority_cluster_responses cache; recomputing semantic clusters.")
 
-    _, largest_clusters, selected_responses = _build_semantic_majority_clusters(cfg, response_lists)
+    _, largest_clusters, selected_responses = _build_semantic_majority_clusters(
+        cfg,
+        response_lists,
+        question_texts=question_texts,
+    )
     _save_pickle_to_results(cfg, "majority_cluster_responses.pkl", largest_clusters)
     return largest_clusters, selected_responses
 
 
-def _build_semantic_majority_clusters(cfg: dict, response_lists: list[tuple[str]]) -> tuple[list[list[int]], list[list[str]], list[str]]:
+def _build_semantic_majority_clusters(
+    cfg: dict,
+    response_lists: list[tuple[str]],
+    question_texts: list[str] | None = None,
+) -> tuple[list[list[int]], list[list[str]], list[str]]:
     semantic_ids_by_question: list[list[int]] = []
     largest_clusters: list[list[str]] = []
     selected_responses: list[str] = []
@@ -220,22 +259,16 @@ def _build_semantic_majority_clusters(cfg: dict, response_lists: list[tuple[str]
     model_manager: ModelManager = ModelManager(master_cfg=cfg, model_config_type=model_config_type)
 
     prompt_texts: list[str] = []
-    for responses in response_lists:
-        response_lines = [f"    {idx}: {text}" for idx, text in enumerate(responses)]
+    for idx, responses in enumerate(response_lists):
+        question = ""
+        if question_texts and idx < len(question_texts):
+            question = question_texts[idx]
+        response_lines = [f"    {idx}: '{text}'" for idx, text in enumerate(responses)]
         prompt_texts.append(
-            """
-You are a strict JSON generator. Group semantically equivalent responses to the same question. Ignore any linguistic markers of uncertainty or hedging and focus solely on the core meaning of the responses. 
-
-Return a JSON object with a single key `semantic_ids`, a list of integers aligned with the response order. Responses that are semantically equivalent (bidirectional entailment) must share the same integer id. Use 0-based ids. 
-Semantic ids represent the semantic cluster assignment for each response.
-Return ONLY the JSON object, no extra text.
-
-Responses:
-{responses}
-
-
-{{"semantic_ids": [...]}}
-""".strip().format(responses="\n".join(response_lines))
+                SEMANTIC_CLUSTERING_PROMPT.strip().format(
+                question=question,
+                responses="\n".join(response_lines),
+            )
         )
 
     prompt_collection = PromptCollection(
@@ -290,7 +323,11 @@ Responses:
 def distributional_length_normalised_log_likelihood(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
     response_lists: list[tuple[str]] = list(zip(*[output.output_texts for output in output_lst]))
     logprob_lists: list[tuple] = list(zip(*[output.output_logprobs for output in output_lst]))
-    largest_clusters, selected_responses = _load_or_build_majority_clusters(cfg, response_lists)
+    largest_clusters, selected_responses = _load_or_build_majority_clusters(
+        cfg,
+        response_lists,
+        question_texts=prompts.questions,
+    )
 
     cluster_token_probs_dist = []
     for q_idx, (responses, response_logprobs) in enumerate(zip(response_lists, logprob_lists)):
@@ -351,14 +388,22 @@ def distributional_semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs
     cached_selected = _load_first_existing_pickle(response_cache_candidates)
     cached_conf = _load_first_existing_pickle(conf_cache_candidates)
 
-    largest_clusters, _ = _load_or_build_majority_clusters(cfg, response_lists)
+    largest_clusters, _ = _load_or_build_majority_clusters(
+        cfg,
+        response_lists,
+        question_texts=prompts.questions,
+    )
 
     if cached_selected is not None and cached_conf is not None:
         selected_responses = cached_selected
         confidence_dists = cached_conf
         logging.info("Loaded cached responses and confidences for semantic uncertainty")
     else:
-        semantic_ids_by_question, majority_clusters, selected_responses = _build_semantic_majority_clusters(cfg, response_lists)
+        semantic_ids_by_question, majority_clusters, selected_responses = _build_semantic_majority_clusters(
+            cfg,
+            response_lists,
+            question_texts=prompts.questions,
+        )
         _save_pickle_to_results(cfg, "majority_cluster_responses.pkl", majority_clusters)
 
         for semantic_ids in semantic_ids_by_question:
@@ -399,7 +444,11 @@ def distributional_linguistic_confidence(cfg: dict, output_lst: list[ModelOutput
 
     # Extract responses per question across rounds.
     response_lists: list[tuple[str]] = list(zip(*[output.output_texts for output in output_lst]))
-    largest_clusters, _ = _load_or_build_majority_clusters(cfg, response_lists)
+    largest_clusters, _ = _load_or_build_majority_clusters(
+        cfg,
+        response_lists,
+        question_texts=prompts.questions,
+    )
     
     def extract_score(text: str) -> float:
         match = re.search(r'(\d+(?:\.\d+)?)', text)

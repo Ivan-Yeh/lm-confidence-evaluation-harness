@@ -30,7 +30,7 @@ class ModelManager:
             case "together_ai":
                 self.model = TogetherAIModel(self.model_cfg)
             case "together_ai_batch":
-                self.model = TogetherAIBatch(self.model_cfg)
+                self.model = TogetherAIBatch(master_cfg, self.model_cfg)
                 
             case "openai_batch":
                 raise NotImplementedError("Not implemented yet")

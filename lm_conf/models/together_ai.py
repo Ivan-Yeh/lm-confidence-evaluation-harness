@@ -142,14 +142,14 @@ class TogetherAIModel(AbstractModel):
                     or "429" in error_text
                 )
                 if is_rate_limit:
-                    logging.warning("TogetherAI rate limit, retrying in 1s: %s", exc)
+                    print("TogetherAI rate limit, retrying in 1s: %s", exc)
                     time.sleep(1)
                     continue
 
                 non_rate_attempts += 1
                 if non_rate_attempts >= 3:
                     raise
-                logging.warning("TogetherAI request failed, retrying in 1s: %s", exc)
+                print("TogetherAI request failed, retrying in 1s: %s", exc)
                 time.sleep(1)
 
         results = []

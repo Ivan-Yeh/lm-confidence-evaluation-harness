@@ -101,8 +101,10 @@ if __name__ == "__main__":
     # load config
     dataset_name, task_name, cfg = get_task_yaml()
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    # path = f"/hdd/ivny/results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
-    path = f"results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
+    if os.path.exists("/hdd"):
+        path = f"/hdd/ivny/results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
+    else:
+        path = f"results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
     os.makedirs(path, exist_ok=True)
     cfg["results_path"] = path
     logger = get_logger(__name__, log_file=f"{path}/task.log")
@@ -178,6 +180,10 @@ if __name__ == "__main__":
             with open(f"{path}/filtered_outputs_{round_idx}.pkl", "wb") as f:
                 pickle.dump(outputs, f) 
             # --------------------------------------------------------------------
+
+            # import sys
+            # logger.info("QA generation and filtering complete. Exiting before confidence extraction and grading.")
+            # sys.exit(0)
 
             # Check for graded outputs cache (skip both confidence extraction and grading)
             # --------------------------------------------------------------------

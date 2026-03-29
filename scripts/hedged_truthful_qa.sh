@@ -5,7 +5,7 @@ limit=null
 rounds=1
 max_model_len=2048
 max_tokens=256
-dataset=mmlu_pro
+dataset=truthful_qa
 backend=together_ai_batch
 
 # selected api models:
@@ -18,7 +18,7 @@ CUDA_VISIBLE_DEVICES=$GPU python -m lm_conf dataset=$dataset \
     rounds=$rounds \
     limit=$limit \
     task=hedged_qa_unified_tp \
-    qa_model.name=mistralai/Mixtral-8x7B-Instruct-v0.1 \
+    qa_model.name=mistralai/Mixtral-8x7B-Instruct-v0.1\
     qa_model.backend=$backend \
     qa_model.reasoning_effort=low \
     qa_model.max_tokens=$max_tokens \

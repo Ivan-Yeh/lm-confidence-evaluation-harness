@@ -4,6 +4,8 @@ import logging
 import random
 
 import matplotlib.pyplot as plt
+from matplotlib.collections import PolyCollection
+from matplotlib.colors import to_rgba
 import numpy as np
 from scipy.stats import beta, wasserstein_distance
 from concurrent.futures import ProcessPoolExecutor
@@ -123,9 +125,6 @@ def precompute_stats_worker(args):
 @register_metric(name="dECE")
 def dECE(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     logging.info("Computing dECE.")
-    # ------------------------------------------------------------
-    # Step 0: Clean inputs (same as your original logic)
-    # ------------------------------------------------------------
     accuracies = []
     confidence_dists = []
 
@@ -141,232 +140,157 @@ def dECE(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
         except Exception:
             continue
 
+    if len(accuracies) == 0:
+        return [float("nan")]
+
     accuracies = np.asarray(accuracies)
-    N = len(accuracies)
+    alpha_list = [bd.alpha_param for bd in confidence_dists]
+    beta_list = [bd.beta_param for bd in confidence_dists]
 
-    # ------------------------------------------------------------
-    # Step 1: Sample once per distribution
-    # ------------------------------------------------------------
     num_bins = cfg.get("num_bins", 10)
-    num_samples = cfg.get("num_wasserstein_samples", 10000)
-
     bins = np.linspace(0.0, 1.0, num_bins + 1)
-    samples_list = [bd.sample(size=num_samples) for bd in confidence_dists]
 
-    # ------------------------------------------------------------
-    # Step 2: Precompute per-distribution bin statistics
-    # ------------------------------------------------------------
-    with ProcessPoolExecutor() as executor:
-        dist_stats = list(
-            tqdm(
-                executor.map(
-                    precompute_stats_worker,
-                    [(s, bins) for s in samples_list],
-                ),
-                total=len(samples_list),
-                desc="Precomputing bin statistics",
-            )
-        )
+    s_grid = np.linspace(1e-6, 1 - 1e-6, 2000)
+    ds = s_grid[1] - s_grid[0]
 
-    # ------------------------------------------------------------
-    # Step 3: Compute bin accuracy & confidence (vectorized)
-    # ------------------------------------------------------------
-    B = num_bins
-    bin_total_weights = np.zeros(B)
-    bin_accuracies = np.zeros(B)
-    bin_confidences = np.zeros(B)
+    pdfs = np.array([beta.pdf(s_grid, a, b) for a, b in zip(alpha_list, beta_list)])
+    N = len(alpha_list)
+    M = len(bins) - 1
 
-    for m in range(B):
-        weights = np.array([stats[0][m] for stats in dist_stats])
-        total_w = weights.sum()
+    w = np.zeros((N, M))
+    for m in range(M):
+        mask = (s_grid >= bins[m]) & (s_grid < bins[m + 1])
+        w[:, m] = np.sum(pdfs[:, mask], axis=1) * ds
 
-        if total_w == 0:
-            bin_confidences[m] = 0.5 * (bins[m] + bins[m + 1])
+    bin_dECE = np.zeros(M)
+    p_m = np.zeros(M)
+    plot_bin_confidences = []
+    plot_bin_accuracies = []
+    plot_lower_bounds = []
+    plot_upper_bounds = []
+    plot_bin_purities = []
+    plot_bin_left = []
+    plot_bin_right = []
+
+    for m in range(M):
+        weights_m = w[:, m]
+        total_weight_m = np.sum(weights_m)
+
+        if total_weight_m < 1e-12:
             continue
 
-        bin_total_weights[m] = total_w
-        bin_accuracies[m] = np.dot(weights, accuracies) / total_w
-        bin_confidences[m] = np.dot(
-            weights,
-            [stats[1][m] for stats in dist_stats],
-        ) / total_w
+        acc_m = np.sum(weights_m * accuracies) / total_weight_m
 
-    # ------------------------------------------------------------
-    # Step 4: Exact 1-Wasserstein dECE (NO SciPy)
-    # ------------------------------------------------------------
-    dECE_bins = np.zeros(B)
-
-    for m in range(B):
-        if bin_total_weights[m] == 0:
-            continue
-
-        bin_acc = bin_accuracies[m]
-        total_w = bin_total_weights[m]
-        W_sum = 0.0
-
-        for stats in dist_stats:
-            w = stats[0][m]
-            if w == 0:
+        conf_num = 0.0
+        mask = (s_grid >= bins[m]) & (s_grid < bins[m + 1])
+        for i in range(N):
+            if weights_m[i] < 1e-12:
                 continue
+            cond_mean = np.sum(s_grid[mask] * pdfs[i, mask]) * ds / weights_m[i]
+            conf_num += weights_m[i] * cond_mean
+        conf_m = conf_num / total_weight_m
 
-            vals = stats[2][m]
-            W = np.mean(np.abs(vals - bin_acc))
-            W_sum += w * W
+        p_bin_i = np.array([
+            beta.cdf(bins[m + 1], alpha_list[i], beta_list[i]) -
+            beta.cdf(bins[m], alpha_list[i], beta_list[i])
+            for i in range(N)
+        ])
 
-        dECE_bins[m] = W_sum / total_w
+        native_purity = np.sum(weights_m * p_bin_i) / total_weight_m
+        impurity = 1.0 - native_purity
 
-    # ------------------------------------------------------------
-    # Step 5: Final dataset-level dECE
-    # ------------------------------------------------------------
-    dataset_dECE = (
-        np.sum(dECE_bins * bin_total_weights) / bin_total_weights.sum()
-        if bin_total_weights.sum() > 0
-        else float("nan")
-    )
+        raw_gap = abs(conf_m - acc_m)
+        impurity_bonus = raw_gap * impurity
+        bin_dECE[m] = raw_gap + impurity_bonus * (1.0 - raw_gap)
 
-    # --- NEW: Plotting Logic with Bootstrap Confidence Interval and Confidence Violins ---
-    plot_path = cfg.get("results_path")
-    if plot_path:
-        plt.figure(figsize=(6, 6))
-        
-        # Use serif fonts for all text
-        plt.rcParams['font.family'] = 'serif'
-        plt.rcParams['font.serif'] = ['Times New Roman', 'DejaVu Serif', 'Bitstream Vera Serif', 'Computer Modern Roman']
+        p_m[m] = total_weight_m / N
 
-        n_bootstrap = cfg.get("n_bootstrap_samples", 5000)
-        max_violin_samples = cfg.get("max_violin_samples", 5000)
-
-        plot_bin_confidences = []
-        plot_bin_accuracies = []
-        plot_lower_bounds = []
-        plot_upper_bounds = []
-        bin_conf_samples = []
-
-        # Step 1: collect per-bin accuracy and confidence samples
-        for m in range(len(bins) - 1):
-            s_min, s_max = bins[m], bins[m + 1]
-
-            ys = []
-            ws = []
-            conf_samples_bin = []
-
-            for samples, y in zip(samples_list, accuracies):
-                mask = (samples >= s_min) & (samples < s_max)
-                w = np.mean(mask)
-                if w > 0:
-                    ys.append(y)
-                    ws.append(w)
-                    conf_samples_bin.append(samples[mask])
-
-            # Combine confidence samples for horizontal violin
-            if len(conf_samples_bin) > 0:
-                conf_samples_bin = np.concatenate(conf_samples_bin)
-                # Subsample for plotting efficiency
-                if len(conf_samples_bin) > max_violin_samples:
-                    conf_samples_bin = np.random.choice(conf_samples_bin, size=max_violin_samples, replace=False)
-                bin_conf_samples.append(conf_samples_bin)
-            else:
-                bin_conf_samples.append(None)
-
-            # Skip empty bins
-            if len(ys) == 0:
-                continue
-
-            ys = np.asarray(ys)
-            ws = np.asarray(ws)
-            ws = ws / ws.sum()  # normalize soft weights
-
-            # Soft-bin accuracy
-            r_hat = bin_accuracies[m]
-
-            # Bootstrap CI for accuracy
+        ws = weights_m / total_weight_m
+        n_obs = len(accuracies)
+        if n_obs > 0:
+            n_bootstrap = cfg.get("n_bootstrap_samples", 2000)
             bootstrap_estimates = []
-            n_obs = len(ys)
             for _ in range(n_bootstrap):
                 idx = np.random.randint(0, n_obs, size=n_obs)
                 ws_b = ws[idx]
-                ys_b = ys[idx]
+                ys_b = accuracies[idx]
                 ws_b = ws_b / ws_b.sum()
                 bootstrap_estimates.append(np.sum(ws_b * ys_b))
+            lower, upper = np.percentile(bootstrap_estimates, [5, 95])
+        else:
+            lower = acc_m
+            upper = acc_m
 
-            lower, upper = np.percentile(bootstrap_estimates, [2.5, 97.5])
+        plot_bin_confidences.append(conf_m)
+        plot_bin_accuracies.append(acc_m)
+        plot_lower_bounds.append(lower)
+        plot_upper_bounds.append(upper)
+        plot_bin_purities.append(native_purity)
+        plot_bin_left.append(bins[m])
+        plot_bin_right.append(bins[m + 1])
 
-            plot_bin_confidences.append(bin_confidences[m])
-            plot_bin_accuracies.append(r_hat)
-            plot_lower_bounds.append(lower)
-            plot_upper_bounds.append(upper)
+    dataset_dECE = np.sum(p_m * bin_dECE)
 
-        # Step 2: Convert to arrays for plotting
+    plot_path = cfg.get("results_path")
+    if plot_path:
+        os.makedirs(plot_path, exist_ok=True)
+
         plot_bin_confidences = np.array(plot_bin_confidences)
         plot_bin_accuracies = np.array(plot_bin_accuracies)
         plot_lower_bounds = np.array(plot_lower_bounds)
         plot_upper_bounds = np.array(plot_upper_bounds)
-        y_err = np.vstack([
-            np.maximum(0, plot_bin_accuracies - plot_lower_bounds),
-            np.maximum(0, plot_upper_bounds - plot_bin_accuracies),
-        ])
+        plot_bin_purities = np.array(plot_bin_purities)
 
-        # Step 3: Horizontal violins for confidence distributions
-        violin_label_added = False
-        for m, conf_samples in enumerate(bin_conf_samples):
-            if conf_samples is None or m >= len(plot_bin_accuracies):
-                continue
-
-            y_center = plot_bin_accuracies[m]
-
-            parts = plt.violinplot(
-                conf_samples,
-                positions=[y_center],
-                vert=False,
-                widths=0.03,          # controls vertical thickness of the violin
-                showmeans=False,
-                showmedians=False,
-                showextrema=False,
-            )
-
-            for pc in parts["bodies"]:
-                pc.set_facecolor("#10d1a1")
-                pc.set_alpha(0.15)
-                # Add legend label only once
-                if not violin_label_added:
-                    pc.set_label("Confidence Distribution")
-                    violin_label_added = True
-
-        # Step 4: Perfect calibration line
+        plt.figure(figsize=(5, 5))
         plt.plot([0, 1], [0, 1], "--", color="gray", alpha=0.7, label="Perfect Calibration")
 
-        # Step 5: Accuracy points with vertical CI
-        plt.errorbar(
-            plot_bin_confidences,
-            plot_bin_accuracies,
-            yerr=y_err,
-            fmt="o",
-            capsize=4,
-            elinewidth=2,
-            alpha=0.85,
-            label=f"Bin Accuracy (95% CI)\nTotal dECE: {dataset_dECE:.4f}",
-        )
+        if plot_bin_confidences.size > 1:
+            order = np.argsort(plot_bin_confidences)
+            x_sorted = plot_bin_confidences[order]
+            lower_sorted = plot_lower_bounds[order]
+            upper_sorted = plot_upper_bounds[order]
+            purity_sorted = plot_bin_purities[order]
 
-        # Optional shaded vertical band for visual continuity
-        plt.fill_between(
-            plot_bin_confidences,
-            plot_lower_bounds,
-            plot_upper_bounds,
-            alpha=0.15,
-            color="#1f77b4"
-        )
+            dense_x = np.linspace(0.0, 1.0, 200)
+            dense_lower = np.interp(dense_x, x_sorted, lower_sorted, left=lower_sorted[0], right=lower_sorted[-1])
+            dense_upper = np.interp(dense_x, x_sorted, upper_sorted, left=upper_sorted[0], right=upper_sorted[-1])
+            dense_purity = np.interp(dense_x, x_sorted, purity_sorted, left=purity_sorted[0], right=purity_sorted[-1])
 
-        # Step 6: Plot aesthetics
+            verts = []
+            colors = []
+            for i in range(len(dense_x) - 1):
+                alpha = 0.1 + 0.6 * float(
+                    np.clip(0.5 * (dense_purity[i] + dense_purity[i + 1]), 0.0, 1.0)
+                )
+                verts.append([
+                    (dense_x[i], dense_lower[i]),
+                    (dense_x[i], dense_upper[i]),
+                    (dense_x[i + 1], dense_upper[i + 1]),
+                    (dense_x[i + 1], dense_lower[i + 1]),
+                ])
+                colors.append(to_rgba("#2ca02c", alpha=alpha))
+
+            band = PolyCollection(verts, facecolors=colors, edgecolors="none")
+            plt.gca().add_collection(band)
+
+            plt.plot(
+                plot_bin_confidences,
+                plot_bin_accuracies,
+                "o-",
+                color="black",
+                markersize=4,
+                label="Bin Accuracy",
+            )
+
         plt.xlabel("Mean Predicted Confidence")
         plt.ylabel("Accuracy")
-        plt.title("dECE Reliability Diagram with Confidence Uncertainty")
+        # plt.title("dECE Reliability Diagram")
         plt.legend(loc="lower right")
         plt.grid(True, linestyle=":", alpha=0.6)
         plt.xlim(0, 1)
         plt.ylim(0, 1)
         plt.tight_layout()
 
-        # Step 7: Save figure
         name = "dECE_reliability_diagram_0"
         if os.path.exists(plot_path + f"/{name}.pdf"):
             idx = 1
@@ -376,7 +300,7 @@ def dECE(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
         plt.savefig(plot_path + f"/{name}.pdf", bbox_inches="tight", dpi=300)
         plt.close()
 
-    return [dataset_dECE]
+    return [float(dataset_dECE)]
 
 
 @register_metric(name="auroc_scalar")

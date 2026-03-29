@@ -8,7 +8,8 @@ from together import Together
 from ..default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
 
 class TogetherAIBatch(AbstractModel):
-    def __init__(self, cfg):
+    def __init__(self, master_cfg, cfg):
+        self.master_cfg = master_cfg
         self.cfg = cfg
         self.model_name = cfg.get("name", None)
         self.repeat = cfg.get("repeat", 1)
@@ -21,7 +22,7 @@ class TogetherAIBatch(AbstractModel):
         top_k = self.cfg.get("logprobs", 5)
         stop_sequences = self.cfg.get("stop_sequences", [])
         max_requests = self.cfg.get("max_batch_requests", 50000)
-        output_dir = self.cfg.get("results_path", "results/")
+        output_dir = self.master_cfg.get("results_path", "results/")
         os.makedirs(output_dir, exist_ok=True)
 
         task_file_paths = self._create_batch_files(
@@ -36,10 +37,15 @@ class TogetherAIBatch(AbstractModel):
         )
 
         merged_responses: dict[tuple[int, int], dict] = {}
+        batch_ids: list[str] = []
         for task_file_path in task_file_paths:
             batch_id = self._submit_batch(client, task_file_path)
             logging.info("Submitted Together batch job %s", batch_id)
-            self._wait_for_batch(client, batch_id)
+            batch_ids.append(batch_id)
+
+        self._wait_for_batches(client, batch_ids)
+
+        for batch_id in batch_ids:
             merged_responses.update(self._retrieve_batch_output(client, batch_id, output_dir))
 
         total_prompts = len(prompt_collection.context_texts)
@@ -119,7 +125,7 @@ class TogetherAIBatch(AbstractModel):
                     }
                 )
 
-            task_file_path = os.path.join(output_dir, f"together_batch_part_{chunk_idx}.jsonl")
+            task_file_path = os.path.join(output_dir, f"{self.master_cfg.get('dataset_name')}_batch_part_{chunk_idx}.jsonl")
             with open(task_file_path, "w", encoding="utf-8") as file_handle:
                 for task in tasks:
                     file_handle.write(json.dumps(task, ensure_ascii=False) + "\n")
@@ -162,7 +168,85 @@ class TogetherAIBatch(AbstractModel):
             logging.info(f"Batch {batch_id} progress: {batch.progress}")
             time.sleep(poll_interval)
 
+    def _wait_for_batches(self, client: Together, batch_ids: list[str], poll_interval: int = 30) -> None:
+        pending = set(batch_ids)
+
+        while pending:
+            completed_now = []
+            for batch_id in list(pending):
+                try:
+                    batch = client.batches.retrieve(batch_id)
+                except Exception:
+                    batch = client.batches.get_batch(batch_id)
+
+                status = batch.status
+                if status == "COMPLETED":
+                    completed_now.append(batch_id)
+                    continue
+
+                if status in {"FAILED", "CANCELLED"}:
+                    raise RuntimeError(f"Batch {batch_id} ended with status {status}")
+
+                logging.info("Batch %s progress: %s", batch_id, getattr(batch, "progress", "unknown"))
+
+            for batch_id in completed_now:
+                pending.remove(batch_id)
+
+            if pending:
+                logging.info("Waiting on %d Together batch job(s)", len(pending))
+                time.sleep(poll_interval)
+
     def _parse_logprobs(self, logprobs_data: dict) -> tuple[list[str], list[float], list[list[tuple[str, float]]]]:
+        # Newer Together responses may return per-token entries under logprobs["content"].
+        content_items = logprobs_data.get("content")
+        if isinstance(content_items, list):
+            tokens: list[str] = []
+            token_logprobs: list[float] = []
+            top_k_tokens: list[list[tuple[str, float]]] = []
+
+            for item in content_items:
+                if not isinstance(item, dict):
+                    continue
+
+                token = item.get("token")
+                logprob = item.get("logprob")
+                if token is None or logprob is None:
+                    continue
+
+                try:
+                    token_str = str(token)
+                    logprob_val = float(logprob)
+                except (TypeError, ValueError):
+                    continue
+
+                tokens.append(token_str)
+                token_logprobs.append(logprob_val)
+
+                token_top_k: list[tuple[str, float]] = []
+                raw_top = item.get("top_logprobs")
+                if isinstance(raw_top, list):
+                    for candidate in raw_top:
+                        if not isinstance(candidate, dict):
+                            continue
+                        cand_token = candidate.get("token")
+                        cand_logprob = candidate.get("logprob")
+                        if cand_token is None or cand_logprob is None:
+                            continue
+                        try:
+                            token_top_k.append((str(cand_token), float(cand_logprob)))
+                        except (TypeError, ValueError):
+                            continue
+                elif isinstance(raw_top, dict):
+                    for cand_token, cand_logprob in raw_top.items():
+                        try:
+                            token_top_k.append((str(cand_token), float(cand_logprob)))
+                        except (TypeError, ValueError):
+                            continue
+
+                top_k_tokens.append(token_top_k)
+
+            return tokens, token_logprobs, top_k_tokens
+
         tokens = list(logprobs_data.get("tokens", []) or [])
         token_logprobs = list(logprobs_data.get("token_logprobs", []) or [])
         raw_top_logprobs = list(logprobs_data.get("top_logprobs", []) or [])
