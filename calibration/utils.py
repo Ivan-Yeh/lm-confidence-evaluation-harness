@@ -4,10 +4,11 @@ import numpy as np
 import pandas as pd
 import re
 import gc
-from vllm import LLM, SamplingParams
 from multiprocessing import Pool, cpu_count
 from linguistic_confidence_lexicon.linguistic_calibrator import find_closest_hedging_words
 from lm_conf.confidence_metrics.distributionals import BetaDistribution
+from lm_conf.default_utils.custom_types import PromptCollection
+from lm_conf.models.model_manager import ModelManager
 
 LINGUISTIC_LEXICON_PATH = "linguistic_confidence_lexicon/hedging_word_scores.pkl"
 LEXICON = pd.read_pickle(LINGUISTIC_LEXICON_PATH)
@@ -48,6 +49,7 @@ def obtain_hedging_words(conf: BetaDistribution) -> list[str] | None:
         conf.alpha_param,
         conf.beta_param,
         LEXICON,
+        top_k=5,
     )["hedging_word"].tolist()
 
 
@@ -76,13 +78,13 @@ def in_domain_numerical_post_hoc_calibration(confidences, accuracies, method="is
     acc_values = np.array([acc if acc != "" else 0 for acc in accuracies], dtype=float)
     
     n = len(mu_values)
-    train_size = max(1, int(np.ceil(0.10 * n)))
+    train_size = max(1, int(np.ceil(0.2 * n)))
     
-    # Split: first 10% for training
+    # Split: first 20% for training
     X_train = mu_values[:train_size]
     y_train = acc_values[:train_size]
     
-    # Last 90% for prediction
+    # Last 80% for prediction
     X_test = mu_values[train_size:]
     test_confidences = confidences[train_size:]
     
@@ -182,7 +184,11 @@ def cross_domain_numerical_post_hoc_calibration(confidences_train, accuracies_tr
     
     return calibrated_betas
 
-def estimate_linguistic_confidence(responses: list[str]) -> list[BetaDistribution | None]:
+def estimate_linguistic_confidence(
+    responses: list[str],
+    evaluators_cfg: dict,
+    evaluator_keys: list[str],
+) -> list[BetaDistribution | None]:
     prompts = [LINGUISTIC_EVALUATOR_PROMPT.format(sentence=response) for response in responses]
 
     def extract_score(text: str) -> float:
@@ -196,28 +202,22 @@ def estimate_linguistic_confidence(responses: list[str]) -> list[BetaDistributio
 
     scores_collection: list[list[float]] = [[] for _ in responses]
 
-    for evaluator in evaluator_list:
-        llm = LLM(max_model_len=4000, model=evaluator, trust_remote_code=True)
-        sampling_params = SamplingParams(temperature=1, max_tokens=512)
-        
-        for run in range(3):  # Run each prompt 3 times
-            message_list = [[{"role": "user", "content": r}] for r in prompts]
+    for evaluator in evaluator_keys:
+        model_manager: ModelManager = ModelManager(master_cfg=evaluators_cfg, model_config_type=evaluator)
+        prompt_collection = PromptCollection(
+            system_prompt="You are a careful assistant.",
+            context_texts=prompts,
+        )
 
-            outputs = llm.chat(
-                messages=message_list,
-                sampling_params=sampling_params,
-                chat_template_kwargs={
-                    "reasoning_effort": "low",  # for gpt-oss
-                    "enable_thinking": False,  # for qwen 3
-                },
-            )
-
-            for i, output in enumerate(outputs):
-                score = extract_score(output.outputs[0].text)
+        outputs = model_manager.run_generation(prompt_collection)
+        for output in outputs:
+            output_texts = output.output_texts
+            for i, text in enumerate(output_texts):
+                score = extract_score(text)
                 if not np.isnan(score):
                     scores_collection[i].append(score)
-        llm.llm_engine.engine_core.shutdown()
-        del llm
+
+        # del model_manager
         gc.collect()
 
     confidence_dists = []

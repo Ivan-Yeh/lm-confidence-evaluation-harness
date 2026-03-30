@@ -4,7 +4,7 @@ defaults:
 
 
 prompt_format: |
-  Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer.
+  Answer the following question using a succinct (at most one sentence) and full answer. 
 
   Question: {{formatted_question}}
   Answer:

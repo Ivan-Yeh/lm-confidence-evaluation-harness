@@ -422,8 +422,8 @@ def dAUROC(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
     if not pos_idxs or not neg_idxs:
         return [float("nan")]
     
-    num_iterations = 1_000_000
-    batch_size = 100_000
+    num_iterations = 10_000
+    batch_size = 10_000
     total_wins = 0.0
     
     for _ in tqdm(range(num_iterations // batch_size), desc="Computing dAUROC using Monte Carlo"):

@@ -37,7 +37,7 @@ performance_metrics:
 qa_model:
   backend: vllm 
   name: openai/gpt-oss-20b
-  repeat: 30
+  repeat: 20
   stop_sequences: []
   temperature: 1
   max_tokens: 256

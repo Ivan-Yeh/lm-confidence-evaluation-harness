@@ -4,12 +4,13 @@ defaults:
 
 
 prompt_format: |
-  Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer.
+  Answer the following question using a succinct (at most one sentence) and full answer. 
 
   Question: {{formatted_question}}
   Answer:
 output_filters: null
-confidence_metrics: distributional_semantic_uncertainty
+confidence_metrics: distributional_linguistic_confidence
+
 
 qa_model:
   repeat: 20

@@ -16,7 +16,7 @@ class vLLMModel(AbstractModel):
     """
     def __init__(self, cfg):
         self.cfg = cfg
-        self.model_name = cfg.get("name", None)
+        self.model_name = cfg.get("name", "openai/gpt-oss-20b")
         self.repeat = cfg.get("repeat", 1)
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.model_name, trust_remote_code=True)
