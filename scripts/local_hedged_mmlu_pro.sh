@@ -9,15 +9,15 @@ dataset=mmlu_pro
 backend=vllm
 
 
-CUDA_VISIBLE_DEVICES=$GPU python -m lm_conf dataset=$dataset \
-    rounds=$rounds \
-    limit=$limit \
-    task=hedged_qa_unified_tp \
-    qa_model.name=openai/gpt-oss-20b \
-    qa_model.backend=$backend \
-    qa_model.reasoning_effort=low \
-    qa_model.max_tokens=$max_tokens \
-    qa_model.max_model_len=$max_model_len 
+# CUDA_VISIBLE_DEVICES=$GPU python -m lm_conf dataset=$dataset \
+#     rounds=$rounds \
+#     limit=$limit \
+#     task=hedged_qa_unified_tp \
+#     qa_model.name=openai/gpt-oss-20b \
+#     qa_model.backend=$backend \
+#     qa_model.reasoning_effort=low \
+#     qa_model.max_tokens=$max_tokens \
+#     qa_model.max_model_len=$max_model_len 
 
 CUDA_VISIBLE_DEVICES=$GPU python -m lm_conf dataset=$dataset \
     rounds=$rounds \
