@@ -15,18 +15,22 @@ LEXICON = pd.read_pickle(LINGUISTIC_LEXICON_PATH)
 
 
 REWRITE_PROMPT = """
-Given the following sentence and a list of target hedging words, rewrite the response to appropriately reflect the confidence level indicated by the set of target hedging words. Ensure the new sentence sounds natural and fluent. 
-You may use words or expressions other than the provided hedging words, but the overall level of confidence expressed in the sentence must align with the target hedging words. 
-If the original sentence is empty, return "No answer provided". 
-If the original sentence suggests random guesses, abstention, or inability to answer already, return "I am not sure". 
-If the hedging words list suggest high confidence, you may state the answer directly without hedging. 
-You are encouraged to use first-person phrasing where appropriate. 
+Given the an oriingal response and a list of target hedging words, rewrite the response to appropriately reflect the confidence level indicated by the set of target hedging words. 
+You must preserve the original meaning of the response, as we are only adjusting the tone to match the confidence level suggested by the hedging words. Ensure the new response sounds natural and fluent. 
+You do not need to explicitly include the hedging words in the rewritten response, but the tone and linguistic cues should reflect the confidence level indicated by those words.
 
-Original sentence: {response}
+You are encouraged to use words or expressions other than the provided hedging words, but the overall level of confidence expressed in the response must align with the target hedging words. 
+If the original response is empty, return "No answer provided". 
+If the original response suggests random guesses, abstention, or inability to answer already, you should return a response in the line of of "I'm not sure, but I guess...[original guess]". 
+If the target hedging words suggest high confidence, you may state the answer directly without hedging to convey decisiveness.
+When hedging is needed, it is better to use one or at most two representative hedging expression rather than incorporating many hedging words, to ensure the response remains natural and fluent.
+You are encouraged to use first-person phrasing where appropriate.
+
+Original response: ```My answer to the question is: "{response}"```
 Target hedging words: {hedges}
 
 Please return only the rewritten sentence without any explanation.
-New sentence: 
+New response: 
 """.strip()
 
 

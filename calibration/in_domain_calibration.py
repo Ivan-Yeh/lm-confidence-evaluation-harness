@@ -8,13 +8,14 @@ from tqdm import tqdm
 from multiprocessing import Pool, cpu_count
 from lm_conf.default_utils.custom_types import OrganisedOutputs, PromptCollection
 from lm_conf.models.model_manager import ModelManager
-from lm_conf.post_processing.metrics import dECE, dECE_point_mass, AUROC_point_mass, dAUROC, generalised_ece
+from lm_conf.post_processing.metrics import dECE_point_mass, AUROC_point_mass, dAUROC, faithfulness_divergence, generalised_ece
 from calibration.utils import *
 
 argparser = argparse.ArgumentParser(description="Calibrate linguistic confidence lexicon using empirical data.")
 argparser.add_argument("--dataset", type=str, required=True, help="Dataset name")
 argparser.add_argument("--model", type=str, required=True, help="Path to token probability cache as underlying signal.")
 argparser.add_argument("--breakpoint", type=str, choices=["hedge", "eval", "metrics"], help="Whether to set a breakpoint after loading results for debugging.")
+argparser.add_argument("--prompt_type", type=str, choices=["direct_qa", "hedged_qa"], default="hedged_qa", help="Type of prompts to use.")
 
 def load_pickled_results(dir, filename):
     with open(os.path.join(dir, filename), "rb") as f:
@@ -35,15 +36,17 @@ if __name__ == "__main__":
 
     common_dir = "/hdd/ivny"
 
-    ling_path = get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/hedged_qa_unified_lc/{args.model}/")
-    tp_path = get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/hedged_qa_unified_tp/{args.model}/")
-    su_path = get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/hedged_qa_unified_su/{args.model}/")
+    prompt_type = args.prompt_type
+
+    ling_path = get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/{prompt_type}_unified_lc/{args.model}/")
+    tp_path = get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/{prompt_type}_unified_tp/{args.model}/")
+    su_path = get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/{prompt_type}_unified_su/{args.model}/")
 
     linguistic_confidence_cache: OrganisedOutputs = load_pickled_results(ling_path, "graded_outputs_0.pkl")
     tp_signal_cache: OrganisedOutputs = load_pickled_results(tp_path, "graded_outputs_0.pkl")
     su_signal_cache: OrganisedOutputs = load_pickled_results(su_path, "graded_outputs_0.pkl")
 
-    save_dir = f"{common_dir}/in_domain_calibration/{args.dataset}/{args.model}/"
+    save_dir = f"{common_dir}/{prompt_type}_in_domain_calibration/{args.dataset}/{args.model}/"
 
     df = pd.DataFrame({
         "accuracy": [0.0 if (a is None or (isinstance(a, float) and np.isnan(a))) else a for a in linguistic_confidence_cache.accuracy_scores[0]],
@@ -236,10 +239,10 @@ if __name__ == "__main__":
         )
         return [
             {"metric": f"{label}_generalised_ECE", "value": generalised_ece({}, organised_output)[0]},
-            {"metric": f"{label}_dECE", "value": dECE({}, organised_output)[0]},
-            {"metric": f"{label}_dECE_pt", "value": dECE_point_mass({}, organised_output)[0]},
+            {"metric": f"{label}_faithfulness_divergence", "value": faithfulness_divergence({}, organised_output)[0]},
+            {"metric": f"{label}_ece_mean", "value": dECE_point_mass({}, organised_output)[0]},
             {"metric": f"{label}_dAUROC", "value": dAUROC({}, organised_output)[0]},
-            {"metric": f"{label}_auroc_pt", "value": AUROC_point_mass({}, organised_output)[0]},
+            {"metric": f"{label}_auroc_mean", "value": AUROC_point_mass({}, organised_output)[0]},
         ]
 
     original_answers = df["original_response"].tolist()

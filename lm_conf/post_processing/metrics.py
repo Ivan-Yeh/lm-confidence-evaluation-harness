@@ -11,10 +11,12 @@ from scipy.stats import beta, wasserstein_distance
 from concurrent.futures import ProcessPoolExecutor
 from sklearn.metrics import roc_auc_score
 from tqdm import tqdm
+from scipy.special import betaln, psi
 
 from ..confidence_metrics.distributionals import BetaDistribution
 from ..default_utils.custom_types import OrganisedOutputs
 from ..default_utils.registry import register_metric
+
 
 
 @register_metric(name="accuracy_scalar_with_abstention")
@@ -465,6 +467,8 @@ def generalised_ece(cfg: dict, extracted_output: OrganisedOutputs) -> list[float
 
     y = np.array(accuracies)
     N = len(y)
+    if N == 0:
+        return [float("nan")]
     
     num_bins = cfg.get("num_bins", 10)
     num_samples = cfg.get("num_samples", 1000) # Balanced for speed/accuracy
@@ -483,6 +487,10 @@ def generalised_ece(cfg: dict, extracted_output: OrganisedOutputs) -> list[float
     rm = np.zeros(num_bins)
     pm = np.zeros(num_bins)
     gm = np.zeros(num_bins)
+    plot_bin_confidences = []
+    plot_bin_accuracies = []
+    plot_lower_bounds = []
+    plot_upper_bounds = []
 
     for m in range(num_bins):
         # Create a boolean mask for samples in bin m
@@ -503,8 +511,137 @@ def generalised_ece(cfg: dict, extracted_output: OrganisedOutputs) -> list[float
             bin_samples_mask = all_samples[mask]
             gm[m] = np.mean(bin_samples_mask) if bin_samples_mask.size > 0 else 0.0
 
+            ws = p_nm / pm[m]
+            n_obs = len(y)
+            if n_obs > 0:
+                n_bootstrap = cfg.get("n_bootstrap_samples", 2000)
+                bootstrap_estimates = []
+                for _ in range(n_bootstrap):
+                    idx = np.random.randint(0, n_obs, size=n_obs)
+                    ws_b = ws[idx]
+                    ys_b = y[idx]
+                    ws_sum = ws_b.sum()
+                    if ws_sum > 0:
+                        ws_b = ws_b / ws_sum
+                        bootstrap_estimates.append(np.sum(ws_b * ys_b))
+                if len(bootstrap_estimates) > 0:
+                    lower, upper = np.percentile(bootstrap_estimates, [5, 95])
+                else:
+                    lower = rm[m]
+                    upper = rm[m]
+            else:
+                lower = rm[m]
+                upper = rm[m]
+
+            plot_bin_confidences.append(gm[m])
+            plot_bin_accuracies.append(rm[m])
+            plot_lower_bounds.append(lower)
+            plot_upper_bounds.append(upper)
+
     # 4. Final gECE
     # gECE = \sum (pm / N) * |rm - gm|
     gece_value = np.sum((pm / N) * np.abs(rm - gm))
 
+    plot_path = cfg.get("results_path")
+    if plot_path and len(plot_bin_confidences) > 0:
+        os.makedirs(plot_path, exist_ok=True)
+
+        plot_bin_confidences = np.array(plot_bin_confidences)
+        plot_bin_accuracies = np.array(plot_bin_accuracies)
+        plot_lower_bounds = np.array(plot_lower_bounds)
+        plot_upper_bounds = np.array(plot_upper_bounds)
+
+        plt.figure(figsize=(5, 5))
+        plt.plot([0, 1], [0, 1], "--", color="gray", alpha=0.7, label="Perfect Calibration")
+
+        if plot_bin_confidences.size > 1:
+            order = np.argsort(plot_bin_confidences)
+            x_sorted = plot_bin_confidences[order]
+            lower_sorted = plot_lower_bounds[order]
+            upper_sorted = plot_upper_bounds[order]
+
+            dense_x = np.linspace(0.0, 1.0, 200)
+            dense_lower = np.interp(dense_x, x_sorted, lower_sorted, left=lower_sorted[0], right=lower_sorted[-1])
+            dense_upper = np.interp(dense_x, x_sorted, upper_sorted, left=upper_sorted[0], right=upper_sorted[-1])
+
+            plt.fill_between(
+                dense_x,
+                dense_lower,
+                dense_upper,
+                color="#2ca02c",
+                alpha=0.25,
+                linewidth=0,
+                label="90% CI",
+            )
+
+            plt.plot(
+                plot_bin_confidences,
+                plot_bin_accuracies,
+                "o-",
+                color="black",
+                markersize=4,
+                label="Bin Accuracy",
+            )
+
+        plt.xlabel("Mean Predicted Confidence")
+        plt.ylabel("Accuracy")
+        plt.legend(loc="lower right")
+        plt.grid(True, linestyle=":", alpha=0.6)
+        plt.xlim(0, 1)
+        plt.ylim(0, 1)
+        plt.tight_layout()
+
+        name = "gECE_reliability_diagram_0"
+        if os.path.exists(plot_path + f"/{name}.pdf"):
+            idx = 1
+            while os.path.exists(plot_path + f"/gECE_reliability_diagram_{idx}.pdf"):
+                idx += 1
+            name = f"gECE_reliability_diagram_{idx}"
+        plt.savefig(plot_path + f"/{name}.pdf", bbox_inches="tight", dpi=300)
+        plt.close()
+
     return [float(gece_value)]
+
+
+
+@register_metric(name="faithfulness_divergence")
+def faithfulness_divergence(cfg: dict, extracted_output: OrganisedOutputs) -> list[float]:
+    logging.info("Computing faithfulness divergence")
+    def kl_beta(a_post, b_post, a_prior, b_prior):
+        return (
+            betaln(a_prior, b_prior) - betaln(a_post, b_post)
+            + (a_post - a_prior) * psi(a_post)
+            + (b_post - b_prior) * psi(b_post)
+            + (a_prior + b_prior - a_post - b_post) * psi(a_post + b_post)
+        )
+    def faithfulness_divergence_single(dist: BetaDistribution, y):
+        # Placeholder: Implement the actual divergence calculation based on the paper
+        a = dist.alpha_param
+        b = dist.beta_param
+        a_post = a + y
+        b_post = b + (1 - y)
+        return (a + b + 1e-8) * kl_beta(a_post, b_post, a, b)
+    
+    accuracies = []
+    confidence_dists = []
+    
+    # Collect valid pairs
+    for acc, conf in zip(extracted_output.accuracy_scores[0], extracted_output.extracted_confidences[0]):
+        try:
+            if acc is None or conf is None or conf.is_valid() is False:
+                continue
+            if acc == "":
+                acc = 0
+            cleaned_acc = float(acc)
+            accuracies.append(cleaned_acc)
+            confidence_dists.append(conf)
+        except:
+            continue
+
+    divergences = []
+    for dist, acc in zip(confidence_dists, accuracies):
+        divergence = faithfulness_divergence_single(dist, acc)
+        if not np.isnan(divergence):
+            divergences.append(divergence)
+
+    return [float(np.mean(divergences))]

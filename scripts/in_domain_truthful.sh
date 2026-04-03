@@ -8,15 +8,15 @@ CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset 
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model qwen/Qwen3-8B --breakpoint $breakpoint 
 CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model mistralai/Mistral-7B-Instruct-v0.3 --breakpoint $breakpoint 
 
-breakpoint=eval
+# breakpoint=eval
 
-CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model openai/gpt-oss-20b --breakpoint $breakpoint
-CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model meta-llama/Llama-3.1-8B-Instruct --breakpoint $breakpoint 
-CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model qwen/Qwen3-8B --breakpoint $breakpoint 
-CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model mistralai/Mistral-7B-Instruct-v0.3 --breakpoint $breakpoint 
+# CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model openai/gpt-oss-20b --breakpoint $breakpoint
+# CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model meta-llama/Llama-3.1-8B-Instruct --breakpoint $breakpoint 
+# CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model qwen/Qwen3-8B --breakpoint $breakpoint 
+# CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model mistralai/Mistral-7B-Instruct-v0.3 --breakpoint $breakpoint 
 
-breakpoint=metrics
-CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model openai/gpt-oss-20b --breakpoint $breakpoint
-CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model meta-llama/Llama-3.1-8B-Instruct --breakpoint $breakpoint 
-CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model qwen/Qwen3-8B --breakpoint $breakpoint 
-CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model mistralai/Mistral-7B-Instruct-v0.3 --breakpoint $breakpoint 
+# breakpoint=metrics
+# CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model openai/gpt-oss-20b --breakpoint $breakpoint
+# CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model meta-llama/Llama-3.1-8B-Instruct --breakpoint $breakpoint 
+# CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model qwen/Qwen3-8B --breakpoint $breakpoint 
+# CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset truthful_qa --model mistralai/Mistral-7B-Instruct-v0.3 --breakpoint $breakpoint 
