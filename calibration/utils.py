@@ -36,11 +36,13 @@ New response:
 
 LINGUISTIC_EVALUATOR_PROMPT = """
 Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence (without using any external or prior knowledge). 
-Please pay attention to the hedging language used and the overall assertiveness of the statement. Do not consider the factual accuracy of the content or context outside the sentence itself.
-If the sentence contains random guesses or abstention, the score should be towards 0. 
-If the sentence does not contain any hedging expressions the score should be towards 100. 
+Please pay attention to the hedging language used and the overall assertiveness of the statement. 
+If the sentence abstains from answering by pointing out the insufficiency of information with a firm tone, the score should be towards 100. 
+If the sentence contains random guesses or abstention, the score should be towards 0. If the sentence is stated with strong certainty or no hedging, the score should be towards 100. 
+If the sentence does not contain any hedging language or is a succinct, decisive short answer, the score should be towards 100, too.
 
-Here is the sentence: {sentence} 
+Here is the sentence:
+{sentence}
 
 Confidence Score: [Return only a number between 0 and 100]
 """.strip()
