@@ -230,7 +230,6 @@ def estimate_linguistic_confidence(
             # Get all scores from all evaluators for this specific text
             all_scores = scores_collection[text_idx]
             valid_scores = [s for s in all_scores if not np.isnan(s)]
-            print(valid_scores)
             if valid_scores:
                 mu = float(np.mean(valid_scores))
                 sigma = float(np.std(valid_scores)) if len(valid_scores) > 1 else 1e-6
