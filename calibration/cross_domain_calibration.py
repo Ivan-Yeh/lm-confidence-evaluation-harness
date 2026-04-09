@@ -16,7 +16,7 @@ argparser.add_argument("--train", type=str, required=True, help="Training datase
 argparser.add_argument("--test", type=str, required=True, help="Test dataset name")
 argparser.add_argument("--model", type=str, required=True, help="Path to token probability cache as underlying signal.")
 argparser.add_argument("--breakpoint", type=str, choices=["hedge", "eval", "metrics"], help="Whether to set a breakpoint after loading results for debugging.")
-argparser.add_argument("--prompt_type", type=str, choices=["direct_qa", "hedged_qa"], default="hedged_qa", help="Type of prompts to use.")
+argparser.add_argument("--prompt_type", type=str, choices=["direct_qa", "hedged_qa"], default="direct_qa", help="Type of prompts to use.")
 
 
 def load_pickled_results(dir, filename):

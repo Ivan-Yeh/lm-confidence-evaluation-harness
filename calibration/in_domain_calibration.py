@@ -15,7 +15,7 @@ argparser = argparse.ArgumentParser(description="Calibrate linguistic confidence
 argparser.add_argument("--dataset", type=str, required=True, help="Dataset name")
 argparser.add_argument("--model", type=str, required=True, help="Path to token probability cache as underlying signal.")
 argparser.add_argument("--breakpoint", type=str, choices=["hedge", "eval", "metrics"], help="Whether to set a breakpoint after loading results for debugging.")
-argparser.add_argument("--prompt_type", type=str, choices=["direct_qa", "hedged_qa"], default="hedged_qa", help="Type of prompts to use.")
+argparser.add_argument("--prompt_type", type=str, choices=["direct_qa", "hedged_qa"], default="direct_qa", help="Type of prompts to use.")
 
 def load_pickled_results(dir, filename):
     with open(os.path.join(dir, filename), "rb") as f:

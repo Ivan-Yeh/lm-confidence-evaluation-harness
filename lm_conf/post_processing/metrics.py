@@ -612,7 +612,7 @@ def faithfulness_divergence(cfg: dict, extracted_output: OrganisedOutputs) -> li
             betaln(a_prior, b_prior) - betaln(a_post, b_post)
             + (a_post - a_prior) * psi(a_post)
             + (b_post - b_prior) * psi(b_post)
-            + (a_prior + b_prior - a_post - b_post) * psi(a_post + b_post)
+            - (a_post + b_post - a_prior - b_prior) * psi(a_post + b_post)
         )
     def faithfulness_divergence_single(dist: BetaDistribution, y):
         # Placeholder: Implement the actual divergence calculation based on the paper
@@ -620,7 +620,7 @@ def faithfulness_divergence(cfg: dict, extracted_output: OrganisedOutputs) -> li
         b = dist.beta_param
         a_post = a + y
         b_post = b + (1 - y)
-        return (a + b + 1e-8) * kl_beta(a_post, b_post, a, b)
+        return max(0, (a + b + 1e-8) * kl_beta(a_post, b_post, a, b))
     
     accuracies = []
     confidence_dists = []
