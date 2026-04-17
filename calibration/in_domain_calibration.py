@@ -4,6 +4,7 @@ import pandas as pd
 import pickle
 import argparse
 import os
+from functools import partial
 from tqdm import tqdm
 from multiprocessing import Pool, cpu_count
 from lm_conf.default_utils.custom_types import OrganisedOutputs, PromptCollection
@@ -16,6 +17,7 @@ argparser.add_argument("--dataset", type=str, required=True, help="Dataset name"
 argparser.add_argument("--model", type=str, required=True, help="Path to token probability cache as underlying signal.")
 argparser.add_argument("--breakpoint", type=str, choices=["hedge", "eval", "metrics"], help="Whether to set a breakpoint after loading results for debugging.")
 argparser.add_argument("--prompt_type", type=str, choices=["direct_qa", "hedged_qa"], default="direct_qa", help="Type of prompts to use.")
+argparser.add_argument("--top_k", type=int, default=5, help="Top-k hedging words to retrieve.")
 
 def load_pickled_results(dir, filename):
     with open(os.path.join(dir, filename), "rb") as f:
@@ -37,6 +39,7 @@ if __name__ == "__main__":
     common_dir = "/hdd/ivny"
 
     prompt_type = args.prompt_type
+    top_k = args.top_k
 
     ling_path = get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/{prompt_type}_unified_lc/{args.model}/")
     tp_path = get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/{prompt_type}_unified_tp/{args.model}/")
@@ -46,7 +49,7 @@ if __name__ == "__main__":
     tp_signal_cache: OrganisedOutputs = load_pickled_results(tp_path, "graded_outputs_0.pkl")
     su_signal_cache: OrganisedOutputs = load_pickled_results(su_path, "graded_outputs_0.pkl")
 
-    save_dir = f"{common_dir}/{prompt_type}_in_domain_calibration/{args.dataset}/{args.model}/"
+    save_dir = f"{common_dir}/{prompt_type}_in_domain_calibration/top_k_ablation/top_{top_k}/{args.dataset}/{args.model}/"
 
     df = pd.DataFrame({
         "accuracy": [0.0 if (a is None or (isinstance(a, float) and np.isnan(a))) else a for a in linguistic_confidence_cache.accuracy_scores[0]],
@@ -95,16 +98,17 @@ if __name__ == "__main__":
                 hedging_words = pickle.load(f)
             print(f"Loaded cached hedging words for {conf_method}: {hedging_words}")
         else:
+            obtain_hedging_words_with_topk = partial(obtain_hedging_words, top_k=top_k)
             with Pool(cpu_count() - 1) as pool:
                 hedging_words = list(
                     tqdm(
                         pool.imap(
-                            obtain_hedging_words,
+                            obtain_hedging_words_with_topk,
                             df[conf_method],
                             chunksize=16,
                         ),
                         total=len(df),
-                        desc=f"Finding hedging words for {conf_method}",
+                        desc=f"Finding top-{top_k} hedging words for {conf_method}",
                     )
                 )
             with open(cache_file, "wb") as f:

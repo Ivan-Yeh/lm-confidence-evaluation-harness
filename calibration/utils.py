@@ -10,8 +10,8 @@ from lm_conf.confidence_metrics.distributionals import BetaDistribution
 from lm_conf.default_utils.custom_types import PromptCollection
 from lm_conf.models.model_manager import ModelManager
 
-LINGUISTIC_LEXICON_PATH = "linguistic_confidence_lexicon/hedging_word_scores.pkl"
-LEXICON = pd.read_pickle(LINGUISTIC_LEXICON_PATH)
+LINGUISTIC_LEXICON_PATH = "linguistic_confidence_lexicon/hedging_word_scores_reasonable.csv"
+LEXICON = pd.read_csv(LINGUISTIC_LEXICON_PATH)
 
 
 REWRITE_PROMPT = """
@@ -48,14 +48,14 @@ Confidence Score: [Return only a number between 0 and 100]
 """.strip()
 
 
-def obtain_hedging_words(conf: BetaDistribution) -> list[str] | None:
+def obtain_hedging_words(conf: BetaDistribution, top_k = 5) -> list[str] | None:
     if conf is None or not conf.is_valid():
         return None
     return find_closest_hedging_words(
         conf.alpha_param,
         conf.beta_param,
         LEXICON,
-        top_k=5,
+        top_k=top_k,
     )["hedging_word"].tolist()
 
 
