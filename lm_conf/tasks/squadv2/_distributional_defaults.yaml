@@ -29,11 +29,11 @@ confidence_metrics: null
 grader: llm_grader
 performance_metrics:
   - accuracy_scalar_with_abstention
+  - faithfulness_divergence
   - generalised_ece
-  - dECE
   - dECE_point_mass
-  - AUROC_point_mass
   - dAUROC
+  - AUROC_point_mass
 
 qa_model:
   backend: vllm 

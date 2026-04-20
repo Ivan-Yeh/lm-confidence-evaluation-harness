@@ -41,13 +41,16 @@ def find_closest_hedging_words(
         DataFrame with top K closest hedging words and their distances
     """
     rng = np.random.default_rng()
+    if not (np.isfinite(target_alpha) and np.isfinite(target_beta)
+            and target_alpha > 0 and target_beta > 0):
+        return pd.DataFrame(columns=["hedging_word", "alpha", "beta", "mean", "wasserstein_distance"])
     target_samples = beta.rvs(target_alpha, target_beta, size=sample_size, random_state=rng)
 
     records = []
     for row in lexicon_df.itertuples(index=False):
         alpha = getattr(row, "alpha_param", np.nan)
         beta_param = getattr(row, "beta_param", np.nan)
-        if pd.isna(alpha) or pd.isna(beta_param):
+        if pd.isna(alpha) or pd.isna(beta_param) or alpha <= 0 or beta_param <= 0:
             continue
         records.append((row.hedging_word, alpha, beta_param, row.mean))
 

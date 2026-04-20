@@ -4,7 +4,7 @@ defaults:
 
 
 prompt_format: |
-  Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. Pleaase include the option letter when answering.
+  Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. Please include the option letter when answering. Please do not include any explanation or reasoning steps, and only provide the final answer succinctly.
 
   Question: {{formatted_question}}
   Answer:

@@ -181,9 +181,13 @@ if __name__ == "__main__":
                 pickle.dump(outputs, f) 
             # --------------------------------------------------------------------
 
-            # import sys
-            # logger.info("QA generation and filtering complete. Exiting before confidence extraction and grading.")
-            # sys.exit(0)
+            logger.info(f"Number of filtered outputs: {len(outputs)}")
+            logger.info(f"Filtered output logprobs: {outputs[0].output_logprobs[0]}")
+            logger.info(f"Filtered output texts: {outputs[0].output_texts[0]}")
+            if cfg.get("qa_model", {}).get("backend", None) != "vllm":
+                import sys
+                logger.info("QA generation and filtering complete. Exiting before confidence extraction and grading.")
+                sys.exit(0)
 
             # Check for graded outputs cache (skip both confidence extraction and grading)
             # --------------------------------------------------------------------
@@ -191,20 +195,21 @@ if __name__ == "__main__":
             graded_outputs_path = None
             estimated_outputs_path = None
             extracted_output = None
+            cached_accuracy_scores = None
             
             if cache_path:
-                # graded_outputs_path = os.path.join(cache_path, f"graded_outputs_{round_idx}.pkl")
+                graded_outputs_path = os.path.join(cache_path, f"graded_outputs_{round_idx}.pkl")
                 # estimated_outputs_path = os.path.join(cache_path, f"estimated_outputs_{round_idx}.pkl")
-                graded_outputs_path = ""
+                # graded_outputs_path = ""
                 estimated_outputs_path = ""
                 
                 if os.path.exists(graded_outputs_path):
-                    logger.info("Cache for graded_outputs found. Skipping confidence extraction and grading.")
+                    logger.info("Cache for graded_outputs found. Will reuse cached accuracy_scores and skip grading.")
                     with open(graded_outputs_path, "rb") as f:
-                        extracted_output = pickle.load(f)
-                    current_graded_path = f"{path}/graded_outputs_{round_idx}.pkl"
-                    if os.path.abspath(graded_outputs_path) != os.path.abspath(current_graded_path):
-                        shutil.copy2(graded_outputs_path, current_graded_path)
+                        cached_graded_output = pickle.load(f)
+                    cached_accuracy_scores = getattr(
+                        cached_graded_output, "accuracy_scores", None
+                    )
             
             # Check for estimated outputs cache (skip confidence extraction only)
             # --------------------------------------------------------------------
@@ -234,9 +239,14 @@ if __name__ == "__main__":
                     pickle.dump(extracted_output, f)
                 # --------------------------------------------------------------------
             
-            # Run grading if graded_outputs does not exist in cache
+            # Reuse cached accuracy_scores when available; otherwise run grading
             # --------------------------------------------------------------------
-            if not graded_outputs_path or not os.path.exists(graded_outputs_path):
+            if cached_accuracy_scores is not None:
+                logger.info("Using cached accuracy_scores from graded_outputs. Skipping grading.")
+                extracted_output.accuracy_scores = cached_accuracy_scores
+                with open(f"{path}/graded_outputs_{round_idx}.pkl", "wb") as f:
+                    pickle.dump(extracted_output, f)
+            else:
                 logger.info(f"Grading responses [Round {round_idx + 1}/{rounds}]")
                 # grade response
                 grader_func: GraderFn = GRADER_FUNCTIONS.get(

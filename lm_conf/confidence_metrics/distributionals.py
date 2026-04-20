@@ -382,30 +382,19 @@ def distributional_length_normalised_log_likelihood(cfg: dict, output_lst: list[
 
 @register_confidence(name="distributional_semantic_uncertainty")
 def distributional_semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs], prompts: PromptCollection, **kwargs) -> OrganisedOutputs:
-    """
-    Process 30 rounds of responses per question.
-    Fix the first response as final answer, then:
-    - Repeat 10 times: subsample 9 random responses from remaining 29
-    - Calculate semantic cluster proportion for fixed response
-    - Average confidences across 10 subsamples
-    """
-    # Extract responses: response_lists[question_idx] = tuple of 30 responses (one per round)
+    # Extract responses: response_lists[question_idx] = tuple of 20 responses (one per round)
     response_lists: list[tuple[str]] = list(zip(*[output.output_texts for output in output_lst]))
-    
     selected_responses = []
     confidence_dists = []
-
     response_cache_candidates = _cache_file_candidates(cfg, "selected_responses.pkl")
     conf_cache_candidates = _cache_file_candidates(cfg, "confidence_cache.pkl")
     cached_selected = _load_first_existing_pickle(response_cache_candidates)
     cached_conf = _load_first_existing_pickle(conf_cache_candidates)
-
     largest_clusters, _ = _load_or_build_majority_clusters(
         cfg,
         response_lists,
         question_texts=prompts.questions,
     )
-
     if cached_selected is not None and cached_conf is not None:
         selected_responses = cached_selected
         confidence_dists = cached_conf
@@ -416,26 +405,21 @@ def distributional_semantic_uncertainty(cfg: dict, output_lst: list[ModelOutputs
                 confidence_dists.append(BetaDistribution(mu=0.5, sigma=1e-6))
                 continue
 
-            majority_texts = set(majority_cluster_responses)
-            indices = np.arange(len(responses))
-            subsample_confidences = []
+            alpha = len(majority_cluster_responses)
+            beta = len(responses) - alpha
+            # Clamp to ensure valid Beta parameters
+            alpha = max(alpha, 1)
+            beta = max(beta, 1)
+            mu = float(alpha) / (alpha + beta)
+            sigma = np.sqrt((alpha * beta) / ((alpha + beta) ** 2 * (alpha + beta + 1)))
+            confidence_dists.append(BetaDistribution(mu=mu, sigma=sigma))
 
-            for _ in range(50):
-                sampled = np.random.choice(indices, size=10, replace=False)
-                support = np.mean([responses[i] in majority_texts for i in sampled])
-                subsample_confidences.append(support)
+        # Always select the first response from each largest cluster.
+        selected_responses = [cluster[0] if cluster else "" for cluster in largest_clusters]
 
-            avg_confidence = float(np.mean(subsample_confidences))
-            std_confidence = float(np.std(subsample_confidences)) if len(subsample_confidences) > 1 else 1e-6
-            confidence_dists.append(BetaDistribution(mu=avg_confidence, sigma=std_confidence))
-
-    # Always select the first response from each largest cluster.
-    selected_responses = [cluster[0] if cluster else "" for cluster in largest_clusters]
-
-    # pickle selected responses and confidence dists for this question
-    _save_pickle_to_results(cfg, "selected_responses.pkl", selected_responses)
-    _save_pickle_to_results(cfg, "confidence_cache.pkl", confidence_dists)
-    logging.info(f"Cached responses and confidences saved to {cfg.get('results_path')}")
+        _save_pickle_to_results(cfg, "selected_responses.pkl", selected_responses)
+        _save_pickle_to_results(cfg, "confidence_cache.pkl", confidence_dists)
+        logging.info(f"Cached responses and confidences saved to {cfg.get('results_path')}")
 
     return OrganisedOutputs(
         extracted_answers=[selected_responses],
@@ -473,7 +457,7 @@ def distributional_linguistic_confidence(cfg: dict, output_lst: list[ModelOutput
                         If the sentence does not contain any hedging language or is a succinct, decisive short answer, the score should be towards 100, too.
 
     Here is the sentence:
-    {sentence}
+    Answer: {sentence}
 
     Confidence Score: [Return only a number between 0 and 100]
     """.strip()

@@ -12,16 +12,15 @@ print(f"Sample:\n{df.head()}\n")
 
 # List of models to use
 MODELS = [
-    "openai/gpt-oss-20b",
     "meta-llama/Llama-3.1-8B-Instruct",
-    "qwen/Qwen2.5-7B-Instruct",
+    "qwen/Qwen3-8B",
     "mistralai/Mistral-7B-Instruct-v0.3",
 ]
 
 # Sampling parameters for chat
 sampling_params = SamplingParams(
     temperature=1,
-    max_tokens=100,
+    max_tokens=512,
 )
 
 def extract_confidence_score(response_text):
@@ -33,15 +32,15 @@ def extract_confidence_score(response_text):
     match = re.search(r'\b([0-9]{1,3})\b', response_text)
     if match:
         score = int(match.group(1))
-        if 0 <= score <= 100:
+        if 0 < score <= 100:
             return score / 100
     
-    # Fallback: look for any integer in the response
-    match = re.search(r'[-+]?\d+', response_text)
-    if match:
-        score = int(match.group(0))
-        if 0 <= score <= 100:
-            return score / 100
+    # # Fallback: look for any integer in the response
+    # match = re.search(r'[-+]?\d+', response_text)
+    # if match:
+    #     score = int(match.group(0))
+    #     if 0 < score <= 100:
+    #         return score / 100
     
     return None
 
@@ -74,19 +73,22 @@ def evaluate_sentences_with_model(model_name, sentences, num_repeats=10):
     # Build chat messages
     messages_batch = []
     for sentence, hedging_word, repeat in prompt_data:
-        prompt = f"""Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence (without using any external or prior knowledge).
-                    Please pay attention to the hedging language used and the overall assertiveness of the statement.
-                    If the sentence contains random guesses or abstention, the score should be towards 0. If the sentence is stated with strong certainty or no hedging, the score should be towards 100.
-                    If the sentence does not contain any linguistic cues or is a succinct, decisive short answer, the score should be towards 100, too.
+        prompt = """
+Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence (without using any external or prior knowledge). 
+Please pay attention to the hedging language used and the overall assertiveness of the statement. 
+If the sentence abstains from answering by pointing out the insufficiency of information with a firm tone, the score should be towards 100. 
+If the sentence contains random guesses or abstention, the score should be towards 0. If the sentence is stated with strong certainty or no hedging, the score should be towards 100. 
+If the sentence does not contain any hedging language or is a succinct, decisive short answer, the score should be towards 100, too.
 
-                    Here is the sentence:
-                    {sentence}
+Here is the sentence:
+{sentence}
 
-                    Confidence Score: [Return only a number between 0 and 100]""".strip()
+Confidence Score: [Return only a number between 0 and 100 without any additional text or explanation]
+""".strip()
         messages = [
             {
                 "role": "user",
-                "content": prompt
+                "content": prompt.format(sentence=sentence)
             }
         ]
         messages_batch.append(messages)
@@ -94,7 +96,7 @@ def evaluate_sentences_with_model(model_name, sentences, num_repeats=10):
     print(f"Evaluating {len(messages_batch)} sentence evaluations ({len(df)} sentences × {num_repeats} repeats)")
     
     # Generate all chat completions at once
-    outputs = llm.chat(messages_batch, sampling_params, use_tqdm=True, chat_template_kwargs={"reasoning_effort": "low"})
+    outputs = llm.chat(messages_batch, sampling_params, use_tqdm=True, chat_template_kwargs={"reasoning_effort": "low", "enable_thinking": False})
     
     # Process outputs and group by sentence
     scores_by_sentence = {}
@@ -137,7 +139,7 @@ if __name__ == "__main__":
         print(f"Evaluating with model: {model}")
         print(f"{'='*80}")
         
-        result_df = evaluate_sentences_with_model(model, df['example_sentence'].tolist(), num_repeats=5)
+        result_df = evaluate_sentences_with_model(model, df['example_sentence'].tolist(), num_repeats=3)
         all_results.append(result_df)
         
         print(f"\nResults for {model}:")

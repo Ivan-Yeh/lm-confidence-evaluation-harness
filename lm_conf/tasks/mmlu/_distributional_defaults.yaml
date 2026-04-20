@@ -20,11 +20,11 @@ system_prompt: ""
 prompt_formatter: multiple_choice 
 performance_metrics:
   - accuracy_scalar_with_abstention
+  - faithfulness_divergence
   - generalised_ece
-  - dECE
   - dECE_point_mass
-  - AUROC_point_mass
   - dAUROC
+  - AUROC_point_mass
 
 generation_type: generation
 output_filters: null

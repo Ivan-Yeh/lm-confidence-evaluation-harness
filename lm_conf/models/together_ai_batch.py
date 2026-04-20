@@ -21,7 +21,7 @@ class TogetherAIBatch(AbstractModel):
         max_tokens = self.cfg.get("max_tokens", 256)
         top_k = self.cfg.get("logprobs", 5)
         stop_sequences = self.cfg.get("stop_sequences", [])
-        max_requests = self.cfg.get("max_batch_requests", 50000)
+        max_requests = self.cfg.get("max_batch_requests", 10000)
         output_dir = self.master_cfg.get("results_path", "results/")
         os.makedirs(output_dir, exist_ok=True)
 
@@ -115,8 +115,9 @@ class TogetherAIBatch(AbstractModel):
                                 {"role": "system", "content": prompt_collection.system_prompt},
                                 {"role": "user", "content": user_content},
                             ],
-                            "enable_thinking": False,
                             "reasoning_effort": "low",
+                            "enable_thinking": False,
+                            "reasoning": {"enabled": False},
                             "logprobs": top_k,
                             "max_tokens": max_tokens,
                             "temperature": temperature,
