@@ -539,17 +539,20 @@ if __name__ == "__main__":
             "response_col": f"{conf_method}_rewritten_response",
             "cache_file": os.path.join(save_dir, f"{conf_method}_rewritten_confidence.pkl"),
             "label": conf_method,
+            "target_mean_col": conf_method,
         })
         confidence_targets.append({
             "out_col": f"{conf_method}_beta_guided_lc",
             "response_col": f"{conf_method}_beta_guided_response",
             "cache_file": os.path.join(save_dir, f"{conf_method}_beta_guided_confidence.pkl"),
             "label": f"{conf_method} (beta-guided)",
+            "target_mean_col": conf_method,
         })
 
     cached_confidences = {}
     pending_jobs = []
     batched_responses = []
+    batched_target_means = []
 
     for target in confidence_targets:
         cache_file = target["cache_file"]
@@ -568,8 +571,10 @@ if __name__ == "__main__":
             )
 
         responses = df[target["response_col"]].tolist()
+        target_means = df[target["target_mean_col"]].tolist()
         start_idx = len(batched_responses)
         batched_responses.extend(responses)
+        batched_target_means.extend(target_means)
         end_idx = len(batched_responses)
         pending_jobs.append({
             "out_col": out_col,
@@ -584,18 +589,14 @@ if __name__ == "__main__":
             f"Estimating linguistic confidence for {len(pending_jobs)} uncached targets "
             f"in one batched call ({len(batched_responses)} prompts)."
         )
-        eval_prompts = [
-            LINGUISTIC_EVALUATOR_PROMPT.format(
-                sentence=response,
-                human_annotated_cues=human_annotated_cues,
-            )
-            for response in batched_responses
-        ]
-        print(eval_prompts[:2])
+        eval_prompts = build_linguistic_evaluator_prompts(
+            batched_responses, batched_target_means
+        )
         for evaluator in evaluator_keys:
             _update_max_model_len(eval_cfg[evaluator], eval_prompts)
         batched_confidences = estimate_linguistic_confidence(
             batched_responses,
+            batched_target_means,
             evaluators_cfg=eval_cfg,
             evaluator_keys=evaluator_keys,
         )

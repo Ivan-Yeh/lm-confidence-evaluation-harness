@@ -165,11 +165,13 @@ if __name__ == "__main__":
         output_df = pd.read_pickle(os.path.join(save_dir, "linguistic_calibration_outputs.pkl"))
     else:
         original_linguistic_confidences = estimate_linguistic_confidence(
-            output_df["original_response"].tolist()
+            output_df["original_response"].tolist(),
+            output_df["original_numerical_confidence"].tolist(),
         )
 
         calibrated_linguistic_confidences = estimate_linguistic_confidence(
-            output_df["calibrated_response"].tolist()
+            output_df["calibrated_response"].tolist(),
+            output_df["calibrated_numerical_confidence"].tolist(),
         )
 
         output_df["original_linguistic_confidence"] = original_linguistic_confidences

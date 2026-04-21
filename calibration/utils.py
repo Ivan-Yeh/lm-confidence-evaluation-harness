@@ -20,7 +20,7 @@ MAX_KAPPA      = 1_000.0 # cap on kappa=alpha+beta; above this the Beta pdf is
 MU_EPS         = 1e-6
 MIN_KAPPA      = 2.0 * MIN_ALPHA_BETA
 
-LINGUISTIC_LEXICON_PATH = "linguistic_confidence_lexicon/hedging_word_aggregated.csv"
+LINGUISTIC_LEXICON_PATH = "linguistic_confidence_lexicon/hedging_word_scores.csv"
 LEXICON = pd.read_csv(LINGUISTIC_LEXICON_PATH)
 LEXICON["alpha_param"] = LEXICON["alpha_param"].astype(float).clip(MIN_ALPHA_BETA)
 LEXICON["beta_param"] = LEXICON["beta_param"].astype(float).clip(MIN_ALPHA_BETA)
@@ -45,6 +45,7 @@ human_annotated_cues = pd.read_csv(os.path.join("linguistic_confidence_lexicon",
 human_annotated_cues["mean"] *= 100.0
 human_annotated_cues["std"] *= 100.0
 human_annotated_cues = human_annotated_cues.sort_values("mean").round(2).to_dict(orient="records")
+_HUMAN_CUE_MEANS = np.array([row["mean"] for row in human_annotated_cues], dtype=float)
 
 LINGUISTIC_EVALUATOR_PROMPT = """
 Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence, without using any external or prior knowledge to assess the knowledge conveyed by the sentence. 
@@ -1032,13 +1033,11 @@ def cross_domain_numerical_post_hoc_calibration(
 
 def estimate_linguistic_confidence(
     responses: list[str],
+    target_means: list[float | BetaDistribution | None],
     evaluators_cfg: dict,
     evaluator_keys: list[str],
 ) -> list[BetaDistribution | None]:
-    prompts = [
-        LINGUISTIC_EVALUATOR_PROMPT.format(sentence=response, human_annotated_cues=human_annotated_cues)
-        for response in responses
-    ]
+    prompts = build_linguistic_evaluator_prompts(responses, target_means)
 
     def extract_score(text: str) -> float:
         match = re.search(r'(\d+(?:\.\d+)?)', text)
@@ -1086,3 +1085,45 @@ def estimate_linguistic_confidence(
             confidence_dists.append(None)
 
     return confidence_dists
+
+
+def build_linguistic_evaluator_prompts(
+    responses: list[str],
+    target_means: list[float | BetaDistribution | None],
+    top_k: int = 20,
+) -> list[str]:
+    if len(responses) != len(target_means):
+        raise ValueError(
+            f"responses and target_means length mismatch: {len(responses)} vs {len(target_means)}"
+        )
+
+    def _normalize_mean(value: float | BetaDistribution | None) -> float:
+        if value is None:
+            return 50.0
+        if isinstance(value, BetaDistribution):
+            mean_val = float(value.mu)
+        else:
+            try:
+                mean_val = float(value)
+            except (TypeError, ValueError):
+                return 50.0
+        if not np.isfinite(mean_val):
+            return 50.0
+        return mean_val * 100.0 if mean_val <= 1.0 else mean_val
+
+    def _select_human_cues(target_mean: float) -> list[dict]:
+        diffs = np.abs(_HUMAN_CUE_MEANS - target_mean)
+        idx = np.argsort(diffs)[:top_k]
+        return [human_annotated_cues[i] for i in idx]
+
+    prompts = []
+    for response, mean_val in zip(responses, target_means):
+        normalized = _normalize_mean(mean_val)
+        cues = _select_human_cues(normalized)
+        prompts.append(
+            LINGUISTIC_EVALUATOR_PROMPT.format(
+                sentence=response,
+                human_annotated_cues=cues,
+            )
+        )
+    return prompts

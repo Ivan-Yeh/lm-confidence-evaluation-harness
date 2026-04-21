@@ -299,11 +299,13 @@ if __name__ == "__main__":
             "lc_col": f"{conf_col}_rewritten_lc",
             "cache_file": os.path.join(save_dir, f"{conf_col}_rewritten_confidence.pkl"),
             "label": conf_col,
+            "target_mean_col": conf_col,
         })
 
     cached_confidences = {}
     pending_confidence_jobs = []
     batched_responses = []
+    batched_target_means = []
 
     for target in confidence_targets:
         cache_file = target["cache_file"]
@@ -323,8 +325,10 @@ if __name__ == "__main__":
             )
 
         responses = test_df[target["rewrite_col"]].tolist()
+        target_means = test_df[target["target_mean_col"]].tolist()
         start_idx = len(batched_responses)
         batched_responses.extend(responses)
+        batched_target_means.extend(target_means)
         end_idx = len(batched_responses)
         pending_confidence_jobs.append({
             "lc_col": lc_col,
@@ -341,6 +345,7 @@ if __name__ == "__main__":
         )
         batched_confidences = estimate_linguistic_confidence(
             batched_responses,
+            batched_target_means,
             evaluators_cfg=eval_cfg,
             evaluator_keys=evaluator_keys,
         )

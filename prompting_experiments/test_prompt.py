@@ -27,7 +27,11 @@ for leaf_dir in leaf_dirs:
             responses = organised_outputs.extracted_answers[0]
             if len(responses[0].strip()) == 1:
                 responses = ["Answer: " + r.strip() for r in responses]
-            linguistic_confidence = estimate_linguistic_confidence(responses) # list of beta dists
+            target_means = [0.5] * len(responses)
+            linguistic_confidence = estimate_linguistic_confidence(
+                responses,
+                target_means,
+            )  # list of beta dists
             lc_means = [lc.mu for lc in linguistic_confidence] # list of means
             lc_stds = [lc.sigma for lc in linguistic_confidence] # list of means
             lc_alphas = [lc.alpha_param for lc in linguistic_confidence] # list of alphas
