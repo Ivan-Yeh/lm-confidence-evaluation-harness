@@ -1,97 +1,74 @@
 # Prompt:
-# Generate a Python list of words or expressions that human use to convey the level of confidence, certainty, or hedging in their statements (without a subject, only the linguistic cues). These words should include common hedging phrases, adverbs, and qualifiers that indicate varying degrees of certainty or uncertainty. 
-# The list should be comprehensive and cover a wide range of expressions used in everyday language as well as in academic and professional contexts.
+"""
+Generate a Python list of words or expressions that humans use to convey the level of confidence, certainty, or hedging in their statements (without a subject, only the linguistic cues). These words should include common hedging phrases, adverbs, and qualifiers that indicate varying degrees of certainty or uncertainty, from extremely low confidence (like I do not know, my random guess is, etc) to high confidence (certain, sure, definitely). 
+
+The list should be comprehensive and cover a wide range of expressions used in everyday language as well as in academic and professional contexts.
+"""
 
 claude_lexicon = [
 
-    # Certainty
-    "certainly", "definitely", "absolutely", "undoubtedly", "unquestionably",
-    "without a doubt", "for certain", "without question", "clearly", "obviously",
-    "evidently", "plainly", "surely", "assuredly", "positively", "categorically",
-    "unconditionally", "indisputably", "indubitably", "unequivocally",
-    "of course", "naturally", "needless to say", "it goes without saying",
-    "there is no doubt that", "it is clear that", "it is obvious that",
-    "beyond question", "beyond doubt", "beyond a shadow of a doubt",
-    "manifestly", "patently", "demonstrably", "incontrovertibly", "incontestably",
+    # --- Very low confidence / complete uncertainty ---
+    "I have no idea", "I don't know", "I have no clue", "beats me",
+    "your guess is as good as mine", "I'm completely in the dark",
+    "I haven't the faintest idea", "I'm totally lost on this",
+    "my random guess is", "this is pure speculation",
+    "I'm just guessing", "wildly guessing", "I'm shooting in the dark",
+    "I'm totally uncertain", "not a clue",
 
-    # High confidence
-    "almost certainly", "very likely", "highly likely", "in all likelihood",
-    "in all probability", "almost definitely", "without reservation",
-    "all but certain", "virtually certain", "as good as certain",
-    "overwhelmingly likely", "strongly supported", "well-established",
-    "widely confirmed", "conclusively shown",
+    # --- Low confidence / high uncertainty ---
+    "perhaps", "possibly", "conceivably", "it could be that",
+    "there's a chance", "I suspect", "I vaguely recall",
+    "I'm not sure but", "if I had to guess", "tentatively",
+    "loosely speaking", "roughly", "something like",
+    "I'm inclined to think", "it's not inconceivable",
+    "I wouldn't rule out", "at a guess", "very roughly",
+    "might", "may well", "could potentially",
 
-    # Moderate confidence
-    "probably", "likely", "presumably", "apparently", "seemingly",
-    "it seems", "it appears", "it looks like", "it would seem",
-    "it seems that", "it appears that", "reportedly", "ostensibly",
-    "on the face of it", "to all appearances", "by all accounts",
-    "on the evidence", "on balance",
+    # --- Moderate uncertainty / hedged ---
+    "I think", "I believe", "I suppose", "I imagine",
+    "as far as I know", "to the best of my knowledge",
+    "from what I understand", "it seems", "it appears",
+    "seemingly", "apparently", "presumably", "supposedly",
+    "if I'm not mistaken", "if memory serves",
+    "generally speaking", "broadly speaking", "on the whole",
+    "in most cases", "more or less", "more or less likely",
+    "I would say", "I'd guess", "from what I can tell",
+    "as I understand it", "in my view", "in my opinion",
+    "to my mind", "as best as I can tell",
 
-    # Weak confidence
-    "possibly", "perhaps", "maybe", "conceivably", "potentially",
-    "it is possible that", "there is a chance that", "it may be that",
-    "it might be that", "it could be that", "there is a possibility that",
-    "not impossible", "not out of the question", "feasibly",
-    "under some circumstances", "in some cases", "in certain conditions",
-    "with some likelihood", "theoretically possible",
+    # --- Moderate confidence / fairly sure ---
+    "I'm fairly confident", "I'm fairly certain",
+    "I'm reasonably sure", "I'm inclined to believe",
+    "there's a good chance", "in all likelihood",
+    "probably", "likely", "in all probability",
+    "I would expect", "I'd expect", "I'd wager",
+    "chances are", "odds are", "for the most part",
+    "it's reasonable to assume", "it stands to reason",
+    "on balance", "by and large", "largely",
+    "it's safe to say", "one could argue", "the evidence suggests",
+    "the data suggests", "indications are that", "it looks like",
 
-    # Uncertainty / doubt
-    "it is unclear", "it is uncertain", "it remains to be seen",
-    "that is debatable", "it is questionable whether", "it is hard to say",
-    "open to debate", "open to question", "yet to be determined",
-    "remains unclear", "remains uncertain", "unresolved", "contested",
-    "disputed", "not yet established", "inconclusive", "ambiguous",
-    "equivocal", "indeterminate", "speculative", "conjectural", "tentative",
-    "at issue", "under debate", "in question", "far from settled",
-    "by no means certain",
+    # --- High confidence / very sure ---
+    "I'm confident", "I'm quite sure", "I'm fairly sure",
+    "I'm pretty certain", "I have no doubt",
+    "it's highly likely", "almost certainly", "very likely",
+    "I strongly believe", "I'm convinced", "I firmly believe",
+    "I'm positive", "clearly", "evidently", "obviously",
+    "undoubtedly", "unquestionably", "without a doubt",
+    "it's clear that", "it's evident that", "it's obvious that",
+    "needless to say", "there's little doubt",
+    "by all accounts", "demonstrably", "manifestly",
 
-    # Approximation
-    "roughly", "approximately", "about", "around", "more or less",
-    "give or take", "in the ballpark of", "somewhere around", "or so",
-    "in the region of", "of the order of", "in the vicinity of",
-    "upwards of", "close to", "nearly", "almost", "practically",
-    "effectively", "essentially", "broadly", "loosely",
-
-    # Qualification / degree
-    "sort of", "kind of", "somewhat", "rather", "fairly", "quite",
-    "to some extent", "to a certain degree", "in a way", "in some ways",
-    "largely", "mostly", "mainly", "chiefly", "primarily", "predominantly",
-    "entirely", "completely", "wholly", "fully", "partially", "marginally",
-    "slightly", "barely", "hardly", "scarcely", "virtually", "nearly",
-    "fundamentally", "technically", "in part", "to a degree",
-    "for the most part", "by and large", "on the whole", "in general",
-    "broadly speaking", "generally speaking", "loosely speaking",
-    "as a rule", "typically", "usually", "normally", "ordinarily",
-    "in most cases", "more often than not",
-
-    # Academic / formal
-    "it is suggested that", "it has been argued that",
-    "it could be argued that", "it is worth noting that",
-    "it should be noted that", "it is important to note that",
-    "it is reasonable to assume that", "there is reason to believe that",
-    "preliminary findings suggest", "available evidence points to",
-    "it is widely believed that", "it is generally accepted that",
-    "it remains unclear whether", "further research is needed",
-    "under certain conditions", "depending on", "subject to",
-    "contingent upon", "assuming that", "it is worth considering that",
-    "it has been observed that", "it is commonly held that",
-    "it is often assumed that", "evidence is consistent with",
-    "data are consistent with", "it cannot be ruled out that",
-    "it would be premature to conclude", "cautious interpretation suggests",
-    "tentative evidence points to", "on current evidence",
-    "as currently understood", "pending further investigation",
-    "with the caveat that", "with the qualification that",
-    "notwithstanding", "subject to revision",
-
-    # Conditional / hypothetical
-    "in theory", "theoretically", "hypothetically", "in principle",
-    "on paper", "ideally", "in an ideal world", "under normal circumstances",
-    "all things being equal", "all else being equal",
-    "under certain assumptions", "given certain conditions",
-    "in certain circumstances", "if conditions hold", "ceteris paribus",
-    "in a best-case scenario", "in a worst-case scenario",
-    "under optimal conditions", "holding everything else constant",
+    # --- Very high confidence / certain ---
+    "certainly", "definitely", "absolutely", "positively",
+    "without question", "for certain", "for sure", "assuredly",
+    "I'm certain", "I'm absolutely sure", "I'm 100% sure",
+    "I guarantee", "I can confirm", "I can assure you",
+    "it is certain that", "it is a fact that", "factually",
+    "categorically", "unequivocally", "beyond any doubt",
+    "beyond a shadow of a doubt", "beyond dispute",
+    "it goes without saying", "indisputably", "incontrovertibly",
+    "incontestably", "it is established that",
 ]
 
 all_hedging_words = list(claude_lexicon)

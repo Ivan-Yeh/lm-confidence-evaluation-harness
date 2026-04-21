@@ -182,7 +182,7 @@ if __name__ == "__main__":
     # reliability diagrams (soft-binned via sampling, 10 bins) before vs after
     def _draw_reliability_ax(
         ax, ax_density, confidences, accuracies, title,
-        n_bins=10, num_samples=1000, n_bootstrap=2000,
+        n_bins=10, num_samples=300, n_bootstrap=200,
     ):
         """
         Reliability diagram using Monte Carlo sampling from each BetaDistribution.
