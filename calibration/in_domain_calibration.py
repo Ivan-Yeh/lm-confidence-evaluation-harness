@@ -118,6 +118,7 @@ if __name__ == "__main__":
     su_signal_cache: OrganisedOutputs = load_pickled_results(su_path, "graded_outputs_0.pkl")
 
     save_dir = f"{common_dir}/{prompt_type}_in_domain_calibration/{args.dataset}/{args.model}/"
+    os.makedirs(save_dir, exist_ok=True)
 
     df = pd.DataFrame({
         "accuracy": [0.0 if (a is None or (isinstance(a, float) and np.isnan(a))) else a for a in linguistic_confidence_cache.accuracy_scores[0]],
@@ -131,28 +132,40 @@ if __name__ == "__main__":
 
     # df = df.iloc[:100]  # limit to 100 samples for faster debugging; remove or adjust as needed
 
-    # apply numerical post hoc calibration
-    calibrated_lc = in_domain_numerical_post_hoc_calibration(
-        np.array(df["original_lc"]),
-        np.array(df["accuracy"]),
-        method=signal_calibration_method
-    )
+    # apply numerical post hoc calibration (cache-aware)
+    calibrated_targets = [
+        ("original_lc", "calibrated_lc"),
+        ("original_tp", "calibrated_tp"),
+        ("original_su", "calibrated_su"),
+    ]
 
-    calibrated_tp = in_domain_numerical_post_hoc_calibration(
-        np.array(df["original_tp"]),
-        np.array(df["accuracy"]),
-        method=signal_calibration_method
-    )
+    for original_col, calibrated_col in calibrated_targets:
+        cache_file = os.path.join(save_dir, f"{calibrated_col}.pkl")
+        calibrated_values = None
 
-    calibrated_su = in_domain_numerical_post_hoc_calibration(
-        np.array(df["original_su"]),
-        np.array(df["accuracy"]),
-        method=signal_calibration_method
-    )
+        if os.path.exists(cache_file):
+            with open(cache_file, "rb") as f:
+                cached_values = pickle.load(f)
+            if len(cached_values) == len(df):
+                calibrated_values = cached_values
+                print(f"Loaded cached {calibrated_col}: {len(calibrated_values)}")
+            else:
+                print(
+                    f"Cache length mismatch for {calibrated_col} "
+                    f"({len(cached_values)} != {len(df)}). Recomputing."
+                )
 
-    df["calibrated_lc"] = calibrated_lc
-    df["calibrated_tp"] = calibrated_tp
-    df["calibrated_su"] = calibrated_su
+        if calibrated_values is None:
+            calibrated_values = in_domain_numerical_post_hoc_calibration(
+                np.array(df[original_col]),
+                np.array(df["accuracy"]),
+                method=signal_calibration_method,
+            )
+            with open(cache_file, "wb") as f:
+                pickle.dump(calibrated_values, f)
+            print(f"Saved {calibrated_col} to {cache_file}")
+
+        df[calibrated_col] = calibrated_values
 
     df.dropna(inplace=True)
     

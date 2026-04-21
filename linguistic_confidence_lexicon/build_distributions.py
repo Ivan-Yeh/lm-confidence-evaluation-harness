@@ -68,8 +68,10 @@ def main():
 	# confidence_scores = pd.concat([confidence_scores_0, confidence_scores_1], ignore_index=True)
 	print(f"Loaded {len(confidence_scores)} rows of confidence scores")
 	aggregated = aggregate_scores(confidence_scores)
-	aggregated[['alpha_param', 'beta_param']] =	aggregated['all_scores'].apply(lambda x: pd.Series(fit_beta_to_scores(x)))
-	
+	aggregated[['alpha_param', 'beta_param']] =	aggregated['all_scores'].apply(lambda x: pd.Series(fit_beta_to_scores(x))).clip(lower=1e-4)
+	aggregated["alpha_param"] = aggregated["alpha_param"].clip(lower=1e-4)
+	aggregated["beta_param"] = aggregated["beta_param"].clip(lower=1e-4)
+	aggregated.dropna(inplace=True)
 	output_base = "linguistic_confidence_lexicon/hedging_word_scores"
 	aggregated.to_pickle(f"{output_base}.pkl")
 	aggregated.to_csv(f"{output_base}.csv", index=False)

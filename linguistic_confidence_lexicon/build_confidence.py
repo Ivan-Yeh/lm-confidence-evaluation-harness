@@ -58,7 +58,7 @@ def evaluate_sentences_with_model(model_name, sentences, num_repeats=10):
         dtype="bfloat16",
         trust_remote_code=True,
         gpu_memory_utilization=0.90,
-        max_model_len = 2048
+        max_model_len = 10240
     )
     
     results = []
@@ -72,7 +72,10 @@ def evaluate_sentences_with_model(model_name, sentences, num_repeats=10):
         for repeat in range(num_repeats):
             prompt_data.append((sentence, hedging_word, repeat))
     
-    human_annotated_cues = pd.read_csv(os.path.join(os.path.dirname(__file__), "linguistic_confidence_lexicon", "hedging_word_aggregated.csv"))[["hedging_word", "mean", "std"]].to_dict(orient="records")
+    human_annotated_cues = pd.read_csv(os.path.join("linguistic_confidence_lexicon", "hedging_word_aggregated.csv"))[["hedging_word", "mean", "std"]]
+    human_annotated_cues["mean"] *= 100.0
+    human_annotated_cues["std"] *= 100.0
+    human_annotated_cues = human_annotated_cues.sort_values("mean").round(2).to_dict(orient="records")
     # Build chat messages
     messages_batch = []
     for sentence, hedging_word, repeat in prompt_data:
@@ -83,7 +86,7 @@ If the sentence abstains from answering by pointing out the insufficiency of inf
 If the sentence contains random guesses or abstention, the score should be towards 0. If the sentence is stated with strong certainty or no hedging, the score should be towards 100. 
 If the sentence does not contain any hedging language or is a succinct, decisive short answer, the score should be towards 100, too.
 
-To guide the evaluation with human alignment, here are some human-annotated linguistic cues with perceived confidence profiles (mean and standard deviation) for your reference: 
+To align with human perception, here are some human-annotated linguistic cues with perceived confidence profiles (mean and standard deviation) for your reference: 
 {human_annotated_cues}
 
 Here is the sentence:
