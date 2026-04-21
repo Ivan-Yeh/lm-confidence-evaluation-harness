@@ -36,7 +36,7 @@ class vLLMModel(AbstractModel):
                                          stop=list(stop_seq)
                                          )
         vllm_model = LLM(model=self.model_name,
-                         max_model_len=self.cfg.get("max_model_len", 4096), gpu_memory_utilization=0.85, trust_remote_code=True)
+                         max_model_len=self.cfg.get("max_model_len", 4096), gpu_memory_utilization=0.9, trust_remote_code=True)
 
         model_outputs_list = []
         for _ in range(self.repeat):

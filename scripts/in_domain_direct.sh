@@ -15,7 +15,7 @@ breakpoint=hedge
 # CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset mmlu --model qwen/Qwen3-8B --breakpoint $breakpoint 
 # CUDA_VISIBLE_DEVICES=$GPU python -m calibration.in_domain_calibration --dataset mmlu --model mistralai/Mistral-7B-Instruct-v0.3 --breakpoint $breakpoint 
 
-# breakpoint=metrics
+breakpoint=metrics
 
 # below to be removed once done:
 # truthful_qa

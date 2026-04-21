@@ -7,6 +7,7 @@ import os
 from functools import partial
 from tqdm import tqdm
 from multiprocessing import Pool, cpu_count
+from transformers import AutoTokenizer
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -14,6 +15,7 @@ from lm_conf.default_utils.custom_types import OrganisedOutputs, PromptCollectio
 from lm_conf.models.model_manager import ModelManager
 from lm_conf.post_processing.metrics import dECE_point_mass, AUROC_point_mass, dAUROC, faithfulness_divergence, generalised_ece
 from calibration.utils import *
+from calibration.utils import _select_bandwidth, _nw_smooth
 
 argparser = argparse.ArgumentParser(description="Calibrate linguistic confidence lexicon using empirical data.")
 argparser.add_argument("--dataset", type=str, required=True, help="Dataset name")
@@ -24,9 +26,10 @@ argparser.add_argument("--top_k", type=int, default=5, help="Top-k hedging words
 
 BETA_GUIDED_PROMPT = """
 Given an original response and a Beta distribtution, rewrite the response to appropriately reflect the confidence level indicated by the given Beta distribution by using hedging language. 
+You must preserve the original meaning of the response, as we are only adjusting the tone to match the confidence level suggested by the hedging words. Ensure the new response sounds natural and fluent. 
 
 Original response: ```My answer to the question is: "{response}"```
-Target Beta distribution: ```Beta(alpha={alpha:.4f}, beta={beta:.4f})```
+Target Beta distribution: ```Beta(alpha={alpha:.2f}, beta={beta:.2f})```
 
 Please return only the rewritten sentence without any explanation.
 New response: 
@@ -44,15 +47,67 @@ def get_latest_leaf_node(dir) -> str:
     latest_subdir = max(subdirs, key=os.path.getmtime)
     return latest_subdir
 
+
+_TOKENIZER_CACHE: dict[str, AutoTokenizer] = {}
+
+
+def _get_tokenizer(model_name: str) -> AutoTokenizer:
+    tokenizer = _TOKENIZER_CACHE.get(model_name)
+    if tokenizer is None:
+        tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+        _TOKENIZER_CACHE[model_name] = tokenizer
+    return tokenizer
+
+
+def _compute_max_model_len(
+    prompts: list[str],
+    model_name: str,
+    max_tokens: int,
+    min_len: int = 1024,
+    pad: int = 64,
+) -> int:
+    if not prompts:
+        return max(min_len, max_tokens + pad)
+    tokenizer = _get_tokenizer(model_name)
+    try:
+        enc = tokenizer(prompts, add_special_tokens=False, padding=False, truncation=False)
+        max_prompt_len = max(len(ids) for ids in enc["input_ids"]) if enc["input_ids"] else 0
+    except Exception:
+        max_prompt_len = max(
+            len(tokenizer.encode(p, add_special_tokens=False)) for p in prompts
+        )
+    target = max(max_prompt_len + max_tokens + pad + 256, min_len)
+    model_max = getattr(tokenizer, "model_max_length", None)
+    if isinstance(model_max, int) and model_max > 0 and model_max < 1_000_000:
+        target = min(target, model_max)
+    return int(target)
+
+
+def _update_max_model_len(cfg: dict, prompts: list[str], min_len: int = 1024, pad: int = 64) -> None:
+    model_name = cfg.get("name")
+    if not model_name:
+        return
+    max_tokens = int(cfg.get("max_tokens", 256))
+    cfg["max_model_len"] = _compute_max_model_len(
+        prompts, model_name, max_tokens, min_len=min_len, pad=pad
+    )
+
 if __name__ == "__main__":
     args = argparser.parse_args()
 
     print("Breakpoint set to:", args.breakpoint)
 
-    common_dir = "/hdd/ivny"
+    if os.path.exists("/hdd"):
+        print("Using /hdd/ivny as common directory for results.")
+        common_dir = "/hdd/ivny"
+    else:
+        print("Using ivny as common directory for results.")
+        common_dir = "ivny"
 
     prompt_type = args.prompt_type
     top_k = args.top_k
+
+    signal_calibration_method = "platt_uni" 
 
     ling_path = get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/{prompt_type}_unified_lc/{args.model}/")
     tp_path = get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/{prompt_type}_unified_tp/{args.model}/")
@@ -80,19 +135,19 @@ if __name__ == "__main__":
     calibrated_lc = in_domain_numerical_post_hoc_calibration(
         np.array(df["original_lc"]),
         np.array(df["accuracy"]),
-        method="platt_uni"
+        method=signal_calibration_method
     )
 
     calibrated_tp = in_domain_numerical_post_hoc_calibration(
         np.array(df["original_tp"]),
         np.array(df["accuracy"]),
-        method="platt_uni"
+        method=signal_calibration_method
     )
 
     calibrated_su = in_domain_numerical_post_hoc_calibration(
         np.array(df["original_su"]),
         np.array(df["accuracy"]),
-        method="platt_uni"
+        method=signal_calibration_method
     )
 
     df["calibrated_lc"] = calibrated_lc
@@ -165,70 +220,30 @@ if __name__ == "__main__":
             ax.legend(fontsize=8)
             return
 
-        y           = np.array(ys)
-        bins        = np.linspace(0.0, 1.0, n_bins + 1)
-        all_samples = np.array([c.sample(size=num_samples) for c in confs])  # (N, S)
+        from scipy.stats import gaussian_kde
+        y    = np.array(ys)
+        mus  = np.array([c.mu for c in confs])
 
-        bin_indices = np.clip(np.digitize(all_samples, bins) - 1, 0, n_bins - 1)  # (N, S)
+        # Bandwidth selection via LOO-CV with a minimum floor for visual smoothness
+        h       = max(_select_bandwidth(mus, y), 0.1)
+        c_grid  = np.linspace(0.01, 0.99, 200)
+        r_hat   = _nw_smooth(c_grid, mus, y, h)
 
-        plot_conf, plot_acc, plot_lower, plot_upper = [], [], [], []
+        # 90% bootstrap CI: resample instances, refit NW curve each time
+        boot_curves = np.empty((n_bootstrap, len(c_grid)))
+        for k in range(n_bootstrap):
+            idx = np.random.randint(0, len(y), size=len(y))
+            boot_curves[k] = _nw_smooth(c_grid, mus[idx], y[idx], h)
+        lower = np.percentile(boot_curves, 5,  axis=0)
+        upper = np.percentile(boot_curves, 95, axis=0)
 
-        for m in range(n_bins):
-            mask = (bin_indices == m)          # (N, S)
-            p_nm = mask.mean(axis=1)           # (N,)  P(S in Im | xn)
-            pm   = p_nm.sum()
-
-            if pm <= 0:
-                continue
-
-            rm = (p_nm * y).sum() / pm
-            gm = all_samples[mask].mean() if all_samples[mask].size > 0 else 0.0
-
-            ws    = p_nm / pm
-            boots = []
-            for _ in range(n_bootstrap):
-                idx  = np.random.randint(0, len(y), size=len(y))
-                ws_b = ws[idx]
-                ws_s = ws_b.sum()
-                if ws_s > 0:
-                    boots.append((ws_b / ws_s * y[idx]).sum())
-            if boots:
-                lower, upper = np.percentile(boots, [5, 95])
-            else:
-                lower = upper = rm
-
-            plot_conf.append(gm)
-            plot_acc.append(rm)
-            plot_lower.append(lower)
-            plot_upper.append(upper)
-
-        if not plot_conf:
-            ax.legend(fontsize=8)
-            return
-
-        plot_conf  = np.array(plot_conf)
-        plot_acc   = np.array(plot_acc)
-        plot_lower = np.array(plot_lower)
-        plot_upper = np.array(plot_upper)
-
-        order    = np.argsort(plot_conf)
-        x_s      = plot_conf[order]
-        lo_s     = plot_lower[order]
-        hi_s     = plot_upper[order]
-        dense_x  = np.linspace(0.0, 1.0, 200)
-        dense_lo = np.interp(dense_x, x_s, lo_s, left=lo_s[0],  right=lo_s[-1])
-        dense_hi = np.interp(dense_x, x_s, hi_s, left=hi_s[0],  right=hi_s[-1])
-
-        ax.fill_between(dense_x, dense_lo, dense_hi,
+        ax.fill_between(c_grid, lower, upper,
                         color="#2ca02c", alpha=0.25, linewidth=0, label="90% CI")
-        ax.plot(plot_conf, plot_acc, "o-", color="black",
-                markersize=4, lw=1.5, label="Bin Accuracy")
+        ax.plot(c_grid, r_hat, color="black", lw=1.5, label="Reliability Curve")
         ax.legend(fontsize=8)
         ax.grid(True, linestyle=":", alpha=0.6)
 
-        # density strip: smoothed KDE of predicted confidence means
-        from scipy.stats import gaussian_kde
-        mus     = np.array([c.mu for c in confs])
+        # density strip: KDE of predicted confidence means
         kde     = gaussian_kde(mus, bw_method="scott")
         x_kde   = np.linspace(0.0, 1.0, 300)
         density = kde(x_kde)
@@ -301,7 +316,7 @@ if __name__ == "__main__":
         "rewrite_model": {
             "backend": "vllm",
             "name": "openai/gpt-oss-20b",
-            "max_model_len": 2048,
+            "max_model_len": 5000,
             "temperature": 1.0,
             "max_tokens": 512,
             "reasoning_effort": "low",
@@ -353,10 +368,10 @@ if __name__ == "__main__":
             prompts.append(
                 REWRITE_PROMPT.format(
                     response=row["original_response"],
-                    hedges=", ".join(hedges),
+                    hedges=format_hedges_for_prompt(hedges),
                 )
             )
-
+        print(prompts[:2])
         start_idx = len(batched_rewrite_prompts)
         batched_rewrite_prompts.extend(prompts)
         end_idx = len(batched_rewrite_prompts)
@@ -373,6 +388,7 @@ if __name__ == "__main__":
             f"Generating rewrites for {len(pending_rewrite_jobs)} uncached targets "
             f"in one batched call ({len(batched_rewrite_prompts)} prompts)."
         )
+        _update_max_model_len(rewrite_cfg["rewrite_model"], batched_rewrite_prompts)
         model_manager: ModelManager = ModelManager(master_cfg=rewrite_cfg, model_config_type="rewrite_model")
         prompt_collection = PromptCollection(
             system_prompt="You are a linguistic expert.",
@@ -453,6 +469,7 @@ if __name__ == "__main__":
             f"Generating beta-guided rewrites for {len(pending_beta_jobs)} uncached targets "
             f"in one batched call ({len(batched_beta_prompts)} prompts)."
         )
+        _update_max_model_len(rewrite_cfg["rewrite_model"], batched_beta_prompts)
         model_manager: ModelManager = ModelManager(master_cfg=rewrite_cfg, model_config_type="rewrite_model")
         beta_prompt_collection = PromptCollection(
             system_prompt="You are a linguistic expert.",
@@ -487,7 +504,7 @@ if __name__ == "__main__":
         "lc_eval_0": {
             "backend": "vllm",
             "name": "qwen/Qwen3-8B",
-            "max_model_len": 2048,
+            "max_model_len": 10240,
             "temperature": 1.0,
             "max_tokens": 256,
             "repeat": 3,
@@ -496,7 +513,7 @@ if __name__ == "__main__":
         "lc_eval_1": {
             "backend": "vllm",
             "name": "meta-llama/Llama-3.1-8B-Instruct",
-            "max_model_len": 2048,
+            "max_model_len": 10240,
             "temperature": 1.0,
             "max_tokens": 256,
             "repeat": 3,
@@ -505,7 +522,7 @@ if __name__ == "__main__":
         "lc_eval_2": {
             "backend": "vllm",
             "name": "mistralai/Mistral-7B-Instruct-v0.3",
-            "max_model_len": 2048,
+            "max_model_len": 10240,
             "temperature": 1.0,
             "max_tokens": 256,
             "repeat": 3,
@@ -567,6 +584,16 @@ if __name__ == "__main__":
             f"Estimating linguistic confidence for {len(pending_jobs)} uncached targets "
             f"in one batched call ({len(batched_responses)} prompts)."
         )
+        eval_prompts = [
+            LINGUISTIC_EVALUATOR_PROMPT.format(
+                sentence=response,
+                human_annotated_cues=human_annotated_cues,
+            )
+            for response in batched_responses
+        ]
+        print(eval_prompts[:2])
+        for evaluator in evaluator_keys:
+            _update_max_model_len(eval_cfg[evaluator], eval_prompts)
         batched_confidences = estimate_linguistic_confidence(
             batched_responses,
             evaluators_cfg=eval_cfg,

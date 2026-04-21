@@ -1,5 +1,5 @@
 # Prompt:
-# Generate a Python list of words and expressions that human use to convey the level of confidence, certainty, or hedging in their statements (without a subject, only the linguistic cues). These words should include common hedging phrases, adverbs, and qualifiers that indicate varying degrees of certainty or uncertainty. 
+# Generate a Python list of words or expressions that human use to convey the level of confidence, certainty, or hedging in their statements (without a subject, only the linguistic cues). These words should include common hedging phrases, adverbs, and qualifiers that indicate varying degrees of certainty or uncertainty. 
 # The list should be comprehensive and cover a wide range of expressions used in everyday language as well as in academic and professional contexts.
 
 claude_lexicon = [

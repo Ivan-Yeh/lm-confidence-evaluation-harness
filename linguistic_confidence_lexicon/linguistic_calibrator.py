@@ -25,27 +25,38 @@ def find_closest_hedging_words(
     target_beta,
     lexicon_df,
     top_k=10,
+    shortlist_k: int = 20,
     sample_size: int = 300,
     n_jobs: int = 1,
 ) -> pd.DataFrame:
     """
     Find the top K closest hedging words to a target beta distribution.
-    
+
+    Two-stage retrieval:
+      1. Shortlist `shortlist_k` candidates by |target_mean - lexicon_mean|.
+      2. Re-rank the shortlist with Wasserstein-2 distance and return top_k.
+
     Args:
-        target_alpha: alpha parameter of target beta distribution
-        target_beta: beta parameter of target beta distribution
-        lexicon_df: DataFrame with hedging words and their beta parameters
-        top_k: number of closest matches to return
-    
+        target_alpha:  alpha parameter of target Beta distribution
+        target_beta:   beta parameter of target Beta distribution
+        lexicon_df:    DataFrame with hedging words and their beta parameters
+        top_k:         number of results to return
+        shortlist_k:   size of mean-distance shortlist fed into W2 ranking
+        sample_size:   MC samples per candidate for W2 estimation
+        n_jobs:        worker processes for W2 computation (1 = sequential)
+
     Returns:
-        DataFrame with top K closest hedging words and their distances
+        DataFrame with top_k rows sorted by wasserstein_distance.
     """
-    rng = np.random.default_rng()
+    empty = pd.DataFrame(columns=["hedging_word", "alpha", "beta", "mean", "wasserstein_distance"])
+
     if not (np.isfinite(target_alpha) and np.isfinite(target_beta)
             and target_alpha > 0 and target_beta > 0):
-        return pd.DataFrame(columns=["hedging_word", "alpha", "beta", "mean", "wasserstein_distance"])
-    target_samples = beta.rvs(target_alpha, target_beta, size=sample_size, random_state=rng)
+        return empty
 
+    target_mean = target_alpha / (target_alpha + target_beta)
+
+    # --- Stage 1: shortlist by |mean - target_mean| ---
     records = []
     for row in lexicon_df.itertuples(index=False):
         alpha = getattr(row, "alpha_param", np.nan)
@@ -55,7 +66,15 @@ def find_closest_hedging_words(
         records.append((row.hedging_word, alpha, beta_param, row.mean))
 
     if not records:
-        return pd.DataFrame(columns=["hedging_word", "alpha", "beta", "mean", "wasserstein_distance"])
+        return empty
+
+    shortlist_k = max(top_k, min(shortlist_k, len(records)))
+    records.sort(key=lambda r: abs(r[3] - target_mean))
+    shortlist = records[:shortlist_k]
+
+    # --- Stage 2: re-rank shortlist by Wasserstein-2 distance ---
+    rng = np.random.default_rng()
+    target_samples = beta.rvs(target_alpha, target_beta, size=sample_size, random_state=rng)
 
     if n_jobs is None:
         n_jobs = max(1, os.cpu_count() or 1)
@@ -63,23 +82,21 @@ def find_closest_hedging_words(
     if n_jobs <= 1:
         distances = [
             _compute_distance(record, target_samples, sample_size, int(rng.integers(0, 2**32 - 1)))
-            for record in records
+            for record in shortlist
         ]
     else:
-        # Per-task seeds keep sampling independent across worker processes.
-        seeds = rng.integers(0, 2**32 - 1, size=len(records), dtype=np.uint32)
-        max_workers = min(n_jobs, len(records))
+        seeds = rng.integers(0, 2**32 - 1, size=len(shortlist), dtype=np.uint32)
+        max_workers = min(n_jobs, len(shortlist))
         with ProcessPoolExecutor(max_workers=max_workers) as executor:
             distances = list(
                 executor.map(
                     _compute_distance,
-                    records,
-                    [target_samples] * len(records),
-                    [sample_size] * len(records),
+                    shortlist,
+                    [target_samples] * len(shortlist),
+                    [sample_size] * len(shortlist),
                     seeds.tolist(),
                 )
             )
-    
-    # Sort by distance and return top K
-    result_df = pd.DataFrame(distances).sort_values('wasserstein_distance').head(top_k)
+
+    result_df = pd.DataFrame(distances).sort_values("wasserstein_distance").head(top_k)
     return result_df.reset_index(drop=True)

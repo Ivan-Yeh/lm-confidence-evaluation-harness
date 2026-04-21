@@ -39,7 +39,12 @@ if __name__ == "__main__":
 
     print("Breakpoint set to:", args.breakpoint)
 
-    common_dir = "/hdd/ivny"
+    if os.path.exists("/hdd"):
+        print("Using /hdd/ivny as common directory for results.")
+        common_dir = "/hdd/ivny"
+    else:
+        print("Using ivny as common directory for results.")
+        common_dir = "ivny"
 
     ling_train_path = get_latest_leaf_node(f"{common_dir}/results/{args.train}/{prompt_type}_unified_lc/{args.model}/")
     tp_train_path = get_latest_leaf_node(f"{common_dir}/results/{args.train}/{prompt_type}_unified_tp/{args.model}/")
@@ -204,7 +209,7 @@ if __name__ == "__main__":
         prompts = [
             REWRITE_PROMPT.format(
                 response=row["original_response"],
-                hedges=", ".join(row[target["hedges_col"]] or []),
+                hedges=format_hedges_for_prompt(row[target["hedges_col"]] or []),
             )
             for _, row in test_df.iterrows()
         ]

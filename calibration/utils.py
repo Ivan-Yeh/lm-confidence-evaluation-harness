@@ -1,3 +1,5 @@
+import os
+
 from sklearn.isotonic import IsotonicRegression
 from sklearn.linear_model import LogisticRegression
 import numpy as np
@@ -5,19 +7,12 @@ import pandas as pd
 import re
 import gc
 from scipy.optimize import minimize
-from scipy.special import betaln, digamma, betainc
+from scipy.special import betaln, digamma, betainc, expit
 from linguistic_confidence_lexicon.linguistic_calibrator import find_closest_hedging_words
 from lm_conf.confidence_metrics.distributionals import BetaDistribution
 from lm_conf.default_utils.custom_types import PromptCollection
 from lm_conf.models.model_manager import ModelManager
 
-LINGUISTIC_LEXICON_PATH = "linguistic_confidence_lexicon/hedging_word_scores.csv"
-LEXICON = pd.read_csv(LINGUISTIC_LEXICON_PATH)
-LEXICON["alpha_param"] = LEXICON["alpha_param"].astype(float)
-LEXICON["beta_param"] = LEXICON["beta_param"].astype(float)
-LEXICON["mean"] = LEXICON["mean"].astype(float)
-LEXICON["std"] = LEXICON["std"].astype(float)
-LEXICON.dropna(inplace=True)
 
 MIN_ALPHA_BETA = 1e-4    # floor for alpha/beta; keeps Beta pdf well-defined
 MAX_KAPPA      = 1_000.0 # cap on kappa=alpha+beta; above this the Beta pdf is
@@ -25,50 +20,75 @@ MAX_KAPPA      = 1_000.0 # cap on kappa=alpha+beta; above this the Beta pdf is
 MU_EPS         = 1e-6
 MIN_KAPPA      = 2.0 * MIN_ALPHA_BETA
 
+LINGUISTIC_LEXICON_PATH = "linguistic_confidence_lexicon/hedging_word_aggregated.csv"
+LEXICON = pd.read_csv(LINGUISTIC_LEXICON_PATH)
+LEXICON["alpha_param"] = LEXICON["alpha_param"].astype(float).clip(MIN_ALPHA_BETA)
+LEXICON["beta_param"] = LEXICON["beta_param"].astype(float).clip(MIN_ALPHA_BETA)
+LEXICON["mean"] = LEXICON["mean"].astype(float)
+LEXICON["std"] = LEXICON["std"].astype(float)
+LEXICON.dropna(inplace=True)
+
 
 REWRITE_PROMPT = """
-Given an original response and a list of target hedging words, rewrite the response to appropriately reflect the confidence level indicated by the set of target hedging words. 
+Given an original response and a list of target hedging words with their confidence profiles (Beta Distributions), rewrite the response to appropriately reflect the confidence level indicated by the set of target hedging words. 
 You must preserve the original meaning of the response, as we are only adjusting the tone to match the confidence level suggested by the hedging words. Ensure the new response sounds natural and fluent. 
-You do not need to explicitly include the hedging words in the rewritten response, but the tone and linguistic cues should reflect the confidence level indicated by those words.
-
-You are encouraged to use words or expressions other than the provided hedging words, but the overall level of confidence expressed in the response must align with the target hedging words. 
-If the original response is empty, return "No answer provided". 
-If the original response suggests random guesses, abstention, or inability to answer already, you should return a response in the line of of "I'm not sure, but I guess...[original guess]". 
-If the target hedging words suggest high confidence, you may state the answer directly without hedging to convey decisiveness.
-When hedging is needed, it is better to use one or at most two representative hedging expression rather than incorporating many hedging words, to ensure the response remains natural and fluent.
-You are encouraged to use first-person phrasing where appropriate.
 
 Original response: ```My answer to the question is: "{response}"```
-Target hedging words: {hedges}
+Target hedging words with confidence profiles: {hedges}
 
 Please return only the rewritten sentence without any explanation.
 New response: 
 """.strip()
 
 
+human_annotated_cues = pd.read_csv(os.path.join("linguistic_confidence_lexicon", "hedging_word_aggregated.csv"))[["hedging_word", "mean", "std"]]
+human_annotated_cues["mean"] *= 100.0
+human_annotated_cues["std"] *= 100.0
+human_annotated_cues = human_annotated_cues.sort_values("mean").round(2).to_dict(orient="records")
+
 LINGUISTIC_EVALUATOR_PROMPT = """
-Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence (without using any external or prior knowledge). 
+Please provide only a confidence score between 0 and 100, based solely on the degree of confidence expressed in the tone and linguistic cues of the following sentence, without using any external or prior knowledge to assess the knowledge conveyed by the sentence. 
 Please pay attention to the hedging language used and the overall assertiveness of the statement. 
 If the sentence abstains from answering by pointing out the insufficiency of information with a firm tone, the score should be towards 100. 
 If the sentence contains random guesses or abstention, the score should be towards 0. If the sentence is stated with strong certainty or no hedging, the score should be towards 100. 
 If the sentence does not contain any hedging language or is a succinct, decisive short answer, the score should be towards 100, too.
 
+To align with human perception, here are some human-annotated linguistic cues with perceived confidence profiles (mean and standard deviation) for your reference: 
+{human_annotated_cues}
+
 Here is the sentence:
-Answer: {sentence}
+{sentence}
 
 Confidence Score: [Return only a number between 0 and 100 without any additional text or explanation]
 """.strip()
 
 
-def obtain_hedging_words(conf: BetaDistribution, top_k=5) -> list[str] | None:
+def obtain_hedging_words(conf: BetaDistribution, top_k=5) -> list[tuple[str, BetaDistribution]] | None:
+    """Return top-k hedging words paired with their lexicon BetaDistribution profiles."""
     if conf is None or not conf.is_valid():
         return None
-    return find_closest_hedging_words(
+    df = find_closest_hedging_words(
         conf.alpha_param,
         conf.beta_param,
         LEXICON,
         top_k=top_k,
-    )["hedging_word"].tolist()
+    )
+    result = []
+    for _, row in df.iterrows():
+        mu, sigma = _to_mu_sigma(float(row["alpha"]), float(row["beta"]))
+        result.append((row["hedging_word"], BetaDistribution(mu=mu, sigma=sigma)))
+    return result
+
+
+def format_hedges_for_prompt(hedges: list[tuple[str, BetaDistribution]] | None) -> str:
+    """Format hedging word + confidence profile pairs for the rewrite prompt."""
+    if not hedges:
+        return "none"
+    parts = [
+        f'"{word}": Beta(alpha={dist.alpha_param:.2f}, beta={dist.beta_param:.2f}) with mean={dist.mu*100:.2f}% and std={dist.sigma*100:.2f}%'
+        for word, dist in hedges
+    ]
+    return "; ".join(parts)
 
 
 evaluator_list = [
@@ -178,6 +198,67 @@ def _ks_ece_abs(a, b, y, Q):
     r_hat = (K * y[:, None]).sum(0) / K.sum(0).clip(1e-8)
     f_hat = K.mean(0)
     return (f_hat * np.abs(r_hat - s)).sum() / Q
+
+
+# =============================================================================
+# SOFT-BINNED HISTOGRAM CALIBRATION MAP
+#
+# Training:  divide [0,1] into B equal-width bins.  For bin b = [lo, hi],
+#   compute soft membership weights via the Beta CDF:
+#     w_{n,b} = I_{hi}(α_n, β_n) - I_{lo}(α_n, β_n)
+#   then set the bin's calibrated accuracy to:
+#     μ'_b = Σ_n w_{n,b} · y_n  /  Σ_n w_{n,b}
+#
+# Inference: apply the same Beta CDF weighting to a new distribution:
+#     μ' = Σ_b w_b · μ'_b,   w_b = I_{hi}(α, β) - I_{lo}(α, β)
+#   then reconstruct α' = μ'·κ, β' = (1-μ')·κ with κ unchanged.
+# =============================================================================
+
+def _fit_soft_hist_bins(
+    mu: np.ndarray,
+    kappa: np.ndarray,
+    y: np.ndarray,
+    n_bins: int = 10,
+) -> np.ndarray:
+    """
+    Fit soft-binned histogram calibration on training data.
+
+    Returns bin_accuracies of shape (n_bins,), one calibrated accuracy per bin.
+    Bins with negligible total weight fall back to their bin midpoint.
+    """
+    a = (mu * kappa).clip(MIN_ALPHA_BETA)
+    b = ((1.0 - mu) * kappa).clip(MIN_ALPHA_BETA)
+    edges = np.linspace(0.0, 1.0, n_bins + 1)
+    bin_accs = np.empty(n_bins)
+    for i in range(n_bins):
+        lo, hi = edges[i], edges[i + 1]
+        w = betainc(a, b, hi) - betainc(a, b, lo)   # (N,)
+        w_sum = w.sum()
+        bin_accs[i] = (w @ y) / w_sum if w_sum > 1e-8 else (lo + hi) / 2.0
+    # Enforce monotonicity: calibrated accuracy should be non-decreasing with bin index
+    midpoints = (edges[:-1] + edges[1:]) / 2.0
+    iso = IsotonicRegression(increasing=True, out_of_bounds="clip")
+    bin_accs = iso.fit_transform(midpoints, bin_accs)
+    return bin_accs
+
+
+def _apply_soft_hist_bin(
+    mu: float,
+    kappa: float,
+    bin_accs: np.ndarray,
+) -> float:
+    """
+    Apply fitted soft-binned histogram map to a single (mu, kappa).
+
+    Returns calibrated μ' = Σ_b w_b · μ'_b, normalised by Σ_b w_b ≈ 1.
+    """
+    n_bins = len(bin_accs)
+    a = float(np.clip(mu * kappa, MIN_ALPHA_BETA, None))
+    b = float(np.clip((1.0 - mu) * kappa, MIN_ALPHA_BETA, None))
+    edges = np.linspace(0.0, 1.0, n_bins + 1)
+    w = betainc(a, b, edges[1:]) - betainc(a, b, edges[:-1])   # (n_bins,)
+    w_sum = w.sum()
+    return float((w @ bin_accs) / w_sum) if w_sum > 1e-8 else mu
 
 
 # =============================================================================
@@ -424,6 +505,17 @@ def _rebuild_with_consistent_sigma(
 #     label, i.e. it was appropriately hedged.
 # =============================================================================
 
+def _safe_kappa(conf: "BetaDistribution") -> float | None:
+    """Extract kappa = alpha + beta from a BetaDistribution; returns None on failure."""
+    if conf is None:
+        return None
+    try:
+        a, b = _to_alpha_beta(conf.mu, conf.sigma)
+        return float(a + b)
+    except Exception:
+        return None
+
+
 def compute_faithfulness_divergence(
     confidences: list[BetaDistribution | None],
     accuracies: list[float | int],
@@ -549,6 +641,33 @@ def in_domain_numerical_post_hoc_calibration(
         )
         return calibrated_betas
 
+    elif method == "hist_bin":
+        train_confs = list(confidences[:train_size])
+        train_kappa = np.array(
+            [_safe_kappa(c) if c is not None else np.nan for c in train_confs],
+            dtype=float,
+        )
+        valid_mask  = np.isfinite(train_kappa) & np.isfinite(mu_values[:train_size])
+        mu_tr       = mu_values[:train_size][valid_mask].clip(MU_EPS, 1.0 - MU_EPS)
+        kappa_tr    = train_kappa[valid_mask].clip(MIN_KAPPA, MAX_KAPPA)
+        bin_accs    = _fit_soft_hist_bins(mu_tr, kappa_tr, y_train[valid_mask], 20)
+        print(f"[hist_bin] bin_accuracies={np.round(bin_accs, 3).tolist()}")
+
+        for conf in test_confidences:
+            if conf is None:
+                calibrated_betas.append(None)
+                continue
+            kappa = _safe_kappa(conf)
+            if kappa is None:
+                calibrated_betas.append(conf)
+                continue
+            mu_i   = float(np.clip(conf.mu, MU_EPS, 1.0 - MU_EPS))
+            kap_i  = float(np.clip(kappa, MIN_KAPPA, MAX_KAPPA))
+            mu_p   = float(np.clip(_apply_soft_hist_bin(mu_i, kap_i, bin_accs), MU_EPS, 1.0 - MU_EPS))
+            calibrated_betas.append(_rebuild_with_consistent_sigma(mu_p, conf))
+
+        return calibrated_betas
+
     elif method == "isotonic":
         calibrator = IsotonicRegression(out_of_bounds="clip")
         calibrator.fit(mu_values[:train_size], y_train)
@@ -567,6 +686,119 @@ def in_domain_numerical_post_hoc_calibration(
         calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
         calibrator.fit(X_tr, y_train)
         calibrated_means = calibrator.predict_proba(X_te)[:, 1]
+
+    elif method == "two_stage_isotonic":
+        B = 3
+        train_confs = list(confidences[:train_size])
+        train_mu_raw = mu_values[:train_size]
+        train_kappa = np.array(
+            [_safe_kappa(c) if c is not None else np.nan for c in train_confs],
+            dtype=float,
+        )
+        valid_mask = np.isfinite(train_kappa)
+        kappa_qs = np.quantile(
+            train_kappa[valid_mask], np.linspace(0, 1, B + 1)[1:-1]
+        )
+
+        def _assign_bin(kappa_val: float) -> int:
+            if not np.isfinite(kappa_val):
+                return 1
+            for b_idx, q in enumerate(kappa_qs):
+                if kappa_val <= q:
+                    return b_idx
+            return B - 1
+
+        bin_regressors: list = []
+        for b_idx in range(B):
+            mask = np.array(
+                [_assign_bin(k) == b_idx for k in train_kappa], dtype=bool
+            )
+            mask &= valid_mask
+            if mask.sum() >= 2:
+                reg = IsotonicRegression(out_of_bounds="clip")
+                reg.fit(train_mu_raw[mask], y_train[mask])
+                bin_regressors.append(reg)
+            else:
+                bin_regressors.append(None)
+            print(
+                f"[two_stage_isotonic] bin {b_idx}: "
+                f"κ ≤ {kappa_qs[b_idx - 1] if b_idx > 0 else '-∞'} ... "
+                f"κ ≤ {kappa_qs[b_idx] if b_idx < B - 1 else '∞'}, "
+                f"n={int(mask.sum())}"
+            )
+
+        for conf in test_confidences:
+            if conf is None:
+                calibrated_betas.append(None)
+                continue
+            kappa = _safe_kappa(conf)
+            if kappa is None:
+                calibrated_betas.append(conf)
+                continue
+            b_idx = _assign_bin(kappa)
+            reg = bin_regressors[b_idx]
+            mu_prime = float(reg.predict(np.array([conf.mu]))[0]) if reg is not None else conf.mu
+            calibrated_betas.append(_rebuild_with_consistent_sigma(mu_prime, conf))
+
+        return calibrated_betas
+
+    elif method == "ece_fd_opt":
+        train_confs  = list(confidences[:train_size])
+        train_kappa  = np.array(
+            [_safe_kappa(c) if c is not None else np.nan for c in train_confs],
+            dtype=float,
+        )
+        valid_mask = np.isfinite(train_kappa) & np.isfinite(mu_values[:train_size])
+        mu_tr      = mu_values[:train_size][valid_mask].clip(MU_EPS, 1.0 - MU_EPS)
+        kappa_tr   = train_kappa[valid_mask].clip(MIN_KAPPA, MAX_KAPPA)
+        y_tr       = y_train[valid_mask]
+        logit_mu_tr = np.log(mu_tr / (1.0 - mu_tr))
+        log_kap_tr  = np.log(kappa_tr)
+
+        # Normalise by identity-params baseline so ECE and FD start at 1.0 each
+        a0    = (mu_tr * kappa_tr).clip(MIN_ALPHA_BETA)
+        b0    = ((1.0 - mu_tr) * kappa_tr).clip(MIN_ALPHA_BETA)
+        ece0  = max(_ks_ece_sq(a0, b0, y_tr, Q=100), 1e-10)
+        fd0   = max(_mean_fd(a0, b0, y_tr), 1e-10)
+        print(f"[ece_fd_opt] baseline ECE={ece0:.6f}  FD={fd0:.6f}")
+
+        # Joint optimisation: normalised ECE + normalised FD over all 4 params
+        def _joint_loss(params: np.ndarray) -> float:
+            w_k, b_k, w, b = params
+            kap_p = np.exp(np.clip(w_k * log_kap_tr + b_k, -20.0, 20.0)).clip(MIN_KAPPA, MAX_KAPPA)
+            mu_p  = expit(w * logit_mu_tr + b).clip(MU_EPS, 1.0 - MU_EPS)
+            a_p   = (mu_p * kap_p).clip(MIN_ALPHA_BETA)
+            b_p   = ((1.0 - mu_p) * kap_p).clip(MIN_ALPHA_BETA)
+            return _ks_ece_sq(a_p, b_p, y_tr, Q=100) / ece0 + _mean_fd(a_p, b_p, y_tr) / fd0
+
+        res = minimize(
+            _joint_loss, x0=np.array([1.0, 0.0, 1.0, 0.0]), method="L-BFGS-B",
+            bounds=[(-10.0, 10.0)] * 4,
+            options={"maxiter": 2000, "ftol": 1e-12, "gtol": 1e-8},
+        )
+        w_kap, b_kap, w_mu, b_mu = (float(x) for x in res.x)
+        print(f"[ece_fd_opt] w_kap={w_kap:.4f}  b_kap={b_kap:.4f}  "
+              f"w_mu={w_mu:.4f}  b_mu={b_mu:.4f}  loss={res.fun:.6f}")
+
+        for conf in test_confidences:
+            if conf is None:
+                calibrated_betas.append(None)
+                continue
+            kappa = _safe_kappa(conf)
+            if kappa is None:
+                calibrated_betas.append(conf)
+                continue
+            mu_i  = float(np.clip(conf.mu, MU_EPS, 1.0 - MU_EPS))
+            kap_i = float(np.clip(kappa, MIN_KAPPA, MAX_KAPPA))
+            kap_p = float(np.clip(np.exp(np.clip(w_kap * np.log(kap_i) + b_kap, -20.0, 20.0)),
+                                   MIN_KAPPA, MAX_KAPPA))
+            mu_p  = float(expit(w_mu * np.log(mu_i / (1.0 - mu_i)) + b_mu).clip(MU_EPS, 1.0 - MU_EPS))
+            a_p   = max(mu_p * kap_p, MIN_ALPHA_BETA)
+            b_p   = max((1.0 - mu_p) * kap_p, MIN_ALPHA_BETA)
+            mu_out, sigma_out = _to_mu_sigma(a_p, b_p)
+            calibrated_betas.append(BetaDistribution(mu=mu_out, sigma=sigma_out))
+
+        return calibrated_betas
 
     else:
         raise ValueError(f"Unknown calibration method: {method!r}")
@@ -641,6 +873,29 @@ def cross_domain_numerical_post_hoc_calibration(
         print(f"[min_ece] h*={h_star:.4f}  α*={alpha_star:.4f}  β*={beta_star:.4f}")
         return _apply_min_ece_calibration(raw_confidences, alpha_star, beta_star)
 
+    elif method == "hist_bin":
+        train_kappa = np.array(
+            [_safe_kappa(c) if c is not None else np.nan for c in train_confs],
+            dtype=float,
+        )
+        valid_k_mask = np.isfinite(train_kappa) & np.isfinite(mu_train)
+        mu_tr        = mu_train[valid_k_mask].clip(MU_EPS, 1.0 - MU_EPS)
+        kappa_tr     = train_kappa[valid_k_mask].clip(MIN_KAPPA, MAX_KAPPA)
+        bin_accs     = _fit_soft_hist_bins(mu_tr, kappa_tr, acc_train[valid_k_mask])
+        print(f"[hist_bin] bin_accuracies={np.round(bin_accs, 3).tolist()}")
+
+        result: list[BetaDistribution | None] = [None] * len(raw_confidences)
+        for i, orig_beta in zip(valid_raw_idx, valid_raw_confs):
+            kappa = _safe_kappa(orig_beta)
+            if kappa is None:
+                result[i] = orig_beta
+                continue
+            mu_i  = float(np.clip(orig_beta.mu, MU_EPS, 1.0 - MU_EPS))
+            kap_i = float(np.clip(kappa, MIN_KAPPA, MAX_KAPPA))
+            mu_p  = float(np.clip(_apply_soft_hist_bin(mu_i, kap_i, bin_accs), MU_EPS, 1.0 - MU_EPS))
+            result[i] = _rebuild_with_consistent_sigma(mu_p, orig_beta)
+        return result
+
     elif method == "isotonic":
         calibrator = IsotonicRegression(out_of_bounds="clip")
         calibrator.fit(mu_train, acc_train)
@@ -657,6 +912,110 @@ def cross_domain_numerical_post_hoc_calibration(
         calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
         calibrator.fit(X_tr, acc_train)
         calibrated_means = calibrator.predict_proba(X_te)[:, 1]
+
+    elif method == "two_stage_isotonic":
+        B = 3
+        train_kappa = np.array(
+            [_safe_kappa(c) if c is not None else np.nan for c in train_confs],
+            dtype=float,
+        )
+        valid_k_mask = np.isfinite(train_kappa)
+        kappa_qs = np.quantile(
+            train_kappa[valid_k_mask], np.linspace(0, 1, B + 1)[1:-1]
+        )
+
+        def _assign_bin(kappa_val: float) -> int:
+            if not np.isfinite(kappa_val):
+                return 1
+            for b_idx, q in enumerate(kappa_qs):
+                if kappa_val <= q:
+                    return b_idx
+            return B - 1
+
+        bin_regressors: list = []
+        for b_idx in range(B):
+            mask = np.array(
+                [_assign_bin(k) == b_idx for k in train_kappa], dtype=bool
+            )
+            mask &= valid_k_mask
+            if mask.sum() >= 2:
+                reg = IsotonicRegression(out_of_bounds="clip")
+                reg.fit(mu_train[mask], acc_train[mask])
+                bin_regressors.append(reg)
+            else:
+                bin_regressors.append(None)
+            print(
+                f"[two_stage_isotonic] bin {b_idx}: "
+                f"κ ≤ {kappa_qs[b_idx - 1] if b_idx > 0 else '-∞'} ... "
+                f"κ ≤ {kappa_qs[b_idx] if b_idx < B - 1 else '∞'}, "
+                f"n={int(mask.sum())}"
+            )
+
+        result: list[BetaDistribution | None] = [None] * len(raw_confidences)
+        for i, orig_beta in zip(valid_raw_idx, valid_raw_confs):
+            kappa = _safe_kappa(orig_beta)
+            if kappa is None:
+                result[i] = orig_beta
+                continue
+            b_idx = _assign_bin(kappa)
+            reg = bin_regressors[b_idx]
+            mu_prime = float(reg.predict(np.array([orig_beta.mu]))[0]) if reg is not None else orig_beta.mu
+            result[i] = _rebuild_with_consistent_sigma(mu_prime, orig_beta)
+        return result
+
+    elif method == "ece_fd_opt":
+        train_kappa = np.array(
+            [_safe_kappa(c) if c is not None else np.nan for c in train_confs],
+            dtype=float,
+        )
+        valid_k_mask = np.isfinite(train_kappa) & np.isfinite(mu_train)
+        mu_tr        = mu_train[valid_k_mask].clip(MU_EPS, 1.0 - MU_EPS)
+        kappa_tr     = train_kappa[valid_k_mask].clip(MIN_KAPPA, MAX_KAPPA)
+        y_tr         = acc_train[valid_k_mask]
+        logit_mu_tr  = np.log(mu_tr / (1.0 - mu_tr))
+        log_kap_tr   = np.log(kappa_tr)
+
+        # Normalise by identity-params baseline so ECE and FD start at 1.0 each
+        a0   = (mu_tr * kappa_tr).clip(MIN_ALPHA_BETA)
+        b0   = ((1.0 - mu_tr) * kappa_tr).clip(MIN_ALPHA_BETA)
+        ece0 = max(_ks_ece_sq(a0, b0, y_tr, Q=100), 1e-10)
+        fd0  = max(_mean_fd(a0, b0, y_tr), 1e-10)
+        print(f"[ece_fd_opt] baseline ECE={ece0:.6f}  FD={fd0:.6f}")
+
+        # Joint optimisation: normalised ECE + normalised FD over all 4 params
+        def _joint_loss(params: np.ndarray) -> float:
+            w_k, b_k, w, b = params
+            kap_p = np.exp(np.clip(w_k * log_kap_tr + b_k, -20.0, 20.0)).clip(MIN_KAPPA, MAX_KAPPA)
+            mu_p  = expit(w * logit_mu_tr + b).clip(MU_EPS, 1.0 - MU_EPS)
+            a_p   = (mu_p * kap_p).clip(MIN_ALPHA_BETA)
+            b_p   = ((1.0 - mu_p) * kap_p).clip(MIN_ALPHA_BETA)
+            return _ks_ece_sq(a_p, b_p, y_tr, Q=100) / ece0 + _mean_fd(a_p, b_p, y_tr) / fd0
+
+        res = minimize(
+            _joint_loss, x0=np.array([1.0, 0.0, 1.0, 0.0]), method="L-BFGS-B",
+            bounds=[(-10.0, 10.0)] * 4,
+            options={"maxiter": 2000, "ftol": 1e-12, "gtol": 1e-8},
+        )
+        w_kap, b_kap, w_mu, b_mu = (float(x) for x in res.x)
+        print(f"[ece_fd_opt] w_kap={w_kap:.4f}  b_kap={b_kap:.4f}  "
+              f"w_mu={w_mu:.4f}  b_mu={b_mu:.4f}  loss={res.fun:.6f}")
+
+        result: list[BetaDistribution | None] = [None] * len(raw_confidences)
+        for i, orig_beta in zip(valid_raw_idx, valid_raw_confs):
+            kappa = _safe_kappa(orig_beta)
+            if kappa is None:
+                result[i] = orig_beta
+                continue
+            mu_i  = float(np.clip(orig_beta.mu, MU_EPS, 1.0 - MU_EPS))
+            kap_i = float(np.clip(kappa, MIN_KAPPA, MAX_KAPPA))
+            kap_p = float(np.clip(np.exp(np.clip(w_kap * np.log(kap_i) + b_kap, -20.0, 20.0)),
+                                   MIN_KAPPA, MAX_KAPPA))
+            mu_p  = float(expit(w_mu * np.log(mu_i / (1.0 - mu_i)) + b_mu).clip(MU_EPS, 1.0 - MU_EPS))
+            a_p   = max(mu_p * kap_p, MIN_ALPHA_BETA)
+            b_p   = max((1.0 - mu_p) * kap_p, MIN_ALPHA_BETA)
+            mu_out, sigma_out = _to_mu_sigma(a_p, b_p)
+            result[i] = BetaDistribution(mu=mu_out, sigma=sigma_out)
+        return result
 
     else:
         raise ValueError(f"Unknown calibration method: {method!r}")
@@ -677,7 +1036,7 @@ def estimate_linguistic_confidence(
     evaluator_keys: list[str],
 ) -> list[BetaDistribution | None]:
     prompts = [
-        LINGUISTIC_EVALUATOR_PROMPT.format(sentence=response)
+        LINGUISTIC_EVALUATOR_PROMPT.format(sentence=response, human_annotated_cues=human_annotated_cues)
         for response in responses
     ]
 
