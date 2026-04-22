@@ -185,12 +185,12 @@ if __name__ == "__main__":
         fd_val = faithfulness_divergence({}, organised_output)[0]
         print(f"[{label}] n={len(metric_df)} | ECE={ece_val:.6f} | FD={fd_val:.6f}")
 
-    _print_signal_metrics("original_lc", "original_lc")
-    _print_signal_metrics("calibrated_lc", "calibrated_lc")
-    _print_signal_metrics("original_tp", "original_tp")
-    _print_signal_metrics("calibrated_tp", "calibrated_tp")
-    _print_signal_metrics("original_su", "original_su")
-    _print_signal_metrics("calibrated_su", "calibrated_su")
+    # _print_signal_metrics("original_lc", "original_lc")
+    # _print_signal_metrics("calibrated_lc", "calibrated_lc")
+    # _print_signal_metrics("original_tp", "original_tp")
+    # _print_signal_metrics("calibrated_tp", "calibrated_tp")
+    # _print_signal_metrics("original_su", "original_su")
+    # _print_signal_metrics("calibrated_su", "calibrated_su")
 
     # reliability diagrams (soft-binned via sampling, 10 bins) before vs after
     def _draw_reliability_ax(
@@ -286,9 +286,9 @@ if __name__ == "__main__":
         plt.close(fig)
         print(f"Saved reliability diagram → {path}")
 
-    _save_reliability_diagram("lc", "original_lc", "calibrated_lc")
-    _save_reliability_diagram("tp", "original_tp", "calibrated_tp")
-    _save_reliability_diagram("su", "original_su", "calibrated_su")
+    # _save_reliability_diagram("lc", "original_lc", "calibrated_lc")
+    # _save_reliability_diagram("tp", "original_tp", "calibrated_tp")
+    # _save_reliability_diagram("su", "original_su", "calibrated_su")
     
     
 
