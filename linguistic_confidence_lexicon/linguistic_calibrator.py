@@ -25,7 +25,7 @@ def find_closest_hedging_words(
     target_beta,
     lexicon_df,
     top_k=10,
-    shortlist_k: int = 20,
+    shortlist_k: int = 30,
     sample_size: int = 300,
     n_jobs: int = 1,
 ) -> pd.DataFrame:

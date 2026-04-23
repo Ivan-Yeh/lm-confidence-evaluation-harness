@@ -1,5 +1,5 @@
 # #!/usr/bin/env bash
-GPU=2
+GPU=0
 prompt_type=direct_qa
 # breakpoint=hedge
 
