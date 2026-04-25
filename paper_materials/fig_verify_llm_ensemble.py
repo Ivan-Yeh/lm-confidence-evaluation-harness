@@ -137,7 +137,7 @@ grouped_sorted = (
     .reset_index(drop=True)
 )
 
-n_select = 20
+n_select = 15
 n = len(grouped_sorted)
 selected_rows = []
 for i in range(n_select):
@@ -148,13 +148,13 @@ for i in range(n_select):
         selected_rows.append(chunk.loc[chunk["alignment_err"].idxmin()])
 selected_df = pd.DataFrame(selected_rows)
 high_mask = selected_df["llm_median"] >= 0.90
-if high_mask.sum() > 4:
-    keep_high = selected_df[high_mask].nsmallest(4, "alignment_err")
+if high_mask.sum() > 2:
+    keep_high = selected_df[high_mask].nsmallest(2, "alignment_err")
     selected_df = pd.concat([selected_df[~high_mask], keep_high])
 selected_df = selected_df.sort_values("llm_median", ascending=True).reset_index(drop=True)
 
 # --- horizontal box plots ---
-fig, ax = plt.subplots(figsize=(10, 5))
+fig, ax = plt.subplots(figsize=(8, 6))
 positions = np.arange(len(selected_df))
 width = 0.35
 
