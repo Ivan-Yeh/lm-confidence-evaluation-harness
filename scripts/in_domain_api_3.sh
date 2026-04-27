@@ -27,6 +27,6 @@ prompt_type=direct_qa
 breakpoint=hedge
 breakpoint=metrics
 
-CUDA_VISIBLE_DEVICES=$GPU run_with_retry python -m calibration.in_domain_calibration --prompt_type $prompt_type --dataset mmlu --model google/gemma-4-31B-it --breakpoint $breakpoint 
-CUDA_VISIBLE_DEVICES=$GPU run_with_retry python -m calibration.in_domain_calibration --prompt_type $prompt_type --dataset mmlu --model openai/gpt-oss-120b --breakpoint $breakpoint 
-CUDA_VISIBLE_DEVICES=$GPU run_with_retry python -m calibration.in_domain_calibration --prompt_type $prompt_type --dataset mmlu --model qwen/Qwen3-235B-A22B-Instruct-2507-tput --breakpoint $breakpoint 
+# CUDA_VISIBLE_DEVICES=$GPU run_with_retry python -m calibration.in_domain_calibration --prompt_type $prompt_type --dataset mmlu --model google/gemma-4-31B-it --breakpoint $breakpoint --re_estimate_lc True
+# CUDA_VISIBLE_DEVICES=$GPU run_with_retry python -m calibration.in_domain_calibration --prompt_type $prompt_type --dataset mmlu --model openai/gpt-oss-120b --breakpoint $breakpoint --re_estimate_lc True
+CUDA_VISIBLE_DEVICES=$GPU run_with_retry python -m calibration.in_domain_calibration --prompt_type $prompt_type --dataset mmlu --model qwen/Qwen3-235B-A22B-Instruct-2507-tput --breakpoint $breakpoint --re_estimate_lc True

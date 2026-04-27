@@ -23,6 +23,7 @@ argparser.add_argument("--model", type=str, required=True, help="Path to token p
 argparser.add_argument("--breakpoint", type=str, choices=["hedge", "eval", "metrics"], help="Whether to set a breakpoint after loading results for debugging.")
 argparser.add_argument("--prompt_type", type=str, choices=["direct_qa", "hedged_qa"], default="direct_qa", help="Type of prompts to use.")
 argparser.add_argument("--top_k", type=int, default=5, help="Top-k hedging words to retrieve.")
+argparser.add_argument("--re_estimate_lc", type=bool, default=False, help="Whether to re-estimate the original linguistic confidence.")
 
 BETA_GUIDED_PROMPT = """
 Given an original response and a Beta distribtution, rewrite the response to appropriately reflect the confidence level indicated by the given Beta distribution by using hedging language. 
@@ -34,6 +35,39 @@ Target Beta distribution: ```Beta(alpha={alpha:.2f}, beta={beta:.2f})```
 Please return only the rewritten sentence without any explanation.
 New response: 
 """
+
+# evaluate rewritten outputs
+eval_cfg = {
+    "lc_eval_0": {
+        "backend": "vllm",
+        "name": "qwen/Qwen3-8B",
+        "max_model_len": 10240,
+        "temperature": 1.0,
+        "max_tokens": 256,
+        "repeat": 3,
+        "reasoning_effort": None,
+    },
+    "lc_eval_1": {
+        "backend": "vllm",
+        "name": "meta-llama/Llama-3.1-8B-Instruct",
+        "max_model_len": 10240,
+        "temperature": 1.0,
+        "max_tokens": 256,
+        "repeat": 3,
+        "reasoning_effort": "low",
+    },
+    "lc_eval_2": {
+        "backend": "vllm",
+        "name": "mistralai/Mistral-7B-Instruct-v0.3",
+        "max_model_len": 10240,
+        "temperature": 1.0,
+        "max_tokens": 256,
+        "repeat": 3,
+        "reasoning_effort": "low",
+    },
+}
+
+evaluator_keys = ["lc_eval_0", "lc_eval_1", "lc_eval_2"]
 
 def load_pickled_results(dir, filename):
     with open(os.path.join(dir, filename), "rb") as f:
@@ -107,7 +141,7 @@ if __name__ == "__main__":
     prompt_type = args.prompt_type
     top_k = args.top_k
 
-    signal_calibration_method = "platt_uni" 
+    signal_calibration_method = "platt_uni"  # "hist_bin" or "platt_uni"
 
     ling_path = get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/{prompt_type}_unified_lc/{args.model}/")
     tp_path = get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/{prompt_type}_unified_tp/{args.model}/")
@@ -121,15 +155,59 @@ if __name__ == "__main__":
     os.makedirs(save_dir, exist_ok=True)
 
     df = pd.DataFrame({
-        "accuracy": [0.0 if (a is None or (isinstance(a, float) and np.isnan(a))) else a for a in linguistic_confidence_cache.accuracy_scores[0]],
+        "accuracy": [0 if (a is None or (isinstance(a, float) and np.isnan(a))) else a for a in linguistic_confidence_cache.accuracy_scores[0]],
         "original_response": linguistic_confidence_cache.extracted_answers[0],
         "original_lc": linguistic_confidence_cache.extracted_confidences[0],
         "original_tp": tp_signal_cache.extracted_confidences[0],
         "original_su": su_signal_cache.extracted_confidences[0],
     })
 
+    df["original_response"] = df["original_response"].apply(lambda x: None if x == "" or x is None or (isinstance(x, str) and len(x.strip()) == 0) else x)
+    df["accuracy"] = df["accuracy"].apply(lambda x: None if (x != 0 and x != 1) else x)  # keep 0/1, but convert NaN or None to NaN
+
     df.dropna(inplace=True)
 
+    print(df.head())
+
+    # print the mean accuracy and mean lc, tp, su
+    
+    if args.re_estimate_lc:
+        reestimate_cache_file = os.path.join(save_dir, "reestimated_original_lc.pkl")
+        estimated_lc = None
+
+        if os.path.exists(reestimate_cache_file):
+            with open(reestimate_cache_file, "rb") as f:
+                cached_estimated_lc = pickle.load(f)
+            if len(cached_estimated_lc) == len(df):
+                estimated_lc = cached_estimated_lc
+                print(f"Loaded cached re-estimated original_lc: {len(estimated_lc)}")
+            else:
+                print(
+                    "Cache length mismatch for re-estimated original_lc "
+                    f"({len(cached_estimated_lc)} != {len(df)}). Recomputing."
+                )
+
+        if estimated_lc is None:
+            print("Re-estimating original linguistic confidence from responses and accuracies...")
+            estimated_lc = estimate_linguistic_confidence(
+                responses=df["original_response"].tolist(),
+                target_means=[0.99] * len(df),
+                evaluators_cfg=eval_cfg,
+                evaluator_keys=evaluator_keys,
+            )
+            with open(reestimate_cache_file, "wb") as f:
+                pickle.dump(estimated_lc, f)
+            print(f"Saved re-estimated original_lc to {reestimate_cache_file}")
+
+        df["original_lc"] = estimated_lc
+
+    mean_accuracy = df["accuracy"].mean()
+    mean_lc = df["original_lc"].apply(lambda x: x.mu if x is not None else np.nan).mean()
+    mean_tp = df["original_tp"].apply(lambda x: x.mu if x is not None else np.nan).mean()
+    mean_su = df["original_su"].apply(lambda x: x.mu if x is not None else np.nan).mean()
+
+    print(mean_accuracy, mean_lc, mean_tp, mean_su)
+    
     # df = df.iloc[:100]  # limit to 100 samples for faster debugging; remove or adjust as needed
 
     # apply numerical post hoc calibration (cache-aware)

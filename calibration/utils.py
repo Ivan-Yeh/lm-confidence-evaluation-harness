@@ -10,8 +10,9 @@ from scipy.optimize import minimize
 from scipy.special import betaln, digamma, betainc, expit
 from linguistic_confidence_lexicon.linguistic_calibrator import find_closest_hedging_words
 from lm_conf.confidence_metrics.distributionals import BetaDistribution
-from lm_conf.default_utils.custom_types import PromptCollection
+from lm_conf.default_utils.custom_types import OrganisedOutputs, PromptCollection
 from lm_conf.models.model_manager import ModelManager
+from lm_conf.post_processing.metrics import faithfulness_divergence, generalised_ece
 
 
 MIN_ALPHA_BETA = 1e-4    # floor for alpha/beta; keeps Beta pdf well-defined
@@ -20,7 +21,7 @@ MAX_KAPPA      = 1_000.0 # cap on kappa=alpha+beta; above this the Beta pdf is
 MU_EPS         = 1e-6
 MIN_KAPPA      = 2.0 * MIN_ALPHA_BETA
 
-LINGUISTIC_LEXICON_PATH = "linguistic_confidence_lexicon/hedging_word_scores.csv"
+LINGUISTIC_LEXICON_PATH = "/home/ivan/lm-confidence-evaluation-harness/linguistic_confidence_lexicon/hedging_word_scores.csv"
 LEXICON = pd.read_csv(LINGUISTIC_LEXICON_PATH)
 LEXICON["alpha_param"] = LEXICON["alpha_param"].astype(float).clip(MIN_ALPHA_BETA)
 LEXICON["beta_param"] = LEXICON["beta_param"].astype(float).clip(MIN_ALPHA_BETA)
@@ -41,7 +42,7 @@ New response:
 """.strip()
 
 
-human_annotated_cues = pd.read_csv(os.path.join("linguistic_confidence_lexicon", "hedging_word_aggregated.csv"))[["hedging_word", "mean", "std"]]
+human_annotated_cues = pd.read_csv(os.path.join("/home/ivan/lm-confidence-evaluation-harness/linguistic_confidence_lexicon", "hedging_word_aggregated.csv"))[["hedging_word", "mean", "std"]]
 human_annotated_cues["mean"] *= 100.0
 human_annotated_cues["std"] *= 100.0
 human_annotated_cues = human_annotated_cues.sort_values("mean").round(2).to_dict(orient="records")
@@ -582,6 +583,40 @@ def compute_faithfulness_divergence(
     }
 
 
+def _print_signal_metrics_from_lists(
+    label: str,
+    accuracies: list[float | int] | np.ndarray,
+    confidences: list[BetaDistribution | None],
+) -> None:
+    valid_acc: list[float] = []
+    valid_conf: list[BetaDistribution] = []
+
+    for acc, conf in zip(accuracies, confidences):
+        if conf is None:
+            continue
+        try:
+            acc_f = float(acc) if acc != "" else np.nan
+        except (TypeError, ValueError):
+            continue
+        if not np.isfinite(acc_f):
+            continue
+        valid_acc.append(acc_f)
+        valid_conf.append(conf)
+
+    if not valid_acc:
+        print(f"[{label}] no valid rows for metric computation")
+        return
+
+    organised_output = OrganisedOutputs(
+        accuracy_scores=[valid_acc],
+        extracted_confidences=[valid_conf],
+        extracted_answers=[[""] * len(valid_acc)],
+    )
+    ece_val = generalised_ece({}, organised_output)[0]
+    fd_val = faithfulness_divergence({}, organised_output)[0]
+    print(f"[{label}] n={len(valid_acc)} | ECE={ece_val:.6f} | FD={fd_val:.6f}")
+
+
 # =============================================================================
 # IN-DOMAIN CALIBRATION
 # =============================================================================
@@ -637,6 +672,10 @@ def in_domain_numerical_post_hoc_calibration(
             y_train,
         )
         print(f"[min_ece] h*={h_star:.4f}  α*={alpha_star:.4f}  β*={beta_star:.4f}")
+        train_calibrated = _apply_min_ece_calibration(
+            list(confidences[:train_size]), alpha_star, beta_star
+        )
+        _print_signal_metrics_from_lists("min_ece_train_calibrated", y_train, train_calibrated)
         calibrated_betas.extend(
             _apply_min_ece_calibration(test_confidences, alpha_star, beta_star)
         )
@@ -653,6 +692,21 @@ def in_domain_numerical_post_hoc_calibration(
         kappa_tr    = train_kappa[valid_mask].clip(MIN_KAPPA, MAX_KAPPA)
         bin_accs    = _fit_soft_hist_bins(mu_tr, kappa_tr, y_train[valid_mask], 20)
         print(f"[hist_bin] bin_accuracies={np.round(bin_accs, 3).tolist()}")
+
+        train_calibrated: list[BetaDistribution | None] = []
+        for conf in train_confs:
+            if conf is None:
+                train_calibrated.append(None)
+                continue
+            kappa = _safe_kappa(conf)
+            if kappa is None:
+                train_calibrated.append(conf)
+                continue
+            mu_i = float(np.clip(conf.mu, MU_EPS, 1.0 - MU_EPS))
+            kap_i = float(np.clip(kappa, MIN_KAPPA, MAX_KAPPA))
+            mu_p = float(np.clip(_apply_soft_hist_bin(mu_i, kap_i, bin_accs), MU_EPS, 1.0 - MU_EPS))
+            train_calibrated.append(_rebuild_with_consistent_sigma(mu_p, conf))
+        _print_signal_metrics_from_lists("hist_bin_train_calibrated", y_train, train_calibrated)
 
         for conf in test_confidences:
             if conf is None:
@@ -672,11 +726,15 @@ def in_domain_numerical_post_hoc_calibration(
     elif method == "isotonic":
         calibrator = IsotonicRegression(out_of_bounds="clip")
         calibrator.fit(mu_values[:train_size], y_train)
+        calibrated_means_train = calibrator.predict(mu_values[:train_size])
         calibrated_means = calibrator.predict(X_test_mu)
 
     elif method == "platt_uni":
         calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
         calibrator.fit(mu_values[:train_size].reshape(-1, 1), y_train)
+        calibrated_means_train = calibrator.predict_proba(
+            mu_values[:train_size].reshape(-1, 1)
+        )[:, 1]
         calibrated_means = calibrator.predict_proba(
             X_test_mu.reshape(-1, 1)
         )[:, 1]
@@ -686,6 +744,7 @@ def in_domain_numerical_post_hoc_calibration(
         X_te = np.column_stack([X_test_mu, X_test_sigma])
         calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
         calibrator.fit(X_tr, y_train)
+        calibrated_means_train = calibrator.predict_proba(X_tr)[:, 1]
         calibrated_means = calibrator.predict_proba(X_te)[:, 1]
 
     elif method == "two_stage_isotonic":
@@ -727,6 +786,21 @@ def in_domain_numerical_post_hoc_calibration(
                 f"κ ≤ {kappa_qs[b_idx] if b_idx < B - 1 else '∞'}, "
                 f"n={int(mask.sum())}"
             )
+
+        train_calibrated: list[BetaDistribution | None] = []
+        for conf in train_confs:
+            if conf is None:
+                train_calibrated.append(None)
+                continue
+            kappa = _safe_kappa(conf)
+            if kappa is None:
+                train_calibrated.append(conf)
+                continue
+            b_idx = _assign_bin(kappa)
+            reg = bin_regressors[b_idx]
+            mu_prime = float(reg.predict(np.array([conf.mu]))[0]) if reg is not None else conf.mu
+            train_calibrated.append(_rebuild_with_consistent_sigma(mu_prime, conf))
+        _print_signal_metrics_from_lists("two_stage_isotonic_train_calibrated", y_train, train_calibrated)
 
         for conf in test_confidences:
             if conf is None:
@@ -781,6 +855,31 @@ def in_domain_numerical_post_hoc_calibration(
         print(f"[ece_fd_opt] w_kap={w_kap:.4f}  b_kap={b_kap:.4f}  "
               f"w_mu={w_mu:.4f}  b_mu={b_mu:.4f}  loss={res.fun:.6f}")
 
+        train_calibrated: list[BetaDistribution | None] = []
+        for conf in train_confs:
+            if conf is None:
+                train_calibrated.append(None)
+                continue
+            kappa = _safe_kappa(conf)
+            if kappa is None:
+                train_calibrated.append(conf)
+                continue
+            mu_i = float(np.clip(conf.mu, MU_EPS, 1.0 - MU_EPS))
+            kap_i = float(np.clip(kappa, MIN_KAPPA, MAX_KAPPA))
+            kap_p = float(
+                np.clip(
+                    np.exp(np.clip(w_kap * np.log(kap_i) + b_kap, -20.0, 20.0)),
+                    MIN_KAPPA,
+                    MAX_KAPPA,
+                )
+            )
+            mu_p = float(expit(w_mu * np.log(mu_i / (1.0 - mu_i)) + b_mu).clip(MU_EPS, 1.0 - MU_EPS))
+            a_p = max(mu_p * kap_p, MIN_ALPHA_BETA)
+            b_p = max((1.0 - mu_p) * kap_p, MIN_ALPHA_BETA)
+            mu_out, sigma_out = _to_mu_sigma(a_p, b_p)
+            train_calibrated.append(BetaDistribution(mu=mu_out, sigma=sigma_out))
+        _print_signal_metrics_from_lists("ece_fd_opt_train_calibrated", y_train, train_calibrated)
+
         for conf in test_confidences:
             if conf is None:
                 calibrated_betas.append(None)
@@ -803,6 +902,14 @@ def in_domain_numerical_post_hoc_calibration(
 
     else:
         raise ValueError(f"Unknown calibration method: {method!r}")
+
+    train_calibrated: list[BetaDistribution | None] = []
+    for cal_mu, orig_beta in zip(calibrated_means_train, confidences[:train_size]):
+        if orig_beta is None:
+            train_calibrated.append(None)
+        else:
+            train_calibrated.append(_rebuild_with_consistent_sigma(cal_mu, orig_beta))
+    _print_signal_metrics_from_lists(f"{method}_train_calibrated", y_train, train_calibrated)
 
     for cal_mu, orig_beta in zip(calibrated_means, test_confidences):
         if orig_beta is None:
