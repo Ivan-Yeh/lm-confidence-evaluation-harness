@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import re
 import gc
-from scipy.optimize import minimize
+from scipy.optimize import minimize, minimize_scalar
 from scipy.special import betaln, digamma, betainc, expit
 from linguistic_confidence_lexicon.linguistic_calibrator import find_closest_hedging_words
 from lm_conf.confidence_metrics.distributionals import BetaDistribution
@@ -747,6 +747,31 @@ def in_domain_numerical_post_hoc_calibration(
         calibrated_means_train = calibrator.predict_proba(X_tr)[:, 1]
         calibrated_means = calibrator.predict_proba(X_te)[:, 1]
 
+    elif method == "temperature_scaling":
+        mu_tr_raw = mu_values[:train_size]
+        valid_tr = np.isfinite(mu_tr_raw) & np.isfinite(acc_values[:train_size])
+        mu_tr = mu_tr_raw[valid_tr].clip(MU_EPS, 1.0 - MU_EPS)
+        y_tr_ts = acc_values[:train_size][valid_tr]
+        logit_tr = np.log(mu_tr / (1.0 - mu_tr))
+
+        def _ts_nll(log_T: float) -> float:
+            p = expit(logit_tr / np.exp(log_T)).clip(1e-9, 1.0 - 1e-9)
+            return float(-np.mean(y_tr_ts * np.log(p) + (1.0 - y_tr_ts) * np.log(1.0 - p)))
+
+        if len(mu_tr) >= 2:
+            res = minimize_scalar(_ts_nll, bounds=(-4.0, 4.0), method="bounded")
+            T_star = float(np.exp(res.x)) if np.isfinite(res.x) else 1.0
+        else:
+            T_star = 1.0
+        print(f"[temperature_scaling] T*={T_star:.4f}")
+
+        mu_tr_full = mu_tr_raw.clip(MU_EPS, 1.0 - MU_EPS)
+        np.nan_to_num(mu_tr_full, nan=0.5, copy=False)
+        calibrated_means_train = expit(np.log(mu_tr_full / (1.0 - mu_tr_full)) / T_star)
+        X_te_clipped = np.where(np.isfinite(X_test_mu), X_test_mu, 0.5).clip(MU_EPS, 1.0 - MU_EPS)
+        logit_te = np.log(X_te_clipped / (1.0 - X_te_clipped))
+        calibrated_means = expit(logit_te / T_star)
+
     elif method == "two_stage_isotonic":
         B = 3
         train_confs = list(confidences[:train_size])
@@ -800,7 +825,7 @@ def in_domain_numerical_post_hoc_calibration(
             reg = bin_regressors[b_idx]
             mu_prime = float(reg.predict(np.array([conf.mu]))[0]) if reg is not None else conf.mu
             train_calibrated.append(_rebuild_with_consistent_sigma(mu_prime, conf))
-        _print_signal_metrics_from_lists("two_stage_isotonic_train_calibrated", y_train, train_calibrated)
+        # _print_signal_metrics_from_lists("two_stage_isotonic_train_calibrated", y_train, train_calibrated)
 
         for conf in test_confidences:
             if conf is None:
@@ -878,7 +903,7 @@ def in_domain_numerical_post_hoc_calibration(
             b_p = max((1.0 - mu_p) * kap_p, MIN_ALPHA_BETA)
             mu_out, sigma_out = _to_mu_sigma(a_p, b_p)
             train_calibrated.append(BetaDistribution(mu=mu_out, sigma=sigma_out))
-        _print_signal_metrics_from_lists("ece_fd_opt_train_calibrated", y_train, train_calibrated)
+        # _print_signal_metrics_from_lists("ece_fd_opt_train_calibrated", y_train, train_calibrated)
 
         for conf in test_confidences:
             if conf is None:
@@ -909,7 +934,7 @@ def in_domain_numerical_post_hoc_calibration(
             train_calibrated.append(None)
         else:
             train_calibrated.append(_rebuild_with_consistent_sigma(cal_mu, orig_beta))
-    _print_signal_metrics_from_lists(f"{method}_train_calibrated", y_train, train_calibrated)
+    # _print_signal_metrics_from_lists(f"{method}_train_calibrated", y_train, train_calibrated)
 
     for cal_mu, orig_beta in zip(calibrated_means, test_confidences):
         if orig_beta is None:
@@ -1020,6 +1045,25 @@ def cross_domain_numerical_post_hoc_calibration(
         calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
         calibrator.fit(X_tr, acc_train)
         calibrated_means = calibrator.predict_proba(X_te)[:, 1]
+
+    elif method == "temperature_scaling":
+        valid_cd = np.isfinite(mu_train) & np.isfinite(acc_train)
+        mu_tr_cd = mu_train[valid_cd].clip(MU_EPS, 1.0 - MU_EPS)
+        y_tr_cd = acc_train[valid_cd]
+        logit_tr_cd = np.log(mu_tr_cd / (1.0 - mu_tr_cd))
+
+        def _ts_nll_cd(log_T: float) -> float:
+            p = expit(logit_tr_cd / np.exp(log_T)).clip(1e-9, 1.0 - 1e-9)
+            return float(-np.mean(y_tr_cd * np.log(p) + (1.0 - y_tr_cd) * np.log(1.0 - p)))
+
+        if len(mu_tr_cd) >= 2:
+            res = minimize_scalar(_ts_nll_cd, bounds=(-4.0, 4.0), method="bounded")
+            T_star = float(np.exp(res.x)) if np.isfinite(res.x) else 1.0
+        else:
+            T_star = 1.0
+        print(f"[temperature_scaling] T*={T_star:.4f}")
+        mu_raw_safe = np.where(np.isfinite(mu_raw), mu_raw, 0.5).clip(MU_EPS, 1.0 - MU_EPS)
+        calibrated_means = expit(np.log(mu_raw_safe / (1.0 - mu_raw_safe)) / T_star)
 
     elif method == "two_stage_isotonic":
         B = 3
