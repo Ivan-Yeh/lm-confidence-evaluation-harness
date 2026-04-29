@@ -72,12 +72,7 @@ if __name__ == "__main__":
 
     print("Breakpoint set to:", args.breakpoint)
 
-    if os.path.exists("/hdd"):
-        print("Using /hdd/ivny as common directory for results.")
-        common_dir = "/hdd/ivny"
-    else:
-        print("Using ivny as common directory for results.")
-        common_dir = "ivny"
+    common_dir = "cross_domain_calibration_results"
 
     ling_train_path = get_latest_leaf_node(f"{common_dir}/results/{args.train}/{prompt_type}_unified_lc/{args.model}/")
     tp_train_path = get_latest_leaf_node(f"{common_dir}/results/{args.train}/{prompt_type}_unified_tp/{args.model}/")

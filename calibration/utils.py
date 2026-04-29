@@ -21,7 +21,7 @@ MAX_KAPPA      = 1_000.0 # cap on kappa=alpha+beta; above this the Beta pdf is
 MU_EPS         = 1e-6
 MIN_KAPPA      = 2.0 * MIN_ALPHA_BETA
 
-LINGUISTIC_LEXICON_PATH = "/home/ivan/lm-confidence-evaluation-harness/linguistic_confidence_lexicon/hedging_word_scores.csv"
+LINGUISTIC_LEXICON_PATH = "~/lm-confidence-evaluation-harness/linguistic_confidence_lexicon/hedging_word_scores.csv"
 LEXICON = pd.read_csv(LINGUISTIC_LEXICON_PATH)
 LEXICON["alpha_param"] = LEXICON["alpha_param"].astype(float).clip(MIN_ALPHA_BETA)
 LEXICON["beta_param"] = LEXICON["beta_param"].astype(float).clip(MIN_ALPHA_BETA)
@@ -42,7 +42,7 @@ New response:
 """.strip()
 
 
-human_annotated_cues = pd.read_csv(os.path.join("/home/ivan/lm-confidence-evaluation-harness/linguistic_confidence_lexicon", "hedging_word_aggregated.csv"))[["hedging_word", "mean", "std"]]
+human_annotated_cues = pd.read_csv(os.path.join("~/lm-confidence-evaluation-harness/linguistic_confidence_lexicon", "hedging_word_aggregated.csv"))[["hedging_word", "mean", "std"]]
 human_annotated_cues["mean"] *= 100.0
 human_annotated_cues["std"] *= 100.0
 human_annotated_cues = human_annotated_cues.sort_values("mean").round(2).to_dict(orient="records")

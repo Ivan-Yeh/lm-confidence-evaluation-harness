@@ -131,12 +131,7 @@ if __name__ == "__main__":
 
     print("Breakpoint set to:", args.breakpoint)
 
-    if os.path.exists("/hdd"):
-        print("Using /hdd/ivny as common directory for results.")
-        common_dir = "/hdd/ivny"
-    else:
-        print("Using ivny as common directory for results.")
-        common_dir = "ivny"
+    common_dir = "in_domain_calibration_results"
 
     prompt_type = args.prompt_type
     top_k = args.top_k

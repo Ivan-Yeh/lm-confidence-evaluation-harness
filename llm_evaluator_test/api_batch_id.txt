@@ -1,3 +1,0 @@
-{'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8': ['a236e03e-42cd-4cd1-8f88-c22bb5f56307'],
- 'Qwen/Qwen3-235B-A22B-Instruct-2507-tput': ['31e45d79-f737-4d23-8d5d-b5dc20e8d32e'],
- 'openai/gpt-oss-120b': ['0c237597-631f-4504-8e90-c5a8e53065e7']}
