@@ -34,16 +34,16 @@ def find_closest_hedging_words(
 
     Two-stage retrieval:
       1. Shortlist `shortlist_k` candidates by |target_mean - lexicon_mean|.
-      2. Re-rank the shortlist with Wasserstein-2 distance and return top_k.
+      2. Re-rank the shortlist with Wasserstein-1 distance and return top_k.
 
     Args:
         target_alpha:  alpha parameter of target Beta distribution
         target_beta:   beta parameter of target Beta distribution
         lexicon_df:    DataFrame with hedging words and their beta parameters
         top_k:         number of results to return
-        shortlist_k:   size of mean-distance shortlist fed into W2 ranking
-        sample_size:   MC samples per candidate for W2 estimation
-        n_jobs:        worker processes for W2 computation (1 = sequential)
+        shortlist_k:   size of mean-distance shortlist fed into W1 ranking
+        sample_size:   MC samples per candidate for W1 estimation
+        n_jobs:        worker processes for W1 computation (1 = sequential)
 
     Returns:
         DataFrame with top_k rows sorted by wasserstein_distance.
@@ -72,7 +72,7 @@ def find_closest_hedging_words(
     records.sort(key=lambda r: abs(r[3] - target_mean))
     shortlist = records[:shortlist_k]
 
-    # --- Stage 2: re-rank shortlist by Wasserstein-2 distance ---
+    # --- Stage 2: re-rank shortlist by Wasserstein-1 distance ---
     rng = np.random.default_rng()
     target_samples = beta.rvs(target_alpha, target_beta, size=sample_size, random_state=rng)
 
