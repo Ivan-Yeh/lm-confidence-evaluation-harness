@@ -181,7 +181,7 @@ bp2 = ax.boxplot(
 )
 
 ax.set_yticks(positions)
-ax.set_yticklabels(selected_df["expression"].tolist(), fontsize=9)
+ax.set_yticklabels(selected_df["expression"].tolist(), fontsize=12)
 ax.set_xlabel("Confidence Score (%)", fontsize=12)
 ax.legend([bp1["boxes"][0], bp2["boxes"][0]], ["LLM Evaluator", "Human Annotated"], fontsize=11)
 ax.set_xlim(0, 100)
