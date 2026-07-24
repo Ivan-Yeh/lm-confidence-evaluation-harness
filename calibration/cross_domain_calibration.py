@@ -17,6 +17,39 @@ argparser.add_argument("--test", type=str, required=True, help="Test dataset nam
 argparser.add_argument("--model", type=str, required=True, help="Path to token probability cache as underlying signal.")
 argparser.add_argument("--breakpoint", type=str, choices=["hedge", "eval", "metrics"], help="Whether to set a breakpoint after loading results for debugging.")
 argparser.add_argument("--prompt_type", type=str, choices=["direct_qa", "hedged_qa"], default="direct_qa", help="Type of prompts to use.")
+argparser.add_argument("--re_estimate_lc", type=bool, default=False, help="Whether to re-estimate the original linguistic confidence on the test set.")
+
+
+eval_cfg = {
+    "lc_eval_0": {
+        "backend": "vllm",
+        "name": "qwen/Qwen3-8B",
+        "max_model_len": 2048,
+        "temperature": 1.0,
+        "max_tokens": 256,
+        "repeat": 3,
+        "reasoning_effort": None,
+    },
+    "lc_eval_1": {
+        "backend": "vllm",
+        "name": "meta-llama/Llama-3.1-8B-Instruct",
+        "max_model_len": 2048,
+        "temperature": 1.0,
+        "max_tokens": 256,
+        "repeat": 3,
+        "reasoning_effort": "low",
+    },
+    "lc_eval_2": {
+        "backend": "vllm",
+        "name": "mistralai/Mistral-7B-Instruct-v0.3",
+        "max_model_len": 2048,
+        "temperature": 1.0,
+        "max_tokens": 256,
+        "repeat": 3,
+        "reasoning_effort": "low",
+    },
+}
+evaluator_keys = ["lc_eval_0", "lc_eval_1", "lc_eval_2"]
 
 
 def load_pickled_results(dir, filename):
@@ -88,6 +121,36 @@ if __name__ == "__main__":
     start_idx = int(len(test_df) * 0.3)
     test_df = test_df.iloc[start_idx:].reset_index(drop=True)
     print(f"Using last 70% of test_df: {len(test_df)} rows")
+
+    if args.re_estimate_lc:
+        reestimate_cache_file = os.path.join(save_dir, "reestimated_original_lc.pkl")
+        estimated_lc = None
+
+        if os.path.exists(reestimate_cache_file):
+            with open(reestimate_cache_file, "rb") as f:
+                cached_estimated_lc = pickle.load(f)
+            if len(cached_estimated_lc) == len(test_df):
+                estimated_lc = cached_estimated_lc
+                print(f"Loaded cached re-estimated original_lc: {len(estimated_lc)}")
+            else:
+                print(
+                    "Cache length mismatch for re-estimated original_lc "
+                    f"({len(cached_estimated_lc)} != {len(test_df)}). Recomputing."
+                )
+
+        if estimated_lc is None:
+            print("Re-estimating original linguistic confidence from test responses...")
+            estimated_lc = estimate_linguistic_confidence(
+                responses=test_df["original_response"].tolist(),
+                target_means=[0.99] * len(test_df),
+                evaluators_cfg=eval_cfg,
+                evaluator_keys=evaluator_keys,
+            )
+            with open(reestimate_cache_file, "wb") as f:
+                pickle.dump(estimated_lc, f)
+            print(f"Saved re-estimated original_lc to {reestimate_cache_file}")
+
+        test_df["original_lc"] = estimated_lc
 
     # === Cross-domain calibration for all signals (lc, tp, su) ===
     # 1. Train calibration map using cross_domain_numerical_post_hoc_calibration
@@ -260,36 +323,6 @@ if __name__ == "__main__":
         test_df[target["rewrite_col"]] = cached_rewrites[target["rewrite_col"]]
 
     # 4. Evaluate rewritten responses using multiple evaluators (on test set)
-    eval_cfg = {
-        "lc_eval_0": {
-            "backend": "vllm",
-            "name": "qwen/Qwen3-8B",
-            "max_model_len": 2048,
-            "temperature": 1.0,
-            "max_tokens": 256,
-            "repeat": 3,
-            "reasoning_effort": None,
-        },
-        "lc_eval_1": {
-            "backend": "vllm",
-            "name": "meta-llama/Llama-3.1-8B-Instruct",
-            "max_model_len": 2048,
-            "temperature": 1.0,
-            "max_tokens": 256,
-            "repeat": 3,
-            "reasoning_effort": "low",
-        },
-        "lc_eval_2": {
-            "backend": "vllm",
-            "name": "mistralai/Mistral-7B-Instruct-v0.3",
-            "max_model_len": 2048,
-            "temperature": 1.0,
-            "max_tokens": 256,
-            "repeat": 3,
-            "reasoning_effort": "low",
-        },
-    }
-    evaluator_keys = ["lc_eval_0", "lc_eval_1", "lc_eval_2"]
     confidence_targets = []
     for signal in ["lc", "tp", "su"]:
         conf_col = f"calibrated_{signal}"
