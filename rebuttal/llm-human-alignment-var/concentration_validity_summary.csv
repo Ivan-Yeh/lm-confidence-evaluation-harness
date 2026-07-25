@@ -1,0 +1,11 @@
+Test,Statistic,Result,Interpretation
+1. Non-uniformity,Levene F = 14.73,< 1e-10,Spread is heterogeneous across expressions (not an artifact)
+1. Non-uniformity,Bartlett χ² = 3240.78,< 1e-10,Confirmed by Bartlett test
+1. Non-uniformity,CV of σ_LLM = 0.458,—,Spread itself varies substantially across expressions
+2. Partial corr (σ),ρ_raw = 0.5560  →  ρ_partial = 0.4824,1.21e-10,Survives after controlling for expression mean (not a ceiling effect)
+2. Partial corr (CV),ρ_raw = 0.7211  →  ρ_partial = 0.4012,1.59e-07,CV partial correlation remains significant
+3. Subsample n=3 (σ),"median ρ = 0.3249  95%CI [0.200,0.442]",—,Correlation persists when matched to human annotator count
+3. Subsample n=3 (CV),"median ρ = 0.4749  95%CI [0.368,0.572]",—,CV correlation robust to n=3 subsampling
+3. Subsample n=3 (κ),"median ρ = 0.1718  95%CI [0.036,0.302]",—,Concentration correlation robust to n=3 subsampling
+4. Decomp: Between-model,Spearman ρ = -0.1413,0.0756,Systematic model disagreement tracks human disagreement
+4. Decomp: Within-model,Spearman ρ = 0.6512,< 1e-10,Stochastic (pass-to-pass) noise — compare to between-model

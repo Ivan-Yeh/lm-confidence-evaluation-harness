@@ -1,0 +1,23 @@
+Section,Test,Statistic,p-value
+A. Variance correlation (σ),Spearman ρ,0.5560,< 1e-10
+A. Variance correlation (σ),Pearson r,0.6975,< 1e-10
+A. Variance correlation (σ),Kendall τ,0.4078,< 1e-10
+A. Variance correlation (CV),Spearman ρ,0.7211,< 1e-10
+A. Variance correlation (CV),Pearson r,0.6111,< 1e-10
+A. Variance correlation (CV),Kendall τ,0.5459,< 1e-10
+A. Bland–Altman on σ,Bias (LLM σ − Human σ),"+0.02266  LoA [-0.09531, +0.14064]",—
+A. Bland–Altman on σ,% within LoA,95.6%,—
+A. Wilcoxon on σ,H₀: median σ_LLM = σ_Human,W = 3027.0,9.94e-09
+A. Wilcoxon on CV,H₀: median CV_LLM = CV_Human,W = 4746.0,0.0055
+B. Per-expression scale (FDR),Levene's test (BH α=0.05),32/159 (20.1%) sig.,—
+B. Per-expression scale (FDR),Fligner–Killeen test (BH α=0.05),32/159 (20.1%) sig.,—
+B. Per-expression scale (FDR),Ansari–Bradley test (BH α=0.05),53/159 (33.3%) sig.,—
+B. Variance ratio,Median σ²_LLM / σ²_Human,1.8970,—
+B. Variance ratio,"% within [0.5, 2.0] ratio",43.7%,—
+C. Beta concentration κ,Spearman ρ (κ_LLM vs κ_Human),0.3581,3.57e-06
+C. Beta concentration κ,Pearson r,-0.0174,0.8276
+C. Beta concentration κ,Kendall τ,0.2529,2.23e-06
+C. Beta concentration κ,Wilcoxon (H₀: κ_LLM = κ_Human),W = 1250.0,< 1e-10
+C. Beta concentration κ,Median κ_LLM / κ_Human,LLM=11.10  Human=35.19,—
+D. Global variance,"F-test (pooled, classical)",F = 0.7766  (ratio = 0.7766),< 1e-10
+D. Global variance,Permutation test (n=10 000),ratio = 0.7766,< 1e-10
