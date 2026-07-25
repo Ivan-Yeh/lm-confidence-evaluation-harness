@@ -101,10 +101,16 @@ if __name__ == "__main__":
     # load config
     dataset_name, task_name, cfg = get_task_yaml()
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    if os.path.exists("/hdd"):
-        path = f"/hdd/ivny/results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
-    else:
-        path = f"ivny/results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
+    # Rebuttal rerun: write under a dedicated tree so this never collides with
+    # (or gets picked up by) production /hdd/ivny/results/ runs of the same
+    # dataset/task/model. Falls back to a local results/ dir under this
+    # rebuttal/re-runs copy if /hdd/ivny/re-runs isn't writable.
+    RERUNS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    try:
+        os.makedirs("/hdd/ivny/re-runs/results", exist_ok=True)
+        path = f"/hdd/ivny/re-runs/results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
+    except OSError:
+        path = f"{RERUNS_ROOT}/results/{dataset_name}/{task_name}/{cfg.qa_model.name}/{timestamp}"
     os.makedirs(path, exist_ok=True)
     cfg["results_path"] = path
     logger = get_logger(__name__, log_file=f"{path}/task.log")

@@ -28,17 +28,20 @@ STAGE_ROW_TEMPLATES = {
     "post_rewritten": "calibrated_{signal}_rewritten_lc",
 }
 
-if os.path.exists("/hdd"):
-    common_dir = "/hdd/ivny"
-else:
-    common_dir = "ivny"
-
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Mirrors the common_dir logic in calibration/in_domain_calibration.py and
+# run_seed_chain.sh: a dedicated re-runs tree, separate from production
+# /hdd/ivny/results/.
+if os.path.isdir("/hdd/ivny/re-runs/results"):
+    common_dir = "/hdd/ivny/re-runs/results"
+else:
+    common_dir = os.path.join(SCRIPT_DIR, "results")
 
 
 def calib_csv_path(model: str, seed: int) -> str:
     return os.path.join(
-        common_dir, "rebuttal_reruns_in_domain_calibration", "truthful_qa",
+        common_dir, "in_domain_calibration", "truthful_qa",
         model, f"seed_{seed}", "calibration_performance.csv",
     )
 

@@ -12,7 +12,7 @@ class EntailmentDeberta():
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = AutoTokenizer.from_pretrained("microsoft/deberta-v2-xlarge-mnli")
         self.model = AutoModelForSequenceClassification.from_pretrained(
-            "microsoft/deberta-v2-xlarge-mnli", load_in_8bit=True, device_map="auto")
+            "microsoft/deberta-v2-xlarge-mnli", dtype=torch.float16).to(device)
 
     def check_implication(self, text1, text2):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

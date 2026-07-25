@@ -124,28 +124,33 @@ if __name__ == "__main__":
 
     print("Breakpoint set to:", args.breakpoint)
 
-    if os.path.exists("/hdd"):
-        print("Using /hdd/ivny as common directory for results.")
-        common_dir = "/hdd/ivny"
-    else:
-        print("Using ivny as common directory for results.")
-        common_dir = "ivny"
+    # Rebuttal rerun: read/write under a dedicated tree so this never collides
+    # with (or gets auto-discovered ahead of) production /hdd/ivny/results/ or
+    # /hdd/ivny/*_in_domain_calibration/ runs. Falls back to a local results/
+    # dir under this rebuttal/re-runs copy if /hdd/ivny/re-runs isn't writable.
+    RERUNS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    try:
+        os.makedirs("/hdd/ivny/re-runs/results", exist_ok=True)
+        common_dir = "/hdd/ivny/re-runs/results"
+    except OSError:
+        common_dir = f"{RERUNS_ROOT}/results"
+    print(f"Using {common_dir} as common directory for results.")
 
     prompt_type = args.prompt_type
     top_k = args.top_k
 
     signal_calibration_method = "platt_uni"  # "hist_bin" or "platt_uni"
 
-    ling_path = args.lc_path or get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/{prompt_type}_unified_lc/{args.model}/")
-    tp_path = args.tp_path or get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/{prompt_type}_unified_tp/{args.model}/")
-    su_path = args.su_path or get_latest_leaf_node(f"{common_dir}/results/{args.dataset}/{prompt_type}_unified_su/{args.model}/")
+    ling_path = args.lc_path or get_latest_leaf_node(f"{common_dir}/{args.dataset}/{prompt_type}_unified_lc/{args.model}/")
+    tp_path = args.tp_path or get_latest_leaf_node(f"{common_dir}/{args.dataset}/{prompt_type}_unified_tp/{args.model}/")
+    su_path = args.su_path or get_latest_leaf_node(f"{common_dir}/{args.dataset}/{prompt_type}_unified_su/{args.model}/")
     print(f"Using lc_path={ling_path}\n      tp_path={tp_path}\n      su_path={su_path}")
 
     linguistic_confidence_cache: OrganisedOutputs = load_pickled_results(ling_path, "graded_outputs_0.pkl")
     tp_signal_cache: OrganisedOutputs = load_pickled_results(tp_path, "graded_outputs_0.pkl")
     su_signal_cache: OrganisedOutputs = load_pickled_results(su_path, "graded_outputs_0.pkl")
 
-    save_dir = f"{common_dir}/rebuttal_reruns_in_domain_calibration/{args.dataset}/{args.model}/seed_{args.seed}/"
+    save_dir = f"{common_dir}/in_domain_calibration/{args.dataset}/{args.model}/seed_{args.seed}/"
     os.makedirs(save_dir, exist_ok=True)
 
     df = pd.DataFrame({

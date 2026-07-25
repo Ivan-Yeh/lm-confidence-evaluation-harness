@@ -12,7 +12,7 @@ the code for QA sampling is in `lm_conf/`, please focus on the distributional se
 The code for calibration is in `calibration/`
 
 Note that the LLM grader should stay as usual: gpt-oss-20b
-The LLM ensemble for linguistic confidence should also remain the same, made up with 3 models: openai/gpt-oss-20b, meta-llama/Llama-3.1-8B-Instruct, qwen/Qwen3-8B, each with 3 repeat, resulting in 9 scores. 
+The LLM ensemble for linguistic confidence should also remain the same, made up with 3 models:  Mistral-7B-Instruct-v0.3, Llama-3.1-8B-Instruct, Qwen3-8B, each with 3 repeat, resulting in 9 scores. 
 
 I need to have 5 independent sampling-calibration runs with 5 different seeds. we only need to run on Truthful QA with direct QA prompt with sematic uncertainty (su), linguistic confidence (lc) and token probability (tp). 
 
@@ -22,7 +22,7 @@ If you need to edit code or task yaml files, copy them to `rebuttal/re-runs/` to
 
 please use appropriate number of agents to optimise the use of GPUs as many people may race to use them, so try to schedule GPU time together so our usage and runs won't be interrupted. 
 
-Please note that if caching is not available in /hdd, please cache and save results in `rebuttal/re-runs/results/` with appropriate naming so we can analyse each run later (or potentially reproduce results). 
+Please note that if caching is not available in `/hdd/ivny/re-runs/results/`, please cache and save results in `rebuttal/re-runs/results/` with appropriate naming so we can analyse each run later (or potentially reproduce results). 
 
 finally, tabulate the results of each run (generalised ECE and Faithfulness divergence) pre and post hoc (in-domain) and save as CSVs in the same directory. 
 

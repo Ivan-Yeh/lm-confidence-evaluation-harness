@@ -50,11 +50,13 @@ ROUNDS=1
 MAX_TOKENS=256
 MAX_MODEL_LEN=2048
 MIN_FREE_GB=10
-# Mirrors the common_dir logic in calibration/in_domain_calibration.py.
-if [[ -d /hdd ]]; then
-  COMMON_DIR=/hdd/ivny
+# Mirrors the common_dir logic in calibration/in_domain_calibration.py: a
+# dedicated re-runs tree so this never collides with production
+# /hdd/ivny/results/ or /hdd/ivny/*_in_domain_calibration/ runs.
+if mkdir -p /hdd/ivny/re-runs/results 2>/dev/null; then
+  COMMON_DIR=/hdd/ivny/re-runs/results
 else
-  COMMON_DIR=ivny
+  COMMON_DIR="$SCRIPT_DIR/results"
 fi
 
 SAFE_MODEL="$(echo "$MODEL" | tr '/' '_')"
@@ -223,7 +225,7 @@ for seed in "${SEEDS[@]}"; do
   # --- calibration (in-domain, 100% lexicon, no beta-guided) ---
   check_disk_space
   calib_log="$LOG_DIR/${SAFE_MODEL}_seed${seed}_calibration.log"
-  calib_out_dir="$COMMON_DIR/rebuttal_reruns_in_domain_calibration/$DATASET/$MODEL/seed_$seed"
+  calib_out_dir="$COMMON_DIR/in_domain_calibration/$DATASET/$MODEL/seed_$seed"
   calib_metrics_csv="$calib_out_dir/calibration_performance.csv"
   echo "  [calibration] -> $calib_log"
   calibration_ok=0
