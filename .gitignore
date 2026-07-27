@@ -212,3 +212,6 @@ graphify-out/*
 CLAUDE.md
 ivny/*/*
 ivny/.DS_Store
+rebuttal/concentration_control_test/counterfactual_decomposition_data.csv
+rebuttal/ensemble_concentration_test/ensemble_concentration_data.csv
+rebuttal/fd_test/fd_test_mean_variance_data.csv
