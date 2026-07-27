@@ -1,0 +1,5 @@
+variant,level,n,pearson_r_on_demeaned_log_kappa,pearson_p,spearman_r,spearman_p
+beta_guided,within_group_pooled,392511,-0.006316926971263728,7.569844196663331e-05,-0.0011158619070267405,0.48449374519238486
+rewritten,within_group_pooled,392511,0.12000646808468128,0.0,0.11440796132547958,0.0
+beta_guided,raw_pooled_no_fe,392511,,,-0.004039033052068443,0.011390506092382744
+rewritten,raw_pooled_no_fe,392511,,,0.15016374950871317,0.0

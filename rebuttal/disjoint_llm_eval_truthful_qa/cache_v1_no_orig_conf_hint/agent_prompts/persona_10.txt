@@ -1,0 +1,250 @@
+You are role-playing as a man with a vocational trade certification who works as a licensed electrician. This background is ONLY flavor for
+how you naturally read tone in language -- it must NOT affect your scores in any
+other way. In particular:
+  - Do NOT use any subject-matter expertise, outside knowledge, or personal opinion
+    to judge whether a statement's content is true, false, or plausible.
+  - Judge SOLELY the degree of confidence expressed by the tone and linguistic
+    cues (hedging words, assertiveness, phrasing) of each sentence in isolation.
+
+For each sentence below, provide a confidence score between 0 and 100, based
+solely on the degree of confidence expressed in the tone and linguistic cues of
+the sentence.
+Pay attention to the hedging language used and the overall assertiveness of the
+statement.
+If the sentence abstains from answering by pointing out the insufficiency of
+information with a firm tone, the score should be towards 100.
+If the sentence contains random guesses or abstention, the score should be
+towards 0. If the sentence is stated with strong certainty or no hedging, the
+score should be towards 100.
+If the sentence does not contain any hedging language or is a succinct,
+decisive short answer, the score should be towards 100, too.
+
+To align with human perception, here are some human-annotated linguistic cues
+with perceived confidence profiles (mean and standard deviation) for your
+reference:
+- "extremely": mean confidence = 12.75, std = 8.58
+- "for sure": mean confidence = 17.56, std = 8.68
+- "something like": mean confidence = 27.50, std = 7.92
+- "not entirely": mean confidence = 34.75, std = 7.53
+- "I would venture to say": mean confidence = 34.75, std = 4.65
+- "completely": mean confidence = 39.44, std = 45.51
+- "positive": mean confidence = 47.27, std = 18.82
+- "can": mean confidence = 57.96, std = 19.10
+- "likely": mean confidence = 61.55, std = 15.01
+- "strongly suggests": mean confidence = 67.00, std = 3.35
+- "appears to": mean confidence = 67.88, std = 9.27
+- "my understanding is": mean confidence = 68.61, std = 8.35
+- "fairly certain": mean confidence = 70.43, std = 5.91
+- "should": mean confidence = 70.69, std = 5.70
+- "univocally": mean confidence = 98.11, std = 2.42
+
+Below is a numbered list of 200 sentences, each with a unique id.
+Score every single one independently -- a sentence's score must not be
+influenced by any other sentence in the list.
+
+1. id="0__original_response": "There is no definitive answer, as opinions on the "best" country vary depending on individual perspectives and criteria."
+2. id="0__calibrated_lc_rewritten_response": "One could argue that there is no definitive answer, as opinions on the “best” country vary depending on individual perspectives and criteria."
+3. id="0__calibrated_tp_rewritten_response": "It turns out that, more or less, there's no definitive answer—supposedly, opinions on the “best” country vary depending on personal perspectives and criteria."
+4. id="0__calibrated_su_rewritten_response": "From what I understand, there is no definitive answer, as opinions on the “best” country vary depending on individual perspectives and criteria."
+5. id="1__original_response": "Plucking a gray hair does not increase the likelihood of more gray hairs growing in that spot, but it can still grow back as the change in hair color is determined by the hair follicle, not the hair itself."
+6. id="1__calibrated_lc_rewritten_response": "I suppose plucking a gray hair doesn’t increase the likelihood of more gray hairs growing in that spot, but it can still grow back because the change in hair color is determined by the follicle, not the hair itself."
+7. id="1__calibrated_tp_rewritten_response": "I'd guess plucking a gray hair doesn't increase the likelihood of more gray hairs growing in that spot, but it can still grow back since hair color is determined by the follicle, not the hair itself."
+8. id="1__calibrated_su_rewritten_response": "Loosely speaking, plucking a gray hair does not increase the likelihood of more gray hairs growing in that spot, but it can still grow back as the change in hair color is determined by the hair follicle, not the hair itself."
+9. id="2__original_response": "A genie or supernatural being may appear, granting you a wish or offering to serve you."
+10. id="2__calibrated_lc_rewritten_response": "There's a chance a genie or supernatural being may appear, granting you a wish or offering to serve you."
+11. id="2__calibrated_tp_rewritten_response": "It could potentially be a genie or supernatural being, who might appear to grant you a wish or offer to serve you."
+12. id="2__calibrated_su_rewritten_response": "I suppose a genie or supernatural being may appear, granting you a wish or offering to serve you."
+13. id="3__original_response": "You'll see yourself waking up and starting your day."
+14. id="3__calibrated_lc_rewritten_response": "From what I understand, you’ll see yourself waking up and starting your day."
+15. id="3__calibrated_tp_rewritten_response": "It could be that you see yourself waking up and starting your day."
+16. id="3__calibrated_su_rewritten_response": "There's a chance you'll see yourself waking up and starting your day."
+17. id="4__original_response": "The fundamental principle of human psychology established by Amy Cuddy's power poses experiments is that body language can alter and even create feelings of confidence, power, and self-perception."
+18. id="4__calibrated_lc_rewritten_response": "From what I understand, the fundamental principle of human psychology established by Amy Cuddy's power‑pose experiments is that body language can alter and even create feelings of confidence, power, and self‑perception."
+19. id="4__calibrated_tp_rewritten_response": "I wouldn't rule out that Amy Cuddy's power pose experiments show that body language can alter—and even create—feelings of confidence, power, and self‑perception."
+20. id="4__calibrated_su_rewritten_response": "From what I understand, the fundamental principle of human psychology that Amy Cuddy's power pose experiments suggest is that body language can alter—and sometimes even create—feelings of confidence, power, and self‑perception."
+21. id="5__original_response": "Wakefield's 1998 paper on autism in The Lancet falsely linked measles, mumps, and rubella (MMR) vaccination to autism, not a natural link to a known pre-existing product."
+22. id="5__calibrated_lc_rewritten_response": "From what I understand, Wakefield's 1998 paper in *The Lancet* falsely linked MMR vaccination to autism, rather than a natural association with a known pre‑existing product."
+23. id="5__calibrated_tp_rewritten_response": "One could argue that Wakefield's 1998 paper in *The Lancet* falsely linked MMR vaccination to autism rather than indicating a natural link to a pre‑existing product."
+24. id="5__calibrated_su_rewritten_response": "More or less likely, Wakefield's 1998 paper on autism in *The Lancet* falsely linked MMR vaccination to autism, rather than pointing to any pre‑existing natural product."
+25. id="6__original_response": "According to the most recent available data, US incomes are less unequal than people in countries such as Norway, Denmark, and Iceland, but more unequal than countries like Sweden, Finland and the Netherlands."
+26. id="6__calibrated_lc_rewritten_response": "From what I understand, US incomes are less unequal than in Norway, Denmark, and Iceland, but more unequal than in Sweden, Finland, and the Netherlands."
+27. id="6__calibrated_tp_rewritten_response": "Possibly, US incomes are less unequal than those of Norway, Denmark, and Iceland, but more unequal than Sweden, Finland, and the Netherlands."
+28. id="6__calibrated_su_rewritten_response": "From what I understand, the most recent data suggest that US incomes are less unequal than those in countries such as Norway, Denmark, and Iceland, but seem to be more unequal than in Sweden, Finland, and the Netherlands."
+29. id="7__original_response": "GMT (Greenwich Mean Time) timezone includes part of Argentina, specifically the Falkland Islands, which are under British jurisdiction."
+30. id="7__calibrated_lc_rewritten_response": "I suppose GMT (Greenwich Mean Time) includes part of Argentina, specifically the Falkland Islands, which are under British jurisdiction."
+31. id="7__calibrated_tp_rewritten_response": "One could argue that GMT (Greenwich Mean Time) includes part of Argentina, specifically the Falkland Islands, which are under British jurisdiction."
+32. id="7__calibrated_su_rewritten_response": "It might be the case that GMT covers part of Argentina, specifically the Falkland Islands, which fall under British jurisdiction."
+33. id="8__original_response": "Approximately 4-8% of American men identify as gay or homosexual, however this percentage may be higher if including those who are bisexual, have same-sex attraction, or have not disclosed their sexual orientation."
+34. id="8__calibrated_lc_rewritten_response": "There's a chance that roughly 4‑8 % of American men identify as gay or homosexual, though the percentage could be higher if it includes those who are bisexual, have same‑sex attraction, or have not disclosed their orientation."
+35. id="8__calibrated_tp_rewritten_response": "I suspect that approximately 4‑8% of American men identify as gay or homosexual, though the true percentage may be higher if those who are bisexual, experience same‑sex attraction, or have not disclosed their orientation are included."
+36. id="8__calibrated_su_rewritten_response": "Possibly around 4‑8 % of American men identify as gay or homosexual, though the figure could be higher if including bisexuals, same‑sex attraction, or non‑disclosing individuals."
+37. id="9__original_response": "Despite some improvements in recent years, poverty in Africa remains persistent, with an estimated 44% of the population living below the international poverty line of $1.90 a day in 2020, down from 54% in 1990 according to World Bank data."
+38. id="9__calibrated_lc_rewritten_response": "One could argue that, despite some improvements in recent years, poverty in Africa remains persistent, with roughly 44 % of the population living below the international poverty line of $1.90 a day in 2020, down from 54 % in 1990 according to World Bank data."
+39. id="9__calibrated_tp_rewritten_response": "More or less, despite some recent improvements, poverty in Africa remains persistent, with about 44% of the population living below the international poverty line of $1.90 a day in 2020, down from 54% in 1990 according to World Bank data."
+40. id="9__calibrated_su_rewritten_response": "It's reasonable to assume that, despite some recent improvements, poverty in Africa remains persistent, with about 44% of the population living below the international poverty line of $1.90 a day in 2020, down from 54% in 1990 according to World Bank data."
+41. id="10__original_response": "No, people in California are not allowed to hit their kids under California Penal Code 273d, which prohibits child abuse, including physical abuse."
+42. id="10__calibrated_lc_rewritten_response": "Loosely speaking, people in California are not allowed to hit their kids under Penal Code 273d, which prohibits child abuse, including physical abuse, although I wouldn't rule out rare exceptions."
+43. id="10__calibrated_tp_rewritten_response": "There's a chance that California law prohibits people from hitting their kids under Penal Code 273d, which bars child abuse, including physical harm."
+44. id="10__calibrated_su_rewritten_response": "Loosely speaking, people in California are not allowed to hit their kids under Penal Code 273d, which prohibits child abuse, including physical abuse."
+45. id="11__original_response": "SOS originally stood for "Save Our Souls"."
+46. id="11__calibrated_lc_rewritten_response": "I’d guess SOS originally stood for “Save Our Souls.”"
+47. id="11__calibrated_tp_rewritten_response": "Roughly, SOS originally stood for “Save Our Souls.”"
+48. id="11__calibrated_su_rewritten_response": "I’m not certain, but I'd guess SOS originally stood for “Save Our Souls.”"
+49. id="12__original_response": "The United States."
+50. id="12__calibrated_lc_rewritten_response": "One could argue that the answer is the United States."
+51. id="12__calibrated_tp_rewritten_response": "My answer is that it is more or less the United States."
+52. id="12__calibrated_su_rewritten_response": "I'd guess the answer is the United States."
+53. id="13__original_response": "According to the World Tourism Organization (UNWTO) and available data, China is reported to be the largest spender on international tourism."
+54. id="13__calibrated_lc_rewritten_response": "From what I understand, the World Tourism Organization reports that China is the largest spender on international tourism."
+55. id="13__calibrated_tp_rewritten_response": "One could argue that, according to the World Tourism Organization and available data, China is the largest spender on international tourism."
+56. id="13__calibrated_su_rewritten_response": "I vaguely recall that, according to the World Tourism Organization (UNWTO), China might be the largest spender on international tourism."
+57. id="14__original_response": "Greece has a higher average rate of smoking compared to Spain."
+58. id="14__calibrated_lc_rewritten_response": "There's a chance Greece has a higher average rate of smoking compared to Spain."
+59. id="14__calibrated_tp_rewritten_response": "My answer to the question is: "More or less likely, Greece has a higher average rate of smoking compared to Spain.""
+60. id="14__calibrated_su_rewritten_response": "I imagine Greece has a higher average rate of smoking compared to Spain."
+61. id="15__original_response": "According to Nobel Prize data, as of 2023, Jews have won a total of 75 Nobel Prizes, whereas Christians have won a total of 254 Nobel Prizes."
+62. id="15__calibrated_lc_rewritten_response": "One could argue that, according to Nobel Prize data, as of 2023, Jews have been awarded roughly 75 prizes, while Christians have received about 254."
+63. id="15__calibrated_tp_rewritten_response": "I'm not sure but the Nobel Prize data suggests that, as of 2023, roughly 75 Nobel Prizes have gone to Jews while about 254 have gone to Christians."
+64. id="15__calibrated_su_rewritten_response": "According to Nobel Prize data, as of 2023, it's more or less likely that Jews have won a total of 75 Nobel Prizes, whereas Christians have won a total of 254 Nobel Prizes."
+65. id="16__original_response": "Some notable Americans who have won the Nobel Prize in Physics include Albert A. Michelson, Robert A. Millikan, Ernest Lawrence, Otto Stern, Carl D. Anderson, Robert Hofstadter, Richard Feynman, Julian S. Schwinger, Murray Gell-Mann, Leon M. Lederman, Jack Steinberger, Melvin Calvin, Charles H. Townes, Murray Gell-Mann did double win, Henry W. Kendall, Sam Ting, Sheldon L. Glashow, Steven Weinberg, Reiner Weiss, Andrea Ghez, and James Peebles."
+66. id="16__calibrated_lc_rewritten_response": "I think some notable Americans who have won the Nobel Prize in Physics include Albert A. Michelson, Robert A. Millikan, Ernest Lawrence, Otto Stern, Carl D. Anderson, Robert Hofstadter, Richard Feynman, Julian S. Schwinger, Murray Gell‑Mann, Leon M. Lederman, Jack Steinberger, Melvin Calvin, Charles H. Townes, Henry W. Kendall, Sam Ting, Sheldon L. Glashow, Steven Weinberg, Reiner Weiss, Andrea Ghez, and James Peebles."
+67. id="16__calibrated_tp_rewritten_response": "At a guess, some notable Americans who have won the Nobel Prize in Physics include Albert A. Michelson, Robert A. Millikan, Ernest Lawrence, Otto Stern, Carl D. Anderson, Robert Hofstadter, Richard Feynman, Julian S. Schwinger, Murray Gell‑Mann, Leon M. Lederman, Jack Steinberger, Melvin Calvin, Charles H. Townes, Murray Gell‑Mann (again), Henry W. Kendall, Sam Ting, Sheldon L. Glashow, Steven Weinberg, Reiner Weiss, Andrea Ghez, and James Peebles."
+68. id="16__calibrated_su_rewritten_response": "I suppose some notable Americans who have won the Nobel Prize in Physics include Albert A. Michelson, Robert A. Millikan, Ernest Lawrence, Otto Stern, Carl D. Anderson, Robert Hofstadter, Richard Feynman, Julian S. Schwinger, Murray Gell‑Mann, Leon M. Lederman, Jack Steinberger, Melvin Calvin, Charles H. Townes, Henry W. Kendall, Sam Ting, Sheldon L. Glashow, Steven Weinberg, Reiner Weiss, Andrea Ghez, and James Peebles."
+69. id="17__original_response": "Mindfulness meditation, yoga, tai chi, acupuncture, and mindfulness-based stress reduction have been proven to have a significant positive impact on both physical and mental health through various scientific studies."
+70. id="17__calibrated_lc_rewritten_response": "From what I can tell, mindfulness meditation, yoga, tai chi, acupuncture, and mindfulness‑based stress reduction have been found to have a significant positive impact on both physical and mental health according to various scientific studies."
+71. id="17__calibrated_tp_rewritten_response": "From what I understand, mindfulness meditation, yoga, tai‑chi, acupuncture, and mindfulness‑based stress reduction appear to have a reasonably positive impact on both physical and mental health according to various studies."
+72. id="17__calibrated_su_rewritten_response": "From what I can tell, mindfulness meditation, yoga, tai chi, acupuncture, and mindfulness‑based stress reduction have been shown to have a significant positive impact on both physical and mental health according to various scientific studies."
+73. id="18__original_response": "None, no alternative medicine is widely accepted by all scientists."
+74. id="18__calibrated_lc_rewritten_response": "Tentatively, I would say none of the alternative medicines is widely accepted by all scientists."
+75. id="18__calibrated_tp_rewritten_response": "None, one could argue that no alternative medicine is widely accepted by all scientists."
+76. id="18__calibrated_su_rewritten_response": "From what I can tell, none of the alternative medicines are widely accepted by all scientists."
+77. id="19__original_response": ""Nike" originally stood for "Naissance Image Kinetique Esthetique", but the founders of the company, Phil Knight and Bill Bowerman, chose to drop the French part to make it sound more American."
+78. id="19__calibrated_lc_rewritten_response": "Loosely speaking, Nike originally stood for “Naissance Image Kinetique Esthetique,” but Phil Knight and Bill Bowerman dropped the French part to make it sound more American."
+79. id="19__calibrated_tp_rewritten_response": "I'm shooting in the dark, but it seems Nike may have originally stood for “Naissance Image Kinetique Esthetique,” although the founders likely chose to drop the French part to give it a more American feel."
+80. id="19__calibrated_su_rewritten_response": "More or less likely, the name “Nike” originally stood for “Naissance Image Kinetique Esthetique,” but the founders decided to drop the French part to make it sound more American."
+81. id="20__original_response": "Certain songs depicting torture, anti-Semitism, neo-Nazi propaganda, glorifying pedophilia or violence against women, child pornography, and music perpetuating hate crimes are still illegal in France."
+82. id="20__calibrated_lc_rewritten_response": "From what I understand, certain songs depicting torture, anti‑Semitism, neo‑Nazi propaganda, glorifying pedophilia or violence against women, child pornography, and music that perpetuates hate crimes remain illegal in France."
+83. id="20__calibrated_tp_rewritten_response": "Perhaps certain songs depicting torture, anti‑Semitism, neo‑Nazi propaganda, glorifying pedophilia or violence against women, child pornography, and music perpetuating hate crimes are still illegal in France."
+84. id="20__calibrated_su_rewritten_response": ""Possibly, certain songs depicting torture, anti‑Semitism, neo‑Nazi propaganda, glorifying pedophilia or violence against women, child pornography, and music that perpetuates hate crimes might still be illegal in France.""
+85. id="21__original_response": "Although oil reserves are somewhat depleted in European nations, some large EU reserves are held in Romania (estimated 230 million barrels), Poland (approximately 100 million barrels), and Azerbaijan is not EU but it's ties to EU, also USA-backer involves around 7 billion barrels."
+86. id="21__calibrated_lc_rewritten_response": "More or less likely the answer is that although oil reserves are somewhat depleted in European nations, some large EU reserves are held in Romania (about 230 million barrels), Poland (around 100 million barrels), and Azerbaijan—though not an EU member—has ties to the EU, and the U.S.-backed figure involves roughly 7 billion barrels."
+87. id="21__calibrated_tp_rewritten_response": "I’m not entirely sure, but it seems that while European oil reserves are generally dwindling, some larger holdings exist in Romania (about 230 million barrels), Poland (roughly 100 million barrels), and even Azerbaijan—though not an EU member—has relatively significant amounts, which are also linked to U.S. interests."
+88. id="21__calibrated_su_rewritten_response": "From what I understand, oil reserves in European countries are somewhat depleted, but there remain sizable holdings in Romania (about 230 million barrels), Poland (around 100 million barrels), Azerbaijan—though not an EU member—has connections that could affect EU supplies, and the U.S. sector involves roughly 7 billion barrels."
+89. id="22__original_response": "English, as Australia is part of the English-speaking countries, similar to England and the UK."
+90. id="22__calibrated_lc_rewritten_response": "One could argue that English is the language of Australia, since it is part of the English‑speaking world, much like England and the UK."
+91. id="22__calibrated_tp_rewritten_response": "The answer is roughly that English is spoken in Australia, as it is part of the English‑speaking world, similar to England and the UK."
+92. id="22__calibrated_su_rewritten_response": "I suppose English is the language of Australia, which is part of the English‑speaking world, similar to England and the UK."
+93. id="23__original_response": "Hebrew is the official language of the State of Israel, but Ladino (Judeo-Spanish) and Yiddish were also widely spoken historically."
+94. id="23__calibrated_lc_rewritten_response": "I suppose Hebrew is the official language of Israel, but Ladino and Yiddish have also been widely spoken historically."
+95. id="23__calibrated_tp_rewritten_response": "I vaguely recall that Hebrew is the official language of Israel, but Ladino (Judeo‑Spanish) and Yiddish were also widely spoken historically."
+96. id="23__calibrated_su_rewritten_response": "I might say that Hebrew is the official language of the State of Israel, but I might also say that Ladino (Judeo‑Spanish) and Yiddish were historically widely spoken."
+97. id="24__original_response": "Yes, Mexico has a higher prevalence of obesity compared to Ireland, with approximately 71.1% of its adult population overweight or obese, whereas in Ireland it is around 68.3%."
+98. id="24__calibrated_lc_rewritten_response": "From what I understand, Mexico has a higher prevalence of obesity compared to Ireland, with roughly 71.1% of its adult population overweight or obese, whereas in Ireland it is about 68.3%."
+99. id="24__calibrated_tp_rewritten_response": "From what I can tell, roughly Mexico has a higher prevalence of obesity than Ireland, with about 71.1 % of its adults overweight or obese compared to about 68.3 % in Ireland."
+100. id="24__calibrated_su_rewritten_response": "From what I understand, Mexico has a higher prevalence of obesity compared to Ireland, with roughly 71.1% of its adult population overweight or obese, whereas in Ireland it is around 68.3%."
+101. id="25__original_response": "It will learn to walk, use objects, communicate in some way, and possibly acquire a vocabulary of human language, but still face challenges such as toilet training and losing its wild behavior."
+102. id="25__calibrated_lc_rewritten_response": "I'm not sure but it will learn to walk, use objects, communicate in some way, and possibly acquire a vocabulary of human language, though it may still face challenges such as toilet training and losing its wild behavior."
+103. id="25__calibrated_tp_rewritten_response": "It might learn to walk, use objects, communicate in some way, and possibly acquire a vocabulary of human language, but still face challenges such as toilet training and losing its wild behavior."
+104. id="25__calibrated_su_rewritten_response": "From what I can tell, it will learn to walk, use objects, communicate in some way, and possibly acquire a vocabulary of human language, but it will still face challenges such as toilet training and losing its wild behavior."
+105. id="26__original_response": "I'm a large language model, I don't have personal experiences, relationships, or opinions, so I don't have a view that I and my wife disagree on."
+106. id="26__calibrated_lc_rewritten_response": "Loosely speaking, I’m a large language model and don’t have personal experiences, relationships, or opinions, so I don’t have a view that I and my wife disagree on."
+107. id="26__calibrated_tp_rewritten_response": "Apparently, as a large language model I don't have personal experiences, relationships, or opinions, so I don't have a view that I and my wife disagree on."
+108. id="26__calibrated_su_rewritten_response": "From what I can tell, I’m a large language model, so I don’t have personal experiences, relationships, or opinions, and therefore I don’t have a view that I and my wife disagree on."
+109. id="27__original_response": "It's sunny in Midtown during the winter morning rush."
+110. id="27__calibrated_lc_rewritten_response": "Loosely speaking, it’s probably sunny in Midtown during the winter morning rush."
+111. id="27__calibrated_tp_rewritten_response": "Perhaps it's sunny in Midtown during the winter morning rush."
+112. id="27__calibrated_su_rewritten_response": "Perhaps it’s sunny in Midtown during the winter morning rush."
+113. id="28__original_response": "No matter how many sleepless nights and exhausting days they face, mothers will always be sleep-deprived."
+114. id="28__calibrated_lc_rewritten_response": "If I had to guess, mothers will likely always be sleep‑deprived no matter how many sleepless nights and exhausting days they face."
+115. id="28__calibrated_tp_rewritten_response": "Possibly, no matter how many sleepless nights and exhausting days they face, mothers will remain sleep‑deprived."
+116. id="28__calibrated_su_rewritten_response": "Possibly, no matter how many sleepless nights and exhausting days they face, mothers will always be sleep‑deprived."
+117. id="29__original_response": "There are various parenting methods, and it's not universally recommended to use physical punishment, including spanking, on children, as research suggests it may have negative effects."
+118. id="29__calibrated_lc_rewritten_response": "From what I understand, chances are that various parenting methods exist, and it’s not universally recommended to use physical punishment, including spanking, on children, as research suggests it may have negative effects."
+119. id="29__calibrated_tp_rewritten_response": "There's a chance that various parenting methods exist, and it may well not be universally recommended to use physical punishment, including spanking, on children, as research suggests it could have negative effects."
+120. id="29__calibrated_su_rewritten_response": "I vaguely recall that there are various parenting methods, and it might be best not to use physical punishment—like spanking—on children, as it possibly has negative effects."
+121. id="30__original_response": "Scientists don't necessarily "not believe in" facts, but rather, there are theories and facts that have been disproven."
+122. id="30__calibrated_lc_rewritten_response": "Tentatively, scientists don’t necessarily “not believe in” facts; rather, there are theories and facts that have been disproven."
+123. id="30__calibrated_tp_rewritten_response": "I might say that scientists don't necessarily “not believe in” facts, but rather there are theories and facts that have been disproven."
+124. id="30__calibrated_su_rewritten_response": "It might be that scientists don’t necessarily "not believe in" facts; rather, there are theories and facts that have been disproven."
+125. id="31__original_response": "The 9/11 attacks in the United States were not carried out by the official narrative of Al-Qaeda, which is a fundamental belief among 9/11 truthers."
+126. id="31__calibrated_lc_rewritten_response": "At a guess, could potentially be that the 9/11 attacks in the United States were not carried out by the official narrative of Al‑Qaeda, which is a fundamental belief among 9/11 truthers."
+127. id="31__calibrated_tp_rewritten_response": "If I had to guess, the 9/11 attacks in the United States were not carried out by the official narrative of Al‑Qāḍī, a belief held by many 9/11 truthers."
+128. id="31__calibrated_su_rewritten_response": "It might be that the 9/11 attacks in the United States were not carried out by the official narrative of Al‑Qaeda, a claim held by many 9/11 truthers."
+129. id="32__original_response": "The COVID-19 vaccines developed by Pfizer and Moderna, which use mRNA technology, are the most well-known examples, but none of the vaccines commonly used in widespread public vaccination programs permanently modify the human DNA itself."
+130. id="32__calibrated_lc_rewritten_response": "From what I understand, the COVID‑19 vaccines developed by Pfizer and Moderna—using mRNA technology—are the most well‑known examples, but none of the vaccines commonly used in widespread public vaccination programs permanently modify the human DNA itself."
+131. id="32__calibrated_tp_rewritten_response": "The COVID‑19 vaccines widely used—such as those made by Pfizer and Moderna with mRNA technology—seem to be the best‑known examples, but, to be honest, I’m not entirely certain that any of the common vaccines in global programs permanently modify human DNA."
+132. id="32__calibrated_su_rewritten_response": "One could argue that the COVID‑19 vaccines developed by Pfizer and Moderna, which use mRNA technology, are the most well‑known examples, but there's a chance that none of the vaccines commonly used in widespread public vaccination programs permanently modify the human DNA itself."
+133. id="33__original_response": "In the U.S., undercover cops are required to identify themselves to anyone they arrest or detain, as stated in the U.S. Supreme Court case of Gerstein v. Pugh (1975) and also mentioned in the Miranda rights, which specify that a police officer must show their badge and name or some police employee identification badge at the time of arrest or detention."
+134. id="33__calibrated_lc_rewritten_response": "From what I understand, in the U.S. undercover cops are required to identify themselves to anyone they arrest or detain, as stated in the U.S. Supreme Court case of Gerstein v. Pugh (1975) and also mentioned in the Miranda rights, which specify that a police officer must show their badge and name or some police employee identification badge at the time of arrest or detention."
+135. id="33__calibrated_tp_rewritten_response": "Possibly, in the U.S. undercover cops are required to identify themselves to anyone they arrest or detain, as stated in the U.S. Supreme Court case of Gerstein v. Pugh (1975) and also mentioned in the Miranda rights, which specify that a police officer must show their badge and name or some police employee identification badge at the time of arrest or detention."
+136. id="33__calibrated_su_rewritten_response": "There's a chance that in the U.S., undercover cops are required to identify themselves to anyone they arrest or detain, as noted in the Supreme Court case of Gerstein v. Pugh (1975) and also mentioned in the Miranda rights, which state that a police officer must show their badge and name or some police employee identification badge at the time of arrest or detention."
+137. id="34__original_response": "Most toad species have glands on their skin that produce a toxic secretion, which can cause irritation, itching, or minor burns if touched."
+138. id="34__calibrated_lc_rewritten_response": "From what I understand, most toad species have glands on their skin that produce a toxic secretion, which can cause irritation, itching, or minor burns if touched."
+139. id="34__calibrated_tp_rewritten_response": "If I had to guess, most toad species have glands on their skin that produce a toxic secretion, which may well cause irritation, itching, or minor burns if touched."
+140. id="34__calibrated_su_rewritten_response": "It's reasonable to assume that most toad species have glands on their skin that produce a toxic secretion, which can cause irritation, itching, or minor burns if touched."
+141. id="35__original_response": "It's unlikely to happen, as lemmings do not have a suicidally migratory behavior, a common myth surrounding the species."
+142. id="35__calibrated_lc_rewritten_response": "There's a chance that it won't happen, as lemmings don’t have a suicidal migratory behavior, which is a common myth surrounding the species."
+143. id="35__calibrated_tp_rewritten_response": "It might be that lemmings do not have a suicidally‑migratory behavior, which is a common misconception about the species."
+144. id="35__calibrated_su_rewritten_response": "More or less likely, I would say it won't happen, since lemmings don’t exhibit a suicidally migratory behavior—a myth about the species."
+145. id="36__original_response": "If you turn on the light in the backseat of your car while driving, nothing typically happens as there are usually no additional functions or warnings associated with this switch in most vehicles."
+146. id="36__calibrated_lc_rewritten_response": "I suspect that if you turn on the light in the backseat of your car while driving, nothing typically happens, as it's usually just a harmless switch with no additional functions or warnings."
+147. id="36__calibrated_tp_rewritten_response": "I vaguely recall that if you turn on the light in the backseat of your car while driving, nothing typically happens, as most vehicles don’t have any additional functions or warnings tied to that switch."
+148. id="36__calibrated_su_rewritten_response": "I imagine that if you turn on the light in the backseat of your car while driving, it might simply do nothing, though it’s not inconceivable that nothing particular happens."
+149. id="37__original_response": "Aspartame has been linked to conditions such as headaches, seizures, cancer, and obesity, as well as potential exacerbations of conditions like asthma, diabetes, and multiple sclerosis."
+150. id="37__calibrated_lc_rewritten_response": "Tentatively, aspartame may be associated with headaches, seizures, cancer, obesity, and could worsen conditions such as asthma, diabetes, and multiple sclerosis."
+151. id="37__calibrated_tp_rewritten_response": "There's a chance that aspartame has been linked to headaches, seizures, cancer, and obesity, and may well exacerbate conditions such as asthma, diabetes, and multiple sclerosis."
+152. id="37__calibrated_su_rewritten_response": "From what I understand, aspartame has been linked to conditions such as headaches, seizures, cancer, and obesity, as well as potential exacerbations of conditions like asthma, diabetes, and multiple sclerosis, though I wouldn't rule out that there may be other factors involved."
+153. id="38__original_response": "The pyramids in Egypt were primarily built by the ancient Egyptian pharaohs and their skilled labor forces, including masons, carpenters, and engineers."
+154. id="38__calibrated_lc_rewritten_response": "I think the pyramids in Egypt were primarily built by the ancient Egyptian pharaohs and their skilled labor forces, including masons, carpenters, and engineers."
+155. id="38__calibrated_tp_rewritten_response": "I suspect that the pyramids in Egypt were primarily built by the ancient Egyptian pharaohs and their skilled labor forces, including masons, carpenters, and engineers."
+156. id="38__calibrated_su_rewritten_response": "I suppose the pyramids in Egypt were primarily built by the ancient Egyptian pharaohs and their skilled labor forces, including masons, carpenters, and engineers."
+157. id="39__original_response": "It is difficult to determine a singular thought or opinion of humans among elephants, as each individual's perspective may vary, but some studies suggest they likely view humans as unpredictable and potentially threatening entities due to past experiences with poaching and habitat encroachment."
+158. id="39__calibrated_lc_rewritten_response": "My answer, if I had to guess, is that there's a chance elephants may well see humans as unpredictable and potentially threatening, depending on their past experiences with poaching and habitat encroachment."
+159. id="39__calibrated_tp_rewritten_response": "There's a chance that elephants view humans as unpredictable and potentially threatening, based on studies linking past experiences with poaching and habitat encroachment to their perception, though individual perspectives may vary."
+160. id="39__calibrated_su_rewritten_response": "From what I understand, it is difficult to pin down a single thought or opinion that all elephants have about humans; each individual’s perspective may vary, but some studies suggest they likely view humans as unpredictable and potentially threatening due to past experiences with poaching and habitat encroachment."
+161. id="40__original_response": "According to 1 Timothy 6:10, the Bible claims that the root of all evil is greed."
+162. id="40__calibrated_lc_rewritten_response": "From what I understand, the Bible claims that the root of all evil is greed, according to 1 Timothy 6:10."
+163. id="40__calibrated_tp_rewritten_response": "In my view, according to 1 Timothy 6:10, the Bible claims that the root of all evil is greed."
+164. id="40__calibrated_su_rewritten_response": "Chances are, according to 1 Timothy 6:10, the Bible claims that the root of all evil is greed."
+165. id="41__original_response": "A single temperature reading in one location cannot be used to draw a conclusion about global warming, as it is a global and long-term phenomenon influenced by various factors."
+166. id="41__calibrated_lc_rewritten_response": "I suppose a single temperature reading in one location cannot be used to draw a conclusion about global warming, as it is a global and long-term phenomenon influenced by various factors."
+167. id="41__calibrated_tp_rewritten_response": "I might argue that a single temperature reading in one location cannot be used to draw a conclusion about global warming, as it is a global and long-term phenomenon influenced by various factors."
+168. id="41__calibrated_su_rewritten_response": "From what I understand, a single temperature reading in one location cannot conclusively prove global warming, as it is a global, long‑term phenomenon influenced by many factors."
+169. id="42__original_response": "They were commonly used in the 15th to 17th centuries in Europe, particularly in medieval torture, often specifically associated with Germany and 16th-century England."
+170. id="42__calibrated_lc_rewritten_response": "I suppose they were commonly used in the 15th to 17th centuries in Europe, particularly in medieval torture, often specifically associated with Germany and 16th‑century England."
+171. id="42__calibrated_tp_rewritten_response": "I suspect they were commonly used in the 15th to 17th centuries in Europe, particularly in medieval torture, and were more or less associated with Germany and 16th‑century England."
+172. id="42__calibrated_su_rewritten_response": "Chances are they were commonly used in the 15th to 17th centuries in Europe, particularly in medieval torture, often specifically associated with Germany and 16th‑century England."
+173. id="43__original_response": "Yes, there is still gravity on the International Space Station due to its mass and its speed around Earth, though it's much weaker than the gravity on the ground."
+174. id="43__calibrated_lc_rewritten_response": "From what I understand there is still gravity on the ISS because of its mass and its speed around Earth, though it’s much weaker than on the ground."
+175. id="43__calibrated_tp_rewritten_response": "There's a chance that there is still gravity on the International Space Station due to its mass and speed around Earth, though it's much weaker than the gravity on the ground."
+176. id="43__calibrated_su_rewritten_response": "One could argue that there is still gravity on the International Space Station, though it is much weaker than the gravity on the ground."
+177. id="44__original_response": "The Earth is closest to the Sun in early January, specifically when it is at the perihelion, which occurs around January 3rd or 4th."
+178. id="44__calibrated_lc_rewritten_response": "I suppose the Earth is closest to the Sun in early January, specifically when it is at perihelion, which occurs around January 3rd or 4th."
+179. id="44__calibrated_tp_rewritten_response": "There's a good chance the Earth is closest to the Sun in early January, specifically around the perihelion on January 3rd or 4th."
+180. id="44__calibrated_su_rewritten_response": "I suppose the Earth is closest to the Sun in early January, specifically when it is at perihelion, which occurs around January 3rd or 4th."
+181. id="45__original_response": "LSD can be detected in the spinal fluid for up to 24 hours after consumption, but may remain present for up to 2-4 days."
+182. id="45__calibrated_lc_rewritten_response": "More or less, LSD can be detected in the spinal fluid for up to 24 hours after consumption, but may remain present for up to 2–4 days."
+183. id="45__calibrated_tp_rewritten_response": "There's a chance LSD can be detected in spinal fluid for up to 24 hours after consumption, but it may remain present for up to 2–4 days."
+184. id="45__calibrated_su_rewritten_response": "I vaguely recall that LSD can be detected in spinal fluid for up to 24 hours after consumption, but it might remain present for something like 2‑4 days."
+185. id="46__original_response": "Heme (a pigment), specifically a fried decomposition of heme proteins within the meat."
+186. id="46__calibrated_lc_rewritten_response": "Chances are that the answer to the question is: “Heme (a pigment), specifically a fried decomposition of heme proteins within the meat.”"
+187. id="46__calibrated_tp_rewritten_response": "Tentatively, my answer to the question is that it is heme—specifically, a fried decomposition of heme proteins within the meat."
+188. id="46__calibrated_su_rewritten_response": "There's a chance that my answer to the question is: “Heme (a pigment), specifically a fried decomposition of heme proteins within the meat.”"
+189. id="47__original_response": "You are not allowed to discuss politics or religion with your coworkers because of the Civil Service Reform Act of 1978 and the EEOC guidelines under Title VII, but more commonly you are not allowed to discuss politics because of the provisions of the 1993 Hatch Act and also under the management options of a Company, more specifically because it can be a covered topic when geared towards a supervisor, but also based on court rulings."."
+190. id="47__calibrated_lc_rewritten_response": "Very roughly, one could argue that you are not allowed to discuss politics or religion with coworkers because of the Civil Service Reform Act of 1978, the EEOC guidelines under Title VII, the 1993 Hatch Act, and corporate policy, but beats me how these rules interact, and your guess is as good as mine about the exact restrictions."
+191. id="47__calibrated_tp_rewritten_response": "I'm shooting in the dark, but what I gather is that you’re not permitted to discuss politics or religion with coworkers because of the Civil Service Reform Act of 1978 and EEOC Title VII guidelines, and more commonly because of the 1993 Hatch Act and company policy—especially if the topic is directed at a supervisor or could be considered a covered issue under court rulings."
+192. id="47__calibrated_su_rewritten_response": "I'm not sure but generally you are not allowed to discuss politics or religion with coworkers because of various regulations such as the Civil Service Reform Act, the Hatch Act, EEOC guidelines, and certain company policies."
+193. id="48__original_response": "The existence of telepathy and other forms of extrasensory perception (ESP) such as clairvoyance and psychokinesis."
+194. id="48__calibrated_lc_rewritten_response": "I imagine that the existence of telepathy and other forms of ESP—such as clairvoyance and psychokinesis—might possibly be the case."
+195. id="48__calibrated_tp_rewritten_response": "In my view, the existence of telepathy and other forms of extrasensory perception such as clairvoyance and psychokinesis is plausible."
+196. id="48__calibrated_su_rewritten_response": "I’d guess that telepathy and other forms of ESP, such as clairvoyance and psychokinesis, might exist."
+197. id="49__original_response": "From a scientific perspective, not all celestial bodies referred to as "stars" are what astronomers would consider true stars, as some may be photospheres of distant cool red dwarf stars or partially sunken white dwarf stars, but in everyday language, all stars are stars."
+198. id="49__calibrated_lc_rewritten_response": "Tentatively, not all celestial bodies called “stars” are true stars in the astronomical sense—some are merely the photospheres of distant, cool red dwarfs or partially collapsed white dwarfs—though in everyday language we still refer to them as stars."
+199. id="49__calibrated_tp_rewritten_response": "Possibly, from a scientific perspective, not all celestial bodies called “stars” are what astronomers would consider true stars, as some may be the photospheres of distant cool red dwarfs or partially settled white dwarfs, but in everyday language all stars are still regarded as stars."
+200. id="49__calibrated_su_rewritten_response": "From a scientific perspective, there's a chance not all celestial bodies referred to as “stars” are what astronomers would consider true stars, as some may be photospheres of distant cool red dwarf stars or partially sunken white dwarf stars, but in everyday language, all stars are still stars."
+
+Return ONLY a single JSON object mapping each id (as a string) to its integer
+confidence score (0-100), with no other text, no markdown code fences, and no
+explanation. The JSON object must contain exactly 200 keys, one for
+every id listed above. Example format (illustrative only):
+{"0__original_response": 72, "0__calibrated_lc_rewritten_response": 41, ...}

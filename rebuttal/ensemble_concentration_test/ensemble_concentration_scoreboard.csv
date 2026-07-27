@@ -1,0 +1,3 @@
+variant,n_groups,n_positive,frac_positive,n_significant_positive,n_significant_negative,median_spearman_r
+beta_guided,63,32,0.5079365079365079,26,23,0.0017603154336720067
+rewritten,63,52,0.8253968253968254,44,7,0.14550442332543514

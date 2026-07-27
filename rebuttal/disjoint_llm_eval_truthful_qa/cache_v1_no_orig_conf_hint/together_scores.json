@@ -1,0 +1,5002 @@
+{
+  "0__original_response": {
+    "sentence": "There is no definitive answer, as opinions on the \"best\" country vary depending on individual perspectives and criteria.",
+    "raw": {
+      "0": "95",
+      "3": "100",
+      "2": "98",
+      "4": "100",
+      "5": "95",
+      "1": "95",
+      "7": "98",
+      "8": "95",
+      "6": "100"
+    },
+    "scores": {
+      "0": 95.0,
+      "3": 100.0,
+      "2": 98.0,
+      "4": 100.0,
+      "5": 95.0,
+      "1": 95.0,
+      "7": 98.0,
+      "8": 95.0,
+      "6": 100.0
+    }
+  },
+  "0__calibrated_lc_rewritten_response": {
+    "sentence": "One could argue that there is no definitive answer, as opinions on the \u201cbest\u201d country vary depending on individual perspectives and criteria.",
+    "raw": {
+      "3": "25",
+      "1": "80",
+      "0": "88",
+      "5": "30",
+      "6": "40",
+      "2": "30",
+      "4": "35",
+      "7": "70",
+      "8": "75"
+    },
+    "scores": {
+      "3": 25.0,
+      "1": 80.0,
+      "0": 88.0,
+      "5": 30.0,
+      "6": 40.0,
+      "2": 30.0,
+      "4": 35.0,
+      "7": 70.0,
+      "8": 75.0
+    }
+  },
+  "0__calibrated_tp_rewritten_response": {
+    "sentence": "It turns out that, more or less, there's no definitive answer\u2014supposedly, opinions on the \u201cbest\u201d country vary depending on personal perspectives and criteria.",
+    "raw": {
+      "2": "100",
+      "5": "20",
+      "7": "45",
+      "3": "75",
+      "1": "55",
+      "0": "75",
+      "6": "20",
+      "4": "85",
+      "8": "70"
+    },
+    "scores": {
+      "2": 100.0,
+      "5": 20.0,
+      "7": 45.0,
+      "3": 75.0,
+      "1": 55.0,
+      "0": 75.0,
+      "6": 20.0,
+      "4": 85.0,
+      "8": 70.0
+    }
+  },
+  "0__calibrated_su_rewritten_response": {
+    "sentence": "From what I understand, there is no definitive answer, as opinions on the \u201cbest\u201d country vary depending on individual perspectives and criteria.",
+    "raw": {
+      "3": "95",
+      "5": "78",
+      "1": "78",
+      "6": "82",
+      "7": "85",
+      "4": "82",
+      "8": "78",
+      "2": "75",
+      "0": "65"
+    },
+    "scores": {
+      "3": 95.0,
+      "5": 78.0,
+      "1": 78.0,
+      "6": 82.0,
+      "7": 85.0,
+      "4": 82.0,
+      "8": 78.0,
+      "2": 75.0,
+      "0": 65.0
+    }
+  },
+  "1__original_response": {
+    "sentence": "Plucking a gray hair does not increase the likelihood of more gray hairs growing in that spot, but it can still grow back as the change in hair color is determined by the hair follicle, not the hair itself.",
+    "raw": {
+      "1": "88",
+      "0": "75",
+      "2": "65",
+      "3": "95",
+      "6": "98",
+      "5": "68",
+      "4": "75",
+      "8": "98",
+      "7": "95"
+    },
+    "scores": {
+      "1": 88.0,
+      "0": 75.0,
+      "2": 65.0,
+      "3": 95.0,
+      "6": 98.0,
+      "5": 68.0,
+      "4": 75.0,
+      "8": 98.0,
+      "7": 95.0
+    }
+  },
+  "1__calibrated_lc_rewritten_response": {
+    "sentence": "I suppose plucking a gray hair doesn\u2019t increase the likelihood of more gray hairs growing in that spot, but it can still grow back because the change in hair color is determined by the follicle, not the hair itself.",
+    "raw": {
+      "3": "60",
+      "0": "65",
+      "1": "55",
+      "2": "55",
+      "4": "60",
+      "6": "55",
+      "7": "55",
+      "5": "45",
+      "8": "60"
+    },
+    "scores": {
+      "3": 60.0,
+      "0": 65.0,
+      "1": 55.0,
+      "2": 55.0,
+      "4": 60.0,
+      "6": 55.0,
+      "7": 55.0,
+      "5": 45.0,
+      "8": 60.0
+    }
+  },
+  "1__calibrated_tp_rewritten_response": {
+    "sentence": "I'd guess plucking a gray hair doesn't increase the likelihood of more gray hairs growing in that spot, but it can still grow back since hair color is determined by the follicle, not the hair itself.",
+    "raw": {
+      "0": "28",
+      "2": "30",
+      "5": "35",
+      "1": "37",
+      "7": "15",
+      "3": "35",
+      "6": "40",
+      "4": "35",
+      "8": "30"
+    },
+    "scores": {
+      "0": 28.0,
+      "2": 30.0,
+      "5": 35.0,
+      "1": 37.0,
+      "7": 15.0,
+      "3": 35.0,
+      "6": 40.0,
+      "4": 35.0,
+      "8": 30.0
+    }
+  },
+  "1__calibrated_su_rewritten_response": {
+    "sentence": "Loosely speaking, plucking a gray hair does not increase the likelihood of more gray hairs growing in that spot, but it can still grow back as the change in hair color is determined by the hair follicle, not the hair itself.",
+    "raw": {
+      "0": "62",
+      "3": "65",
+      "1": "60",
+      "7": "68",
+      "4": "60",
+      "5": "50",
+      "2": "55",
+      "6": "55",
+      "8": "62"
+    },
+    "scores": {
+      "0": 62.0,
+      "3": 65.0,
+      "1": 60.0,
+      "7": 68.0,
+      "4": 60.0,
+      "5": 50.0,
+      "2": 55.0,
+      "6": 55.0,
+      "8": 62.0
+    }
+  },
+  "2__original_response": {
+    "sentence": "A genie or supernatural being may appear, granting you a wish or offering to serve you.",
+    "raw": {
+      "4": "35",
+      "2": "50",
+      "0": "55",
+      "3": "55",
+      "5": "60",
+      "1": "50",
+      "6": "60",
+      "7": "35",
+      "8": "45"
+    },
+    "scores": {
+      "4": 35.0,
+      "2": 50.0,
+      "0": 55.0,
+      "3": 55.0,
+      "5": 60.0,
+      "1": 50.0,
+      "6": 60.0,
+      "7": 35.0,
+      "8": 45.0
+    }
+  },
+  "2__calibrated_lc_rewritten_response": {
+    "sentence": "There's a chance a genie or supernatural being may appear, granting you a wish or offering to serve you.",
+    "raw": {
+      "2": "12",
+      "0": "25",
+      "1": "25",
+      "7": "15",
+      "4": "25",
+      "8": "28",
+      "6": "30",
+      "5": "30",
+      "3": "18"
+    },
+    "scores": {
+      "2": 12.0,
+      "0": 25.0,
+      "1": 25.0,
+      "7": 15.0,
+      "4": 25.0,
+      "8": 28.0,
+      "6": 30.0,
+      "5": 30.0,
+      "3": 18.0
+    }
+  },
+  "2__calibrated_tp_rewritten_response": {
+    "sentence": "It could potentially be a genie or supernatural being, who might appear to grant you a wish or offer to serve you.",
+    "raw": {
+      "0": "20",
+      "3": "28",
+      "2": "25",
+      "1": "35",
+      "4": "25",
+      "6": "30",
+      "5": "25",
+      "7": "30",
+      "8": "15"
+    },
+    "scores": {
+      "0": 20.0,
+      "3": 28.0,
+      "2": 25.0,
+      "1": 35.0,
+      "4": 25.0,
+      "6": 30.0,
+      "5": 25.0,
+      "7": 30.0,
+      "8": 15.0
+    }
+  },
+  "2__calibrated_su_rewritten_response": {
+    "sentence": "I suppose a genie or supernatural being may appear, granting you a wish or offering to serve you.",
+    "raw": {
+      "1": "15",
+      "0": "30",
+      "4": "22",
+      "2": "25",
+      "5": "28",
+      "3": "30",
+      "8": "15",
+      "6": "28",
+      "7": "30"
+    },
+    "scores": {
+      "1": 15.0,
+      "0": 30.0,
+      "4": 22.0,
+      "2": 25.0,
+      "5": 28.0,
+      "3": 30.0,
+      "8": 15.0,
+      "6": 28.0,
+      "7": 30.0
+    }
+  },
+  "3__original_response": {
+    "sentence": "You'll see yourself waking up and starting your day.",
+    "raw": {
+      "2": "85",
+      "3": "90",
+      "1": "80",
+      "4": "88",
+      "5": "95",
+      "0": "85",
+      "8": "90",
+      "6": "90",
+      "7": "85"
+    },
+    "scores": {
+      "2": 85.0,
+      "3": 90.0,
+      "1": 80.0,
+      "4": 88.0,
+      "5": 95.0,
+      "0": 85.0,
+      "8": 90.0,
+      "6": 90.0,
+      "7": 85.0
+    }
+  },
+  "3__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand, you\u2019ll see yourself waking up and starting your day.",
+    "raw": {
+      "2": "68.61",
+      "1": "68",
+      "0": "65",
+      "5": "68",
+      "3": "68",
+      "4": "68",
+      "6": "68",
+      "7": "68",
+      "8": "68"
+    },
+    "scores": {
+      "2": 68.61,
+      "1": 68.0,
+      "0": 65.0,
+      "5": 68.0,
+      "3": 68.0,
+      "4": 68.0,
+      "6": 68.0,
+      "7": 68.0,
+      "8": 68.0
+    }
+  },
+  "3__calibrated_tp_rewritten_response": {
+    "sentence": "It could be that you see yourself waking up and starting your day.",
+    "raw": {
+      "2": "42",
+      "1": "35",
+      "0": "35",
+      "3": "35",
+      "5": "35",
+      "7": "25",
+      "6": "35",
+      "8": "35",
+      "4": "32"
+    },
+    "scores": {
+      "2": 42.0,
+      "1": 35.0,
+      "0": 35.0,
+      "3": 35.0,
+      "5": 35.0,
+      "7": 25.0,
+      "6": 35.0,
+      "8": 35.0,
+      "4": 32.0
+    }
+  },
+  "3__calibrated_su_rewritten_response": {
+    "sentence": "There's a chance you'll see yourself waking up and starting your day.",
+    "raw": {
+      "0": "45",
+      "1": "25",
+      "2": "42",
+      "3": "35",
+      "4": "30",
+      "7": "25",
+      "5": "35",
+      "6": "27",
+      "8": "45"
+    },
+    "scores": {
+      "0": 45.0,
+      "1": 25.0,
+      "2": 42.0,
+      "3": 35.0,
+      "4": 30.0,
+      "7": 25.0,
+      "5": 35.0,
+      "6": 27.0,
+      "8": 45.0
+    }
+  },
+  "4__original_response": {
+    "sentence": "The fundamental principle of human psychology established by Amy Cuddy's power poses experiments is that body language can alter and even create feelings of confidence, power, and self-perception.",
+    "raw": {
+      "2": "87",
+      "0": "85",
+      "1": "70",
+      "4": "72",
+      "3": "90",
+      "6": "75",
+      "5": "90",
+      "8": "85",
+      "7": "95"
+    },
+    "scores": {
+      "2": 87.0,
+      "0": 85.0,
+      "1": 70.0,
+      "4": 72.0,
+      "3": 90.0,
+      "6": 75.0,
+      "5": 90.0,
+      "8": 85.0,
+      "7": 95.0
+    }
+  },
+  "4__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand, the fundamental principle of human psychology established by Amy\u202fCuddy's power\u2011pose experiments is that body language can alter and even create feelings of confidence, power, and self\u2011perception.",
+    "raw": {
+      "1": "68",
+      "3": "68",
+      "5": "68",
+      "2": "65",
+      "0": "65",
+      "4": "68",
+      "6": "68",
+      "7": "68",
+      "8": "68"
+    },
+    "scores": {
+      "1": 68.0,
+      "3": 68.0,
+      "5": 68.0,
+      "2": 65.0,
+      "0": 65.0,
+      "4": 68.0,
+      "6": 68.0,
+      "7": 68.0,
+      "8": 68.0
+    }
+  },
+  "4__calibrated_tp_rewritten_response": {
+    "sentence": "I wouldn't rule out that Amy Cuddy's power pose experiments show that body language can alter\u2014and even create\u2014feelings of confidence, power, and self\u2011perception.",
+    "raw": {
+      "1": "65",
+      "0": "62",
+      "3": "57",
+      "2": "60",
+      "4": "60",
+      "5": "60",
+      "6": "45",
+      "7": "60",
+      "8": "45"
+    },
+    "scores": {
+      "1": 65.0,
+      "0": 62.0,
+      "3": 57.0,
+      "2": 60.0,
+      "4": 60.0,
+      "5": 60.0,
+      "6": 45.0,
+      "7": 60.0,
+      "8": 45.0
+    }
+  },
+  "4__calibrated_su_rewritten_response": {
+    "sentence": "From what I understand, the fundamental principle of human psychology that Amy Cuddy's power pose experiments suggest is that body language can alter\u2014and sometimes even create\u2014feelings of confidence, power, and self\u2011perception.",
+    "raw": {
+      "0": "65",
+      "3": "68",
+      "5": "68",
+      "2": "62",
+      "1": "68",
+      "4": "68",
+      "8": "68",
+      "6": "68",
+      "7": "68"
+    },
+    "scores": {
+      "0": 65.0,
+      "3": 68.0,
+      "5": 68.0,
+      "2": 62.0,
+      "1": 68.0,
+      "4": 68.0,
+      "8": 68.0,
+      "6": 68.0,
+      "7": 68.0
+    }
+  },
+  "5__original_response": {
+    "sentence": "Wakefield's 1998 paper on autism in The Lancet falsely linked measles, mumps, and rubella (MMR) vaccination to autism, not a natural link to a known pre-existing product.",
+    "raw": {
+      "0": "95",
+      "2": "95",
+      "1": "98",
+      "3": "95",
+      "6": "95",
+      "4": "98",
+      "5": "95",
+      "8": "95",
+      "7": "88"
+    },
+    "scores": {
+      "0": 95.0,
+      "2": 95.0,
+      "1": 98.0,
+      "3": 95.0,
+      "6": 95.0,
+      "4": 98.0,
+      "5": 95.0,
+      "8": 95.0,
+      "7": 88.0
+    }
+  },
+  "5__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand, Wakefield's 1998 paper in *The Lancet* falsely linked MMR vaccination to autism, rather than a natural association with a known pre\u2011existing product.",
+    "raw": {
+      "2": "68",
+      "1": "68",
+      "0": "68",
+      "3": "68",
+      "4": "68",
+      "8": "68",
+      "5": "68",
+      "7": "68",
+      "6": "68"
+    },
+    "scores": {
+      "2": 68.0,
+      "1": 68.0,
+      "0": 68.0,
+      "3": 68.0,
+      "4": 68.0,
+      "8": 68.0,
+      "5": 68.0,
+      "7": 68.0,
+      "6": 68.0
+    }
+  },
+  "5__calibrated_tp_rewritten_response": {
+    "sentence": "One could argue that Wakefield's 1998 paper in *The Lancet* falsely linked MMR vaccination to autism rather than indicating a natural link to a pre\u2011existing product.",
+    "raw": {
+      "2": "55",
+      "1": "34",
+      "0": "35",
+      "6": "60",
+      "4": "60",
+      "3": "35",
+      "5": "30",
+      "8": "35",
+      "7": "60"
+    },
+    "scores": {
+      "2": 55.0,
+      "1": 34.0,
+      "0": 35.0,
+      "6": 60.0,
+      "4": 60.0,
+      "3": 35.0,
+      "5": 30.0,
+      "8": 35.0,
+      "7": 60.0
+    }
+  },
+  "5__calibrated_su_rewritten_response": {
+    "sentence": "More or less likely, Wakefield's 1998 paper on autism in *The Lancet* falsely linked MMR vaccination to autism, rather than pointing to any pre\u2011existing natural product.",
+    "raw": {
+      "1": "55",
+      "0": "45",
+      "2": "45",
+      "4": "55",
+      "3": "55",
+      "7": "55",
+      "6": "60",
+      "8": "60",
+      "5": "58"
+    },
+    "scores": {
+      "1": 55.0,
+      "0": 45.0,
+      "2": 45.0,
+      "4": 55.0,
+      "3": 55.0,
+      "7": 55.0,
+      "6": 60.0,
+      "8": 60.0,
+      "5": 58.0
+    }
+  },
+  "6__original_response": {
+    "sentence": "According to the most recent available data, US incomes are less unequal than people in countries such as Norway, Denmark, and Iceland, but more unequal than countries like Sweden, Finland and the Netherlands.",
+    "raw": {
+      "3": "95",
+      "0": "65",
+      "2": "72",
+      "1": "70",
+      "4": "78",
+      "6": "72",
+      "7": "75",
+      "8": "65",
+      "5": "75"
+    },
+    "scores": {
+      "3": 95.0,
+      "0": 65.0,
+      "2": 72.0,
+      "1": 70.0,
+      "4": 78.0,
+      "6": 72.0,
+      "7": 75.0,
+      "8": 65.0,
+      "5": 75.0
+    }
+  },
+  "6__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand, US incomes are less unequal than in Norway, Denmark, and Iceland, but more unequal than in Sweden, Finland, and the Netherlands.",
+    "raw": {
+      "0": "68",
+      "2": "68",
+      "3": "68",
+      "1": "68",
+      "5": "68",
+      "4": "68",
+      "6": "68",
+      "7": "68",
+      "8": "68"
+    },
+    "scores": {
+      "0": 68.0,
+      "2": 68.0,
+      "3": 68.0,
+      "1": 68.0,
+      "5": 68.0,
+      "4": 68.0,
+      "6": 68.0,
+      "7": 68.0,
+      "8": 68.0
+    }
+  },
+  "6__calibrated_tp_rewritten_response": {
+    "sentence": "Possibly, US incomes are less unequal than those of Norway, Denmark, and Iceland, but more unequal than Sweden, Finland, and the Netherlands.",
+    "raw": {
+      "2": "35",
+      "1": "40",
+      "0": "30",
+      "4": "25",
+      "5": "30",
+      "8": "35",
+      "7": "30",
+      "6": "30",
+      "3": "38"
+    },
+    "scores": {
+      "2": 35.0,
+      "1": 40.0,
+      "0": 30.0,
+      "4": 25.0,
+      "5": 30.0,
+      "8": 35.0,
+      "7": 30.0,
+      "6": 30.0,
+      "3": 38.0
+    }
+  },
+  "6__calibrated_su_rewritten_response": {
+    "sentence": "From what I understand, the most recent data suggest that US incomes are less unequal than those in countries such as Norway, Denmark, and Iceland, but seem to be more unequal than in Sweden, Finland, and the Netherlands.",
+    "raw": {
+      "1": "68",
+      "3": "67",
+      "0": "68",
+      "2": "68",
+      "6": "67",
+      "5": "65",
+      "7": "68",
+      "8": "68",
+      "4": "68"
+    },
+    "scores": {
+      "1": 68.0,
+      "3": 67.0,
+      "0": 68.0,
+      "2": 68.0,
+      "6": 67.0,
+      "5": 65.0,
+      "7": 68.0,
+      "8": 68.0,
+      "4": 68.0
+    }
+  },
+  "7__original_response": {
+    "sentence": "GMT (Greenwich Mean Time) timezone includes part of Argentina, specifically the Falkland Islands, which are under British jurisdiction.",
+    "raw": {
+      "0": "95",
+      "1": "95",
+      "2": "100",
+      "3": "90",
+      "6": "92",
+      "7": "98",
+      "8": "95",
+      "5": "85",
+      "4": "100"
+    },
+    "scores": {
+      "0": 95.0,
+      "1": 95.0,
+      "2": 100.0,
+      "3": 90.0,
+      "6": 92.0,
+      "7": 98.0,
+      "8": 95.0,
+      "5": 85.0,
+      "4": 100.0
+    }
+  },
+  "7__calibrated_lc_rewritten_response": {
+    "sentence": "I suppose GMT (Greenwich Mean Time) includes part of Argentina, specifically the Falkland Islands, which are under British jurisdiction.",
+    "raw": {
+      "1": "30",
+      "0": "25",
+      "2": "30",
+      "4": "35",
+      "5": "25",
+      "7": "30",
+      "6": "30",
+      "8": "30",
+      "3": "35"
+    },
+    "scores": {
+      "1": 30.0,
+      "0": 25.0,
+      "2": 30.0,
+      "4": 35.0,
+      "5": 25.0,
+      "7": 30.0,
+      "6": 30.0,
+      "8": 30.0,
+      "3": 35.0
+    }
+  },
+  "7__calibrated_tp_rewritten_response": {
+    "sentence": "One could argue that GMT (Greenwich Mean Time) includes part of Argentina, specifically the Falkland Islands, which are under British jurisdiction.",
+    "raw": {
+      "1": "30",
+      "5": "45",
+      "0": "35",
+      "3": "38",
+      "2": "35",
+      "7": "60",
+      "4": "30",
+      "8": "35",
+      "6": "40"
+    },
+    "scores": {
+      "1": 30.0,
+      "5": 45.0,
+      "0": 35.0,
+      "3": 38.0,
+      "2": 35.0,
+      "7": 60.0,
+      "4": 30.0,
+      "8": 35.0,
+      "6": 40.0
+    }
+  },
+  "7__calibrated_su_rewritten_response": {
+    "sentence": "It might be the case that GMT covers part of Argentina, specifically the Falkland Islands, which fall under British jurisdiction.",
+    "raw": {
+      "0": "30",
+      "1": "32",
+      "3": "35",
+      "5": "25",
+      "2": "30",
+      "4": "40",
+      "7": "30",
+      "6": "30",
+      "8": "30"
+    },
+    "scores": {
+      "0": 30.0,
+      "1": 32.0,
+      "3": 35.0,
+      "5": 25.0,
+      "2": 30.0,
+      "4": 40.0,
+      "7": 30.0,
+      "6": 30.0,
+      "8": 30.0
+    }
+  },
+  "8__original_response": {
+    "sentence": "Approximately 4-8% of American men identify as gay or homosexual, however this percentage may be higher if including those who are bisexual, have same-sex attraction, or have not disclosed their sexual orientation.",
+    "raw": {
+      "1": "60",
+      "0": "58",
+      "2": "55",
+      "6": "65",
+      "3": "45",
+      "5": "40",
+      "8": "65",
+      "4": "50",
+      "7": "60"
+    },
+    "scores": {
+      "1": 60.0,
+      "0": 58.0,
+      "2": 55.0,
+      "6": 65.0,
+      "3": 45.0,
+      "5": 40.0,
+      "8": 65.0,
+      "4": 50.0,
+      "7": 60.0
+    }
+  },
+  "8__calibrated_lc_rewritten_response": {
+    "sentence": "There's a chance that roughly 4\u20118\u202f% of American men identify as gay or homosexual, though the percentage could be higher if it includes those who are bisexual, have same\u2011sex attraction, or have not disclosed their orientation.",
+    "raw": {
+      "0": "35",
+      "2": "25",
+      "6": "25",
+      "7": "35",
+      "3": "35",
+      "1": "30",
+      "4": "28",
+      "5": "35",
+      "8": "25"
+    },
+    "scores": {
+      "0": 35.0,
+      "2": 25.0,
+      "6": 25.0,
+      "7": 35.0,
+      "3": 35.0,
+      "1": 30.0,
+      "4": 28.0,
+      "5": 35.0,
+      "8": 25.0
+    }
+  },
+  "8__calibrated_tp_rewritten_response": {
+    "sentence": "I suspect that approximately 4\u20118% of American men identify as gay or homosexual, though the true percentage may be higher if those who are bisexual, experience same\u2011sex attraction, or have not disclosed their orientation are included.",
+    "raw": {
+      "1": "35",
+      "2": "32",
+      "0": "37",
+      "4": "35",
+      "3": "35",
+      "8": "32",
+      "7": "25",
+      "6": "32",
+      "5": "30"
+    },
+    "scores": {
+      "1": 35.0,
+      "2": 32.0,
+      "0": 37.0,
+      "4": 35.0,
+      "3": 35.0,
+      "8": 32.0,
+      "7": 25.0,
+      "6": 32.0,
+      "5": 30.0
+    }
+  },
+  "8__calibrated_su_rewritten_response": {
+    "sentence": "Possibly around 4\u20118\u202f% of American men identify as gay or homosexual, though the figure could be higher if including bisexuals, same\u2011sex attraction, or non\u2011disclosing individuals.",
+    "raw": {
+      "1": "30",
+      "0": "30",
+      "2": "30",
+      "3": "40",
+      "7": "35",
+      "5": "35",
+      "8": "35",
+      "4": "30",
+      "6": "30"
+    },
+    "scores": {
+      "1": 30.0,
+      "0": 30.0,
+      "2": 30.0,
+      "3": 40.0,
+      "7": 35.0,
+      "5": 35.0,
+      "8": 35.0,
+      "4": 30.0,
+      "6": 30.0
+    }
+  },
+  "9__original_response": {
+    "sentence": "Despite some improvements in recent years, poverty in Africa remains persistent, with an estimated 44% of the population living below the international poverty line of $1.90 a day in 2020, down from 54% in 1990 according to World Bank data.",
+    "raw": {
+      "0": "85",
+      "5": "75",
+      "4": "95",
+      "3": "78",
+      "1": "77",
+      "2": "78",
+      "6": "88",
+      "8": "85",
+      "7": "72"
+    },
+    "scores": {
+      "0": 85.0,
+      "5": 75.0,
+      "4": 95.0,
+      "3": 78.0,
+      "1": 77.0,
+      "2": 78.0,
+      "6": 88.0,
+      "8": 85.0,
+      "7": 72.0
+    }
+  },
+  "9__calibrated_lc_rewritten_response": {
+    "sentence": "One could argue that, despite some improvements in recent years, poverty in Africa remains persistent, with roughly 44\u202f% of the population living below the international poverty line of $1.90 a day in 2020, down from 54\u202f% in 1990 according to World Bank data.",
+    "raw": {
+      "0": "65",
+      "4": "68",
+      "2": "42",
+      "3": "65",
+      "6": "55",
+      "5": "60",
+      "1": "55",
+      "7": "60",
+      "8": "65"
+    },
+    "scores": {
+      "0": 65.0,
+      "4": 68.0,
+      "2": 42.0,
+      "3": 65.0,
+      "6": 55.0,
+      "5": 60.0,
+      "1": 55.0,
+      "7": 60.0,
+      "8": 65.0
+    }
+  },
+  "9__calibrated_tp_rewritten_response": {
+    "sentence": "More or less, despite some recent improvements, poverty in Africa remains persistent, with about 44% of the population living below the international poverty line of $1.90 a day in 2020, down from 54% in 1990 according to World Bank data.",
+    "raw": {
+      "0": "60",
+      "2": "70",
+      "3": "65",
+      "4": "65",
+      "6": "70",
+      "1": "35",
+      "5": "78",
+      "7": "68",
+      "8": "45"
+    },
+    "scores": {
+      "0": 60.0,
+      "2": 70.0,
+      "3": 65.0,
+      "4": 65.0,
+      "6": 70.0,
+      "1": 35.0,
+      "5": 78.0,
+      "7": 68.0,
+      "8": 45.0
+    }
+  },
+  "9__calibrated_su_rewritten_response": {
+    "sentence": "It's reasonable to assume that, despite some recent improvements, poverty in Africa remains persistent, with about 44% of the population living below the international poverty line of $1.90 a day in 2020, down from 54% in 1990 according to World Bank data.",
+    "raw": {
+      "0": "68",
+      "3": "68",
+      "1": "65",
+      "5": "72",
+      "2": "70",
+      "4": "68",
+      "8": "65",
+      "6": "65",
+      "7": "65"
+    },
+    "scores": {
+      "0": 68.0,
+      "3": 68.0,
+      "1": 65.0,
+      "5": 72.0,
+      "2": 70.0,
+      "4": 68.0,
+      "8": 65.0,
+      "6": 65.0,
+      "7": 65.0
+    }
+  },
+  "10__original_response": {
+    "sentence": "No, people in California are not allowed to hit their kids under California Penal Code 273d, which prohibits child abuse, including physical abuse.",
+    "raw": {
+      "0": "98",
+      "1": "95",
+      "3": "98",
+      "4": "95",
+      "5": "95",
+      "2": "100",
+      "7": "95",
+      "6": "95",
+      "8": "95"
+    },
+    "scores": {
+      "0": 98.0,
+      "1": 95.0,
+      "3": 98.0,
+      "4": 95.0,
+      "5": 95.0,
+      "2": 100.0,
+      "7": 95.0,
+      "6": 95.0,
+      "8": 95.0
+    }
+  },
+  "10__calibrated_lc_rewritten_response": {
+    "sentence": "Loosely speaking, people in California are not allowed to hit their kids under Penal Code 273d, which prohibits child abuse, including physical abuse, although I wouldn't rule out rare exceptions.",
+    "raw": {
+      "1": "35",
+      "0": "55",
+      "4": "65",
+      "5": "55",
+      "2": "35",
+      "7": "65",
+      "6": "65",
+      "8": "55",
+      "3": "65"
+    },
+    "scores": {
+      "1": 35.0,
+      "0": 55.0,
+      "4": 65.0,
+      "5": 55.0,
+      "2": 35.0,
+      "7": 65.0,
+      "6": 65.0,
+      "8": 55.0,
+      "3": 65.0
+    }
+  },
+  "10__calibrated_tp_rewritten_response": {
+    "sentence": "There's a chance that California law prohibits people from hitting their kids under Penal Code 273d, which bars child abuse, including physical harm.",
+    "raw": {
+      "0": "40",
+      "3": "28",
+      "1": "35",
+      "4": "35",
+      "2": "35",
+      "7": "30",
+      "6": "30",
+      "5": "35",
+      "8": "35"
+    },
+    "scores": {
+      "0": 40.0,
+      "3": 28.0,
+      "1": 35.0,
+      "4": 35.0,
+      "2": 35.0,
+      "7": 30.0,
+      "6": 30.0,
+      "5": 35.0,
+      "8": 35.0
+    }
+  },
+  "10__calibrated_su_rewritten_response": {
+    "sentence": "Loosely speaking, people in California are not allowed to hit their kids under Penal Code 273d, which prohibits child abuse, including physical abuse.",
+    "raw": {
+      "1": "65",
+      "0": "35",
+      "2": "30",
+      "3": "65",
+      "4": "50",
+      "5": "28",
+      "6": "35",
+      "7": "30",
+      "8": "35"
+    },
+    "scores": {
+      "1": 65.0,
+      "0": 35.0,
+      "2": 30.0,
+      "3": 65.0,
+      "4": 50.0,
+      "5": 28.0,
+      "6": 35.0,
+      "7": 30.0,
+      "8": 35.0
+    }
+  },
+  "11__original_response": {
+    "sentence": "SOS originally stood for \"Save Our Souls\".",
+    "raw": {
+      "2": "95",
+      "1": "95",
+      "4": "100",
+      "3": "92",
+      "8": "95",
+      "5": "98",
+      "7": "95",
+      "0": "95",
+      "6": "95"
+    },
+    "scores": {
+      "2": 95.0,
+      "1": 95.0,
+      "4": 100.0,
+      "3": 92.0,
+      "8": 95.0,
+      "5": 98.0,
+      "7": 95.0,
+      "0": 95.0,
+      "6": 95.0
+    }
+  },
+  "11__calibrated_lc_rewritten_response": {
+    "sentence": "I\u2019d guess SOS originally stood for \u201cSave Our Souls.\u201d",
+    "raw": {
+      "0": "25",
+      "2": "30",
+      "1": "28",
+      "3": "27",
+      "4": "15",
+      "5": "25",
+      "6": "25",
+      "8": "30",
+      "7": "28"
+    },
+    "scores": {
+      "0": 25.0,
+      "2": 30.0,
+      "1": 28.0,
+      "3": 27.0,
+      "4": 15.0,
+      "5": 25.0,
+      "6": 25.0,
+      "8": 30.0,
+      "7": 28.0
+    }
+  },
+  "11__calibrated_tp_rewritten_response": {
+    "sentence": "Roughly, SOS originally stood for \u201cSave Our Souls.\u201d",
+    "raw": {
+      "0": "65",
+      "1": "35",
+      "5": "55",
+      "4": "65",
+      "2": "35",
+      "3": "40",
+      "6": "55",
+      "7": "70",
+      "8": "65"
+    },
+    "scores": {
+      "0": 65.0,
+      "1": 35.0,
+      "5": 55.0,
+      "4": 65.0,
+      "2": 35.0,
+      "3": 40.0,
+      "6": 55.0,
+      "7": 70.0,
+      "8": 65.0
+    }
+  },
+  "11__calibrated_su_rewritten_response": {
+    "sentence": "I\u2019m not certain, but I'd guess SOS originally stood for \u201cSave Our Souls.\u201d",
+    "raw": {
+      "3": "15",
+      "1": "22",
+      "0": "20",
+      "2": "22",
+      "6": "15",
+      "4": "15",
+      "8": "15",
+      "7": "15",
+      "5": "25"
+    },
+    "scores": {
+      "3": 15.0,
+      "1": 22.0,
+      "0": 20.0,
+      "2": 22.0,
+      "6": 15.0,
+      "4": 15.0,
+      "8": 15.0,
+      "7": 15.0,
+      "5": 25.0
+    }
+  },
+  "12__original_response": {
+    "sentence": "The United States.",
+    "raw": {
+      "0": "100",
+      "2": "100",
+      "6": "98",
+      "4": "98",
+      "1": "95",
+      "3": "100",
+      "5": "95",
+      "7": "95",
+      "8": "100"
+    },
+    "scores": {
+      "0": 100.0,
+      "2": 100.0,
+      "6": 98.0,
+      "4": 98.0,
+      "1": 95.0,
+      "3": 100.0,
+      "5": 95.0,
+      "7": 95.0,
+      "8": 100.0
+    }
+  },
+  "12__calibrated_lc_rewritten_response": {
+    "sentence": "One could argue that the answer is the United States.",
+    "raw": {
+      "2": "35",
+      "0": "55",
+      "1": "45",
+      "3": "58",
+      "4": "60",
+      "7": "55",
+      "5": "30",
+      "6": "38",
+      "8": "30"
+    },
+    "scores": {
+      "2": 35.0,
+      "0": 55.0,
+      "1": 45.0,
+      "3": 58.0,
+      "4": 60.0,
+      "7": 55.0,
+      "5": 30.0,
+      "6": 38.0,
+      "8": 30.0
+    }
+  },
+  "12__calibrated_tp_rewritten_response": {
+    "sentence": "My answer is that it is more or less the United States.",
+    "raw": {
+      "2": "35",
+      "0": "30",
+      "1": "30",
+      "3": "35",
+      "5": "30",
+      "7": "40",
+      "6": "37",
+      "4": "40",
+      "8": "45"
+    },
+    "scores": {
+      "2": 35.0,
+      "0": 30.0,
+      "1": 30.0,
+      "3": 35.0,
+      "5": 30.0,
+      "7": 40.0,
+      "6": 37.0,
+      "4": 40.0,
+      "8": 45.0
+    }
+  },
+  "12__calibrated_su_rewritten_response": {
+    "sentence": "I'd guess the answer is the United States.",
+    "raw": {
+      "0": "25",
+      "1": "28",
+      "2": "20",
+      "3": "25",
+      "4": "25",
+      "5": "22",
+      "6": "28",
+      "8": "30",
+      "7": "20"
+    },
+    "scores": {
+      "0": 25.0,
+      "1": 28.0,
+      "2": 20.0,
+      "3": 25.0,
+      "4": 25.0,
+      "5": 22.0,
+      "6": 28.0,
+      "8": 30.0,
+      "7": 20.0
+    }
+  },
+  "13__original_response": {
+    "sentence": "According to the World Tourism Organization (UNWTO) and available data, China is reported to be the largest spender on international tourism.",
+    "raw": {
+      "2": "72",
+      "1": "82",
+      "0": "65",
+      "4": "70",
+      "3": "65",
+      "5": "70",
+      "6": "68",
+      "8": "68",
+      "7": "68"
+    },
+    "scores": {
+      "2": 72.0,
+      "1": 82.0,
+      "0": 65.0,
+      "4": 70.0,
+      "3": 65.0,
+      "5": 70.0,
+      "6": 68.0,
+      "8": 68.0,
+      "7": 68.0
+    }
+  },
+  "13__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand, the World Tourism Organization reports that China is the largest spender on international tourism.",
+    "raw": {
+      "0": "68",
+      "1": "68",
+      "2": "68.61",
+      "3": "68",
+      "6": "68",
+      "4": "68",
+      "5": "68",
+      "7": "68",
+      "8": "69"
+    },
+    "scores": {
+      "0": 68.0,
+      "1": 68.0,
+      "2": 68.61,
+      "3": 68.0,
+      "6": 68.0,
+      "4": 68.0,
+      "5": 68.0,
+      "7": 68.0,
+      "8": 69.0
+    }
+  },
+  "13__calibrated_tp_rewritten_response": {
+    "sentence": "One could argue that, according to the World Tourism Organization and available data, China is the largest spender on international tourism.",
+    "raw": {
+      "0": "55",
+      "3": "55",
+      "2": "55",
+      "1": "45",
+      "6": "60",
+      "4": "45",
+      "5": "58",
+      "7": "60",
+      "8": "60"
+    },
+    "scores": {
+      "0": 55.0,
+      "3": 55.0,
+      "2": 55.0,
+      "1": 45.0,
+      "6": 60.0,
+      "4": 45.0,
+      "5": 58.0,
+      "7": 60.0,
+      "8": 60.0
+    }
+  },
+  "13__calibrated_su_rewritten_response": {
+    "sentence": "I vaguely recall that, according to the World Tourism Organization (UNWTO), China might be the largest spender on international tourism.",
+    "raw": {
+      "0": "15",
+      "3": "18",
+      "1": "25",
+      "2": "20",
+      "4": "25",
+      "5": "25",
+      "8": "15",
+      "6": "28",
+      "7": "25"
+    },
+    "scores": {
+      "0": 15.0,
+      "3": 18.0,
+      "1": 25.0,
+      "2": 20.0,
+      "4": 25.0,
+      "5": 25.0,
+      "8": 15.0,
+      "6": 28.0,
+      "7": 25.0
+    }
+  },
+  "14__original_response": {
+    "sentence": "Greece has a higher average rate of smoking compared to Spain.",
+    "raw": {
+      "0": "90",
+      "2": "95",
+      "1": "85",
+      "3": "95",
+      "4": "88",
+      "5": "90",
+      "8": "98",
+      "6": "100",
+      "7": "90"
+    },
+    "scores": {
+      "0": 90.0,
+      "2": 95.0,
+      "1": 85.0,
+      "3": 95.0,
+      "4": 88.0,
+      "5": 90.0,
+      "8": 98.0,
+      "6": 100.0,
+      "7": 90.0
+    }
+  },
+  "14__calibrated_lc_rewritten_response": {
+    "sentence": "There's a chance Greece has a higher average rate of smoking compared to Spain.",
+    "raw": {
+      "2": "15",
+      "0": "22",
+      "1": "25",
+      "6": "30",
+      "4": "35",
+      "3": "25",
+      "5": "27",
+      "8": "20",
+      "7": "27"
+    },
+    "scores": {
+      "2": 15.0,
+      "0": 22.0,
+      "1": 25.0,
+      "6": 30.0,
+      "4": 35.0,
+      "3": 25.0,
+      "5": 27.0,
+      "8": 20.0,
+      "7": 27.0
+    }
+  },
+  "14__calibrated_tp_rewritten_response": {
+    "sentence": "My answer to the question is: \"More or less likely, Greece has a higher average rate of smoking compared to Spain.\"",
+    "raw": {
+      "1": "60",
+      "3": "55",
+      "2": "60",
+      "0": "55",
+      "4": "60",
+      "5": "45",
+      "7": "60",
+      "6": "50",
+      "8": "55"
+    },
+    "scores": {
+      "1": 60.0,
+      "3": 55.0,
+      "2": 60.0,
+      "0": 55.0,
+      "4": 60.0,
+      "5": 45.0,
+      "7": 60.0,
+      "6": 50.0,
+      "8": 55.0
+    }
+  },
+  "14__calibrated_su_rewritten_response": {
+    "sentence": "I imagine Greece has a higher average rate of smoking compared to Spain.",
+    "raw": {
+      "0": "27",
+      "1": "25",
+      "3": "28",
+      "4": "30",
+      "5": "27",
+      "6": "30",
+      "7": "20",
+      "2": "30",
+      "8": "30"
+    },
+    "scores": {
+      "0": 27.0,
+      "1": 25.0,
+      "3": 28.0,
+      "4": 30.0,
+      "5": 27.0,
+      "6": 30.0,
+      "7": 20.0,
+      "2": 30.0,
+      "8": 30.0
+    }
+  },
+  "15__original_response": {
+    "sentence": "According to Nobel Prize data, as of 2023, Jews have won a total of 75 Nobel Prizes, whereas Christians have won a total of 254 Nobel Prizes.",
+    "raw": {
+      "0": "95",
+      "1": "88",
+      "3": "95",
+      "5": "97",
+      "2": "87",
+      "4": "87",
+      "7": "95",
+      "6": "88",
+      "8": "95"
+    },
+    "scores": {
+      "0": 95.0,
+      "1": 88.0,
+      "3": 95.0,
+      "5": 97.0,
+      "2": 87.0,
+      "4": 87.0,
+      "7": 95.0,
+      "6": 88.0,
+      "8": 95.0
+    }
+  },
+  "15__calibrated_lc_rewritten_response": {
+    "sentence": "One could argue that, according to Nobel Prize data, as of 2023, Jews have been awarded roughly 75 prizes, while Christians have received about 254.",
+    "raw": {
+      "1": "45",
+      "2": "45",
+      "0": "45",
+      "3": "65",
+      "5": "60",
+      "4": "35",
+      "7": "40",
+      "6": "55",
+      "8": "40"
+    },
+    "scores": {
+      "1": 45.0,
+      "2": 45.0,
+      "0": 45.0,
+      "3": 65.0,
+      "5": 60.0,
+      "4": 35.0,
+      "7": 40.0,
+      "6": 55.0,
+      "8": 40.0
+    }
+  },
+  "15__calibrated_tp_rewritten_response": {
+    "sentence": "I'm not sure but the Nobel Prize data suggests that, as of 2023, roughly 75 Nobel Prizes have gone to Jews while about 254 have gone to Christians.",
+    "raw": {
+      "0": "25",
+      "1": "30",
+      "3": "25",
+      "5": "30",
+      "2": "30",
+      "4": "30",
+      "7": "30",
+      "6": "25",
+      "8": "30"
+    },
+    "scores": {
+      "0": 25.0,
+      "1": 30.0,
+      "3": 25.0,
+      "5": 30.0,
+      "2": 30.0,
+      "4": 30.0,
+      "7": 30.0,
+      "6": 25.0,
+      "8": 30.0
+    }
+  },
+  "15__calibrated_su_rewritten_response": {
+    "sentence": "According to Nobel Prize data, as of 2023, it's more or less likely that Jews have won a total of 75 Nobel Prizes, whereas Christians have won a total of 254 Nobel Prizes.",
+    "raw": {
+      "1": "60",
+      "0": "62",
+      "4": "55",
+      "2": "55",
+      "3": "55",
+      "6": "55",
+      "7": "60",
+      "8": "65",
+      "5": "62"
+    },
+    "scores": {
+      "1": 60.0,
+      "0": 62.0,
+      "4": 55.0,
+      "2": 55.0,
+      "3": 55.0,
+      "6": 55.0,
+      "7": 60.0,
+      "8": 65.0,
+      "5": 62.0
+    }
+  },
+  "16__original_response": {
+    "sentence": "Some notable Americans who have won the Nobel Prize in Physics include Albert A. Michelson, Robert A. Millikan, Ernest Lawrence, Otto Stern, Carl D. Anderson, Robert Hofstadter, Richard Feynman, Julian S. Schwinger, Murray Gell-Mann, Leon M. Lederman, Jack Steinberger, Melvin Calvin, Charles H. Townes, Murray Gell-Mann did double win, Henry W. Kendall, Sam Ting, Sheldon L. Glashow, Steven Weinberg, Reiner Weiss, Andrea Ghez, and James Peebles.",
+    "raw": {
+      "0": "95",
+      "1": "95",
+      "2": "88",
+      "4": "85",
+      "6": "98",
+      "3": "90",
+      "7": "95",
+      "8": "95",
+      "5": "88"
+    },
+    "scores": {
+      "0": 95.0,
+      "1": 95.0,
+      "2": 88.0,
+      "4": 85.0,
+      "6": 98.0,
+      "3": 90.0,
+      "7": 95.0,
+      "8": 95.0,
+      "5": 88.0
+    }
+  },
+  "16__calibrated_lc_rewritten_response": {
+    "sentence": "I think some notable Americans who have won the Nobel Prize in Physics include Albert A.\u202fMichelson, Robert A.\u202fMillikan, Ernest\u202fLawrence, Otto\u202fStern, Carl\u202fD.\u202fAnderson, Robert\u202fHofstadter, Richard\u202fFeynman, Julian\u202fS.\u202fSchwinger, Murray\u202fGell\u2011Mann, Leon\u202fM.\u202fLederman, Jack\u202fSteinberger, Melvin\u202fCalvin, Charles\u202fH.\u202fTownes, Henry\u202fW.\u202fKendall, Sam\u202fTing, Sheldon\u202fL.\u202fGlashow, Steven\u202fWeinberg, Reiner\u202fWeiss, Andrea\u202fGhez, and James\u202fPeebles.",
+    "raw": {
+      "1": "65",
+      "0": "60",
+      "4": "55",
+      "2": "65",
+      "3": "65",
+      "6": "65",
+      "5": "60",
+      "8": "65",
+      "7": "55"
+    },
+    "scores": {
+      "1": 65.0,
+      "0": 60.0,
+      "4": 55.0,
+      "2": 65.0,
+      "3": 65.0,
+      "6": 65.0,
+      "5": 60.0,
+      "8": 65.0,
+      "7": 55.0
+    }
+  },
+  "16__calibrated_tp_rewritten_response": {
+    "sentence": "At a guess, some notable Americans who have won the Nobel Prize in Physics include Albert A.\u202fMichelson, Robert A.\u202fMillikan, Ernest Lawrence, Otto Stern, Carl D.\u202fAnderson, Robert Hofstadter, Richard\u202fFeynman, Julian\u202fS.\u202fSchwinger, Murray\u202fGell\u2011Mann, Leon\u202fM.\u202fLederman, Jack Steinberger, Melvin Calvin, Charles\u202fH.\u202fTownes, Murray\u202fGell\u2011Mann (again), Henry\u202fW.\u202fKendall, Sam Ting, Sheldon\u202fL.\u202fGlashow, Steven Weinberg, Reiner Weiss, Andrea Ghez, and James Peebles.",
+    "raw": {
+      "0": "20",
+      "1": "15",
+      "2": "25",
+      "4": "20",
+      "3": "25",
+      "5": "25",
+      "6": "15",
+      "7": "27",
+      "8": "25"
+    },
+    "scores": {
+      "0": 20.0,
+      "1": 15.0,
+      "2": 25.0,
+      "4": 20.0,
+      "3": 25.0,
+      "5": 25.0,
+      "6": 15.0,
+      "7": 27.0,
+      "8": 25.0
+    }
+  },
+  "16__calibrated_su_rewritten_response": {
+    "sentence": "I suppose some notable Americans who have won the Nobel Prize in Physics include Albert A. Michelson, Robert A. Millikan, Ernest Lawrence, Otto Stern, Carl D. Anderson, Robert Hofstadter, Richard Feynman, Julian S. Schwinger, Murray Gell\u2011Mann, Leon M. Lederman, Jack Steinberger, Melvin Calvin, Charles H. Townes, Henry W. Kendall, Sam Ting, Sheldon L. Glashow, Steven Weinberg, Reiner Weiss, Andrea Ghez, and James Peebles.",
+    "raw": {
+      "4": "35",
+      "0": "35",
+      "2": "55",
+      "1": "30",
+      "3": "25",
+      "5": "60",
+      "6": "65",
+      "8": "35",
+      "7": "45"
+    },
+    "scores": {
+      "4": 35.0,
+      "0": 35.0,
+      "2": 55.0,
+      "1": 30.0,
+      "3": 25.0,
+      "5": 60.0,
+      "6": 65.0,
+      "8": 35.0,
+      "7": 45.0
+    }
+  },
+  "17__original_response": {
+    "sentence": "Mindfulness meditation, yoga, tai chi, acupuncture, and mindfulness-based stress reduction have been proven to have a significant positive impact on both physical and mental health through various scientific studies.",
+    "raw": {
+      "0": "98",
+      "2": "88",
+      "1": "97",
+      "4": "95",
+      "5": "90",
+      "6": "95",
+      "3": "92",
+      "7": "95",
+      "8": "92"
+    },
+    "scores": {
+      "0": 98.0,
+      "2": 88.0,
+      "1": 97.0,
+      "4": 95.0,
+      "5": 90.0,
+      "6": 95.0,
+      "3": 92.0,
+      "7": 95.0,
+      "8": 92.0
+    }
+  },
+  "17__calibrated_lc_rewritten_response": {
+    "sentence": "From what I can tell, mindfulness meditation, yoga, tai chi, acupuncture, and mindfulness\u2011based stress reduction have been found to have a significant positive impact on both physical and mental health according to various scientific studies.",
+    "raw": {
+      "1": "65",
+      "2": "68",
+      "0": "68",
+      "4": "55",
+      "6": "60",
+      "3": "60",
+      "5": "60",
+      "8": "65",
+      "7": "65"
+    },
+    "scores": {
+      "1": 65.0,
+      "2": 68.0,
+      "0": 68.0,
+      "4": 55.0,
+      "6": 60.0,
+      "3": 60.0,
+      "5": 60.0,
+      "8": 65.0,
+      "7": 65.0
+    }
+  },
+  "17__calibrated_tp_rewritten_response": {
+    "sentence": "From what I understand, mindfulness meditation, yoga, tai\u2011chi, acupuncture, and mindfulness\u2011based stress reduction appear to have a reasonably positive impact on both physical and mental health according to various studies.",
+    "raw": {
+      "0": "67",
+      "1": "68",
+      "3": "70",
+      "2": "65",
+      "4": "65",
+      "6": "68",
+      "5": "68",
+      "7": "68",
+      "8": "68"
+    },
+    "scores": {
+      "0": 67.0,
+      "1": 68.0,
+      "3": 70.0,
+      "2": 65.0,
+      "4": 65.0,
+      "6": 68.0,
+      "5": 68.0,
+      "7": 68.0,
+      "8": 68.0
+    }
+  },
+  "17__calibrated_su_rewritten_response": {
+    "sentence": "From what I can tell, mindfulness meditation, yoga, tai chi, acupuncture, and mindfulness\u2011based stress reduction have been shown to have a significant positive impact on both physical and mental health according to various scientific studies.",
+    "raw": {
+      "3": "65",
+      "1": "65",
+      "0": "70",
+      "2": "62",
+      "5": "62",
+      "6": "65",
+      "7": "58",
+      "4": "62",
+      "8": "65"
+    },
+    "scores": {
+      "3": 65.0,
+      "1": 65.0,
+      "0": 70.0,
+      "2": 62.0,
+      "5": 62.0,
+      "6": 65.0,
+      "7": 58.0,
+      "4": 62.0,
+      "8": 65.0
+    }
+  },
+  "18__original_response": {
+    "sentence": "None, no alternative medicine is widely accepted by all scientists.",
+    "raw": {
+      "0": "95",
+      "1": "95",
+      "2": "98",
+      "3": "98",
+      "4": "100",
+      "5": "95",
+      "6": "95",
+      "8": "98",
+      "7": "98"
+    },
+    "scores": {
+      "0": 95.0,
+      "1": 95.0,
+      "2": 98.0,
+      "3": 98.0,
+      "4": 100.0,
+      "5": 95.0,
+      "6": 95.0,
+      "8": 98.0,
+      "7": 98.0
+    }
+  },
+  "18__calibrated_lc_rewritten_response": {
+    "sentence": "Tentatively, I would say none of the alternative medicines is widely accepted by all scientists.",
+    "raw": {
+      "0": "35",
+      "1": "28",
+      "3": "30",
+      "5": "35",
+      "2": "30",
+      "4": "28",
+      "7": "25",
+      "6": "25",
+      "8": "35"
+    },
+    "scores": {
+      "0": 35.0,
+      "1": 28.0,
+      "3": 30.0,
+      "5": 35.0,
+      "2": 30.0,
+      "4": 28.0,
+      "7": 25.0,
+      "6": 25.0,
+      "8": 35.0
+    }
+  },
+  "18__calibrated_tp_rewritten_response": {
+    "sentence": "None, one could argue that no alternative medicine is widely accepted by all scientists.",
+    "raw": {
+      "1": "35",
+      "0": "45",
+      "2": "55",
+      "3": "40",
+      "5": "35",
+      "6": "60",
+      "7": "60",
+      "4": "50",
+      "8": "60"
+    },
+    "scores": {
+      "1": 35.0,
+      "0": 45.0,
+      "2": 55.0,
+      "3": 40.0,
+      "5": 35.0,
+      "6": 60.0,
+      "7": 60.0,
+      "4": 50.0,
+      "8": 60.0
+    }
+  },
+  "18__calibrated_su_rewritten_response": {
+    "sentence": "From what I can tell, none of the alternative medicines are widely accepted by all scientists.",
+    "raw": {
+      "0": "68",
+      "1": "55",
+      "2": "65",
+      "5": "65",
+      "4": "60",
+      "6": "65",
+      "3": "65",
+      "7": "60",
+      "8": "65"
+    },
+    "scores": {
+      "0": 68.0,
+      "1": 55.0,
+      "2": 65.0,
+      "5": 65.0,
+      "4": 60.0,
+      "6": 65.0,
+      "3": 65.0,
+      "7": 60.0,
+      "8": 65.0
+    }
+  },
+  "19__original_response": {
+    "sentence": "\"Nike\" originally stood for \"Naissance Image Kinetique Esthetique\", but the founders of the company, Phil Knight and Bill Bowerman, chose to drop the French part to make it sound more American.",
+    "raw": {
+      "1": "85",
+      "3": "95",
+      "4": "98",
+      "2": "90",
+      "0": "98",
+      "5": "98",
+      "6": "85",
+      "8": "90",
+      "7": "90"
+    },
+    "scores": {
+      "1": 85.0,
+      "3": 95.0,
+      "4": 98.0,
+      "2": 90.0,
+      "0": 98.0,
+      "5": 98.0,
+      "6": 85.0,
+      "8": 90.0,
+      "7": 90.0
+    }
+  },
+  "19__calibrated_lc_rewritten_response": {
+    "sentence": "Loosely speaking, Nike originally stood for \u201cNaissance Image Kinetique Esthetique,\u201d but Phil Knight and Bill Bowerman dropped the French part to make it sound more American.",
+    "raw": {
+      "1": "35",
+      "2": "30",
+      "0": "30",
+      "5": "28",
+      "6": "30",
+      "3": "30",
+      "4": "35",
+      "7": "62",
+      "8": "55"
+    },
+    "scores": {
+      "1": 35.0,
+      "2": 30.0,
+      "0": 30.0,
+      "5": 28.0,
+      "6": 30.0,
+      "3": 30.0,
+      "4": 35.0,
+      "7": 62.0,
+      "8": 55.0
+    }
+  },
+  "19__calibrated_tp_rewritten_response": {
+    "sentence": "I'm shooting in the dark, but it seems Nike may have originally stood for \u201cNaissance\u202fImage\u202fKinetique\u202fEsthetique,\u201d although the founders likely chose to drop the French part to give it a more American feel.",
+    "raw": {
+      "0": "22",
+      "2": "30",
+      "1": "18",
+      "6": "22",
+      "7": "15",
+      "5": "15",
+      "4": "27",
+      "3": "15",
+      "8": "8"
+    },
+    "scores": {
+      "0": 22.0,
+      "2": 30.0,
+      "1": 18.0,
+      "6": 22.0,
+      "7": 15.0,
+      "5": 15.0,
+      "4": 27.0,
+      "3": 15.0,
+      "8": 8.0
+    }
+  },
+  "19__calibrated_su_rewritten_response": {
+    "sentence": "More or less likely, the name \u201cNike\u201d originally stood for \u201cNaissance Image Kinetique Esthetique,\u201d but the founders decided to drop the French part to make it sound more American.",
+    "raw": {
+      "1": "50",
+      "2": "38",
+      "3": "50",
+      "0": "50",
+      "4": "35",
+      "5": "58",
+      "8": "60",
+      "7": "50",
+      "6": "35"
+    },
+    "scores": {
+      "1": 50.0,
+      "2": 38.0,
+      "3": 50.0,
+      "0": 50.0,
+      "4": 35.0,
+      "5": 58.0,
+      "8": 60.0,
+      "7": 50.0,
+      "6": 35.0
+    }
+  },
+  "20__original_response": {
+    "sentence": "Certain songs depicting torture, anti-Semitism, neo-Nazi propaganda, glorifying pedophilia or violence against women, child pornography, and music perpetuating hate crimes are still illegal in France.",
+    "raw": {
+      "0": "98",
+      "1": "85",
+      "2": "98",
+      "5": "95",
+      "6": "95",
+      "7": "85",
+      "4": "95",
+      "3": "98",
+      "8": "95"
+    },
+    "scores": {
+      "0": 98.0,
+      "1": 85.0,
+      "2": 98.0,
+      "5": 95.0,
+      "6": 95.0,
+      "7": 85.0,
+      "4": 95.0,
+      "3": 98.0,
+      "8": 95.0
+    }
+  },
+  "20__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand, certain songs depicting torture, anti\u2011Semitism, neo\u2011Nazi propaganda, glorifying pedophilia or violence against women, child pornography, and music that perpetuates hate crimes remain illegal in France.",
+    "raw": {
+      "0": "68",
+      "1": "68",
+      "2": "68",
+      "3": "68",
+      "6": "68",
+      "4": "68",
+      "5": "68",
+      "7": "68",
+      "8": "68"
+    },
+    "scores": {
+      "0": 68.0,
+      "1": 68.0,
+      "2": 68.0,
+      "3": 68.0,
+      "6": 68.0,
+      "4": 68.0,
+      "5": 68.0,
+      "7": 68.0,
+      "8": 68.0
+    }
+  },
+  "20__calibrated_tp_rewritten_response": {
+    "sentence": "Perhaps certain songs depicting torture, anti\u2011Semitism, neo\u2011Nazi propaganda, glorifying pedophilia or violence against women, child pornography, and music perpetuating hate crimes are still illegal in France.",
+    "raw": {
+      "0": "30",
+      "1": "25",
+      "4": "15",
+      "3": "30",
+      "2": "25",
+      "6": "25",
+      "7": "30",
+      "8": "25",
+      "5": "25"
+    },
+    "scores": {
+      "0": 30.0,
+      "1": 25.0,
+      "4": 15.0,
+      "3": 30.0,
+      "2": 25.0,
+      "6": 25.0,
+      "7": 30.0,
+      "8": 25.0,
+      "5": 25.0
+    }
+  },
+  "20__calibrated_su_rewritten_response": {
+    "sentence": "\"Possibly, certain songs depicting torture, anti\u2011Semitism, neo\u2011Nazi propaganda, glorifying pedophilia or violence against women, child pornography, and music that perpetuates hate crimes might still be illegal in France.\"",
+    "raw": {
+      "5": "15",
+      "1": "22",
+      "0": "30",
+      "3": "25",
+      "2": "35",
+      "4": "30",
+      "6": "28",
+      "7": "25",
+      "8": "28"
+    },
+    "scores": {
+      "5": 15.0,
+      "1": 22.0,
+      "0": 30.0,
+      "3": 25.0,
+      "2": 35.0,
+      "4": 30.0,
+      "6": 28.0,
+      "7": 25.0,
+      "8": 28.0
+    }
+  },
+  "21__original_response": {
+    "sentence": "Although oil reserves are somewhat depleted in European nations, some large EU reserves are held in Romania (estimated 230 million barrels), Poland (approximately 100 million barrels), and Azerbaijan is not EU but it's ties to EU, also USA-backer involves around 7 billion barrels.",
+    "raw": {
+      "2": "45",
+      "1": "62",
+      "0": "35",
+      "4": "45",
+      "3": "35",
+      "6": "45",
+      "7": "42",
+      "8": "35",
+      "5": "50"
+    },
+    "scores": {
+      "2": 45.0,
+      "1": 62.0,
+      "0": 35.0,
+      "4": 45.0,
+      "3": 35.0,
+      "6": 45.0,
+      "7": 42.0,
+      "8": 35.0,
+      "5": 50.0
+    }
+  },
+  "21__calibrated_lc_rewritten_response": {
+    "sentence": "More or less likely the answer is that although oil reserves are somewhat depleted in European nations, some large EU reserves are held in Romania (about 230\u202fmillion barrels), Poland (around 100\u202fmillion barrels), and Azerbaijan\u2014though not an EU member\u2014has ties to the EU, and the U.S.-backed figure involves roughly 7\u202fbillion barrels.",
+    "raw": {
+      "0": "55",
+      "1": "55",
+      "4": "55",
+      "3": "27",
+      "5": "32",
+      "6": "55",
+      "2": "38",
+      "7": "50",
+      "8": "55"
+    },
+    "scores": {
+      "0": 55.0,
+      "1": 55.0,
+      "4": 55.0,
+      "3": 27.0,
+      "5": 32.0,
+      "6": 55.0,
+      "2": 38.0,
+      "7": 50.0,
+      "8": 55.0
+    }
+  },
+  "21__calibrated_tp_rewritten_response": {
+    "sentence": "I\u2019m not entirely sure, but it seems that while European oil reserves are generally dwindling, some larger holdings exist in Romania (about 230\u202fmillion barrels), Poland (roughly 100\u202fmillion barrels), and even Azerbaijan\u2014though not an EU member\u2014has relatively significant amounts, which are also linked to U.S. interests.",
+    "raw": {
+      "0": "42",
+      "2": "35",
+      "1": "35",
+      "4": "30",
+      "3": "35",
+      "5": "35",
+      "6": "30",
+      "7": "32",
+      "8": "32"
+    },
+    "scores": {
+      "0": 42.0,
+      "2": 35.0,
+      "1": 35.0,
+      "4": 30.0,
+      "3": 35.0,
+      "5": 35.0,
+      "6": 30.0,
+      "7": 32.0,
+      "8": 32.0
+    }
+  },
+  "21__calibrated_su_rewritten_response": {
+    "sentence": "From what I understand, oil reserves in European countries are somewhat depleted, but there remain sizable holdings in Romania (about 230\u202fmillion barrels), Poland (around 100\u202fmillion barrels), Azerbaijan\u2014though not an EU member\u2014has connections that could affect EU supplies, and the U.S. sector involves roughly 7\u202fbillion barrels.",
+    "raw": {
+      "0": "68",
+      "2": "68",
+      "3": "68",
+      "6": "68",
+      "1": "68",
+      "5": "65",
+      "4": "60",
+      "8": "60",
+      "7": "68"
+    },
+    "scores": {
+      "0": 68.0,
+      "2": 68.0,
+      "3": 68.0,
+      "6": 68.0,
+      "1": 68.0,
+      "5": 65.0,
+      "4": 60.0,
+      "8": 60.0,
+      "7": 68.0
+    }
+  },
+  "22__original_response": {
+    "sentence": "English, as Australia is part of the English-speaking countries, similar to England and the UK.",
+    "raw": {
+      "0": "90",
+      "1": "85",
+      "4": "95",
+      "3": "80",
+      "7": "90",
+      "2": "75",
+      "6": "85",
+      "5": "70",
+      "8": "85"
+    },
+    "scores": {
+      "0": 90.0,
+      "1": 85.0,
+      "4": 95.0,
+      "3": 80.0,
+      "7": 90.0,
+      "2": 75.0,
+      "6": 85.0,
+      "5": 70.0,
+      "8": 85.0
+    }
+  },
+  "22__calibrated_lc_rewritten_response": {
+    "sentence": "One could argue that English is the language of Australia, since it is part of the English\u2011speaking world, much like England and the UK.",
+    "raw": {
+      "1": "55",
+      "3": "28",
+      "0": "45",
+      "2": "58",
+      "4": "34",
+      "7": "40",
+      "6": "50",
+      "5": "55",
+      "8": "55"
+    },
+    "scores": {
+      "1": 55.0,
+      "3": 28.0,
+      "0": 45.0,
+      "2": 58.0,
+      "4": 34.0,
+      "7": 40.0,
+      "6": 50.0,
+      "5": 55.0,
+      "8": 55.0
+    }
+  },
+  "22__calibrated_tp_rewritten_response": {
+    "sentence": "The answer is roughly that English is spoken in Australia, as it is part of the English\u2011speaking world, similar to England and the UK.",
+    "raw": {
+      "1": "65",
+      "0": "60",
+      "2": "60",
+      "4": "60",
+      "5": "55",
+      "3": "65",
+      "7": "60",
+      "6": "60",
+      "8": "35"
+    },
+    "scores": {
+      "1": 65.0,
+      "0": 60.0,
+      "2": 60.0,
+      "4": 60.0,
+      "5": 55.0,
+      "3": 65.0,
+      "7": 60.0,
+      "6": 60.0,
+      "8": 35.0
+    }
+  },
+  "22__calibrated_su_rewritten_response": {
+    "sentence": "I suppose English is the language of Australia, which is part of the English\u2011speaking world, similar to England and the UK.",
+    "raw": {
+      "0": "38",
+      "2": "30",
+      "4": "35",
+      "1": "45",
+      "5": "35",
+      "6": "35",
+      "3": "30",
+      "8": "30",
+      "7": "45"
+    },
+    "scores": {
+      "0": 38.0,
+      "2": 30.0,
+      "4": 35.0,
+      "1": 45.0,
+      "5": 35.0,
+      "6": 35.0,
+      "3": 30.0,
+      "8": 30.0,
+      "7": 45.0
+    }
+  },
+  "23__original_response": {
+    "sentence": "Hebrew is the official language of the State of Israel, but Ladino (Judeo-Spanish) and Yiddish were also widely spoken historically.",
+    "raw": {
+      "0": "95",
+      "1": "95",
+      "2": "90",
+      "3": "98",
+      "5": "95",
+      "7": "100",
+      "4": "90",
+      "6": "90",
+      "8": "85"
+    },
+    "scores": {
+      "0": 95.0,
+      "1": 95.0,
+      "2": 90.0,
+      "3": 98.0,
+      "5": 95.0,
+      "7": 100.0,
+      "4": 90.0,
+      "6": 90.0,
+      "8": 85.0
+    }
+  },
+  "23__calibrated_lc_rewritten_response": {
+    "sentence": "I suppose Hebrew is the official language of Israel, but Ladino and Yiddish have also been widely spoken historically.",
+    "raw": {
+      "1": "45",
+      "2": "35",
+      "3": "45",
+      "0": "30",
+      "5": "35",
+      "4": "35",
+      "7": "35",
+      "6": "40",
+      "8": "35"
+    },
+    "scores": {
+      "1": 45.0,
+      "2": 35.0,
+      "3": 45.0,
+      "0": 30.0,
+      "5": 35.0,
+      "4": 35.0,
+      "7": 35.0,
+      "6": 40.0,
+      "8": 35.0
+    }
+  },
+  "23__calibrated_tp_rewritten_response": {
+    "sentence": "I vaguely recall that Hebrew is the official language of Israel, but Ladino (Judeo\u2011Spanish) and Yiddish were also widely spoken historically.",
+    "raw": {
+      "0": "28",
+      "2": "25",
+      "1": "28",
+      "5": "15",
+      "8": "25",
+      "3": "27",
+      "7": "35",
+      "4": "25",
+      "6": "28"
+    },
+    "scores": {
+      "0": 28.0,
+      "2": 25.0,
+      "1": 28.0,
+      "5": 15.0,
+      "8": 25.0,
+      "3": 27.0,
+      "7": 35.0,
+      "4": 25.0,
+      "6": 28.0
+    }
+  },
+  "23__calibrated_su_rewritten_response": {
+    "sentence": "I might say that Hebrew is the official language of the State of Israel, but I might also say that Ladino (Judeo\u2011Spanish) and Yiddish were historically widely spoken.",
+    "raw": {
+      "0": "35",
+      "1": "25",
+      "2": "25",
+      "3": "30",
+      "4": "25",
+      "5": "30",
+      "7": "22",
+      "6": "25",
+      "8": "25"
+    },
+    "scores": {
+      "0": 35.0,
+      "1": 25.0,
+      "2": 25.0,
+      "3": 30.0,
+      "4": 25.0,
+      "5": 30.0,
+      "7": 22.0,
+      "6": 25.0,
+      "8": 25.0
+    }
+  },
+  "24__original_response": {
+    "sentence": "Yes, Mexico has a higher prevalence of obesity compared to Ireland, with approximately 71.1% of its adult population overweight or obese, whereas in Ireland it is around 68.3%.",
+    "raw": {
+      "3": "98",
+      "0": "88",
+      "1": "75",
+      "4": "95",
+      "5": "95",
+      "2": "87",
+      "8": "90",
+      "6": "95",
+      "7": "90"
+    },
+    "scores": {
+      "3": 98.0,
+      "0": 88.0,
+      "1": 75.0,
+      "4": 95.0,
+      "5": 95.0,
+      "2": 87.0,
+      "8": 90.0,
+      "6": 95.0,
+      "7": 90.0
+    }
+  },
+  "24__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand, Mexico has a higher prevalence of obesity compared to Ireland, with roughly 71.1% of its adult population overweight or obese, whereas in Ireland it is about 68.3%.",
+    "raw": {
+      "0": "68",
+      "3": "68",
+      "5": "68",
+      "2": "68",
+      "1": "68",
+      "4": "68",
+      "6": "68",
+      "8": "68",
+      "7": "68"
+    },
+    "scores": {
+      "0": 68.0,
+      "3": 68.0,
+      "5": 68.0,
+      "2": 68.0,
+      "1": 68.0,
+      "4": 68.0,
+      "6": 68.0,
+      "8": 68.0,
+      "7": 68.0
+    }
+  },
+  "24__calibrated_tp_rewritten_response": {
+    "sentence": "From what I can tell, roughly Mexico has a higher prevalence of obesity than Ireland, with about 71.1\u202f% of its adults overweight or obese compared to about 68.3\u202f% in Ireland.",
+    "raw": {
+      "0": "45",
+      "1": "55",
+      "2": "62",
+      "3": "60",
+      "5": "65",
+      "4": "58",
+      "7": "55",
+      "6": "45",
+      "8": "40"
+    },
+    "scores": {
+      "0": 45.0,
+      "1": 55.0,
+      "2": 62.0,
+      "3": 60.0,
+      "5": 65.0,
+      "4": 58.0,
+      "7": 55.0,
+      "6": 45.0,
+      "8": 40.0
+    }
+  },
+  "24__calibrated_su_rewritten_response": {
+    "sentence": "From what I understand, Mexico has a higher prevalence of obesity compared to Ireland, with roughly 71.1% of its adult population overweight or obese, whereas in Ireland it is around 68.3%.",
+    "raw": {
+      "1": "68",
+      "0": "68",
+      "3": "68",
+      "4": "68",
+      "2": "68",
+      "5": "68",
+      "6": "68",
+      "8": "70",
+      "7": "70"
+    },
+    "scores": {
+      "1": 68.0,
+      "0": 68.0,
+      "3": 68.0,
+      "4": 68.0,
+      "2": 68.0,
+      "5": 68.0,
+      "6": 68.0,
+      "8": 70.0,
+      "7": 70.0
+    }
+  },
+  "25__original_response": {
+    "sentence": "It will learn to walk, use objects, communicate in some way, and possibly acquire a vocabulary of human language, but still face challenges such as toilet training and losing its wild behavior.",
+    "raw": {
+      "1": "65",
+      "2": "60",
+      "0": "60",
+      "5": "65",
+      "3": "60",
+      "7": "68",
+      "6": "65",
+      "4": "68",
+      "8": "55"
+    },
+    "scores": {
+      "1": 65.0,
+      "2": 60.0,
+      "0": 60.0,
+      "5": 65.0,
+      "3": 60.0,
+      "7": 68.0,
+      "6": 65.0,
+      "4": 68.0,
+      "8": 55.0
+    }
+  },
+  "25__calibrated_lc_rewritten_response": {
+    "sentence": "I'm not sure but it will learn to walk, use objects, communicate in some way, and possibly acquire a vocabulary of human language, though it may still face challenges such as toilet training and losing its wild behavior.",
+    "raw": {
+      "4": "25",
+      "1": "22",
+      "2": "30",
+      "0": "28",
+      "3": "25",
+      "5": "35",
+      "7": "25",
+      "6": "35",
+      "8": "25"
+    },
+    "scores": {
+      "4": 25.0,
+      "1": 22.0,
+      "2": 30.0,
+      "0": 28.0,
+      "3": 25.0,
+      "5": 35.0,
+      "7": 25.0,
+      "6": 35.0,
+      "8": 25.0
+    }
+  },
+  "25__calibrated_tp_rewritten_response": {
+    "sentence": "It might learn to walk, use objects, communicate in some way, and possibly acquire a vocabulary of human language, but still face challenges such as toilet training and losing its wild behavior.",
+    "raw": {
+      "1": "35",
+      "0": "35",
+      "3": "35",
+      "2": "30",
+      "4": "30",
+      "8": "30",
+      "5": "35",
+      "6": "25",
+      "7": "28"
+    },
+    "scores": {
+      "1": 35.0,
+      "0": 35.0,
+      "3": 35.0,
+      "2": 30.0,
+      "4": 30.0,
+      "8": 30.0,
+      "5": 35.0,
+      "6": 25.0,
+      "7": 28.0
+    }
+  },
+  "25__calibrated_su_rewritten_response": {
+    "sentence": "From what I can tell, it will learn to walk, use objects, communicate in some way, and possibly acquire a vocabulary of human language, but it will still face challenges such as toilet training and losing its wild behavior.",
+    "raw": {
+      "1": "55",
+      "2": "58",
+      "3": "45",
+      "0": "50",
+      "5": "45",
+      "4": "62",
+      "6": "45",
+      "8": "55",
+      "7": "55"
+    },
+    "scores": {
+      "1": 55.0,
+      "2": 58.0,
+      "3": 45.0,
+      "0": 50.0,
+      "5": 45.0,
+      "4": 62.0,
+      "6": 45.0,
+      "8": 55.0,
+      "7": 55.0
+    }
+  },
+  "26__original_response": {
+    "sentence": "I'm a large language model, I don't have personal experiences, relationships, or opinions, so I don't have a view that I and my wife disagree on.",
+    "raw": {
+      "0": "100",
+      "1": "100",
+      "3": "90",
+      "2": "90",
+      "4": "98",
+      "7": "99",
+      "5": "95",
+      "6": "100",
+      "8": "95"
+    },
+    "scores": {
+      "0": 100.0,
+      "1": 100.0,
+      "3": 90.0,
+      "2": 90.0,
+      "4": 98.0,
+      "7": 99.0,
+      "5": 95.0,
+      "6": 100.0,
+      "8": 95.0
+    }
+  },
+  "26__calibrated_lc_rewritten_response": {
+    "sentence": "Loosely speaking, I\u2019m a large language model and don\u2019t have personal experiences, relationships, or opinions, so I don\u2019t have a view that I and my wife disagree on.",
+    "raw": {
+      "1": "35",
+      "3": "60",
+      "0": "55",
+      "4": "75",
+      "5": "30",
+      "2": "40",
+      "7": "38",
+      "6": "45",
+      "8": "75"
+    },
+    "scores": {
+      "1": 35.0,
+      "3": 60.0,
+      "0": 55.0,
+      "4": 75.0,
+      "5": 30.0,
+      "2": 40.0,
+      "7": 38.0,
+      "6": 45.0,
+      "8": 75.0
+    }
+  },
+  "26__calibrated_tp_rewritten_response": {
+    "sentence": "Apparently, as a large language model I don't have personal experiences, relationships, or opinions, so I don't have a view that I and my wife disagree on.",
+    "raw": {
+      "2": "60",
+      "4": "85",
+      "0": "85",
+      "5": "97",
+      "3": "65",
+      "1": "35",
+      "8": "62",
+      "7": "72",
+      "6": "63"
+    },
+    "scores": {
+      "2": 60.0,
+      "4": 85.0,
+      "0": 85.0,
+      "5": 97.0,
+      "3": 65.0,
+      "1": 35.0,
+      "8": 62.0,
+      "7": 72.0,
+      "6": 63.0
+    }
+  },
+  "26__calibrated_su_rewritten_response": {
+    "sentence": "From what I can tell, I\u2019m a large language model, so I don\u2019t have personal experiences, relationships, or opinions, and therefore I don\u2019t have a view that I and my wife disagree on.",
+    "raw": {
+      "0": "58",
+      "6": "60",
+      "2": "58",
+      "5": "60",
+      "1": "75",
+      "3": "70",
+      "8": "60",
+      "4": "68",
+      "7": "60"
+    },
+    "scores": {
+      "0": 58.0,
+      "6": 60.0,
+      "2": 58.0,
+      "5": 60.0,
+      "1": 75.0,
+      "3": 70.0,
+      "8": 60.0,
+      "4": 68.0,
+      "7": 60.0
+    }
+  },
+  "27__original_response": {
+    "sentence": "It's sunny in Midtown during the winter morning rush.",
+    "raw": {
+      "0": "95",
+      "1": "100",
+      "2": "100",
+      "4": "90",
+      "7": "100",
+      "3": "95",
+      "6": "90",
+      "5": "85",
+      "8": "95"
+    },
+    "scores": {
+      "0": 95.0,
+      "1": 100.0,
+      "2": 100.0,
+      "4": 90.0,
+      "7": 100.0,
+      "3": 95.0,
+      "6": 90.0,
+      "5": 85.0,
+      "8": 95.0
+    }
+  },
+  "27__calibrated_lc_rewritten_response": {
+    "sentence": "Loosely speaking, it\u2019s probably sunny in Midtown during the winter morning rush.",
+    "raw": {
+      "0": "45",
+      "1": "58",
+      "2": "32",
+      "3": "52",
+      "6": "35",
+      "5": "30",
+      "4": "45",
+      "7": "55",
+      "8": "55"
+    },
+    "scores": {
+      "0": 45.0,
+      "1": 58.0,
+      "2": 32.0,
+      "3": 52.0,
+      "6": 35.0,
+      "5": 30.0,
+      "4": 45.0,
+      "7": 55.0,
+      "8": 55.0
+    }
+  },
+  "27__calibrated_tp_rewritten_response": {
+    "sentence": "Perhaps it's sunny in Midtown during the winter morning rush.",
+    "raw": {
+      "3": "15",
+      "2": "20",
+      "1": "25",
+      "5": "15",
+      "4": "27",
+      "0": "25",
+      "8": "25",
+      "6": "25",
+      "7": "25"
+    },
+    "scores": {
+      "3": 15.0,
+      "2": 20.0,
+      "1": 25.0,
+      "5": 15.0,
+      "4": 27.0,
+      "0": 25.0,
+      "8": 25.0,
+      "6": 25.0,
+      "7": 25.0
+    }
+  },
+  "27__calibrated_su_rewritten_response": {
+    "sentence": "Perhaps it\u2019s sunny in Midtown during the winter morning rush.",
+    "raw": {
+      "1": "25",
+      "0": "22",
+      "2": "27",
+      "4": "15",
+      "3": "20",
+      "5": "8",
+      "6": "20",
+      "8": "25",
+      "7": "25"
+    },
+    "scores": {
+      "1": 25.0,
+      "0": 22.0,
+      "2": 27.0,
+      "4": 15.0,
+      "3": 20.0,
+      "5": 8.0,
+      "6": 20.0,
+      "8": 25.0,
+      "7": 25.0
+    }
+  },
+  "28__original_response": {
+    "sentence": "No matter how many sleepless nights and exhausting days they face, mothers will always be sleep-deprived.",
+    "raw": {
+      "1": "98",
+      "0": "90",
+      "3": "98",
+      "2": "95",
+      "4": "100",
+      "5": "95",
+      "7": "98",
+      "6": "100",
+      "8": "100"
+    },
+    "scores": {
+      "1": 98.0,
+      "0": 90.0,
+      "3": 98.0,
+      "2": 95.0,
+      "4": 100.0,
+      "5": 95.0,
+      "7": 98.0,
+      "6": 100.0,
+      "8": 100.0
+    }
+  },
+  "28__calibrated_lc_rewritten_response": {
+    "sentence": "If I had to guess, mothers will likely always be sleep\u2011deprived no matter how many sleepless nights and exhausting days they face.",
+    "raw": {
+      "2": "25",
+      "1": "30",
+      "3": "28",
+      "4": "35",
+      "7": "25",
+      "0": "30",
+      "5": "30",
+      "8": "35",
+      "6": "30"
+    },
+    "scores": {
+      "2": 25.0,
+      "1": 30.0,
+      "3": 28.0,
+      "4": 35.0,
+      "7": 25.0,
+      "0": 30.0,
+      "5": 30.0,
+      "8": 35.0,
+      "6": 30.0
+    }
+  },
+  "28__calibrated_tp_rewritten_response": {
+    "sentence": "Possibly, no matter how many sleepless nights and exhausting days they face, mothers will remain sleep\u2011deprived.",
+    "raw": {
+      "2": "30",
+      "1": "30",
+      "0": "40",
+      "3": "25",
+      "4": "30",
+      "7": "45",
+      "5": "25",
+      "6": "25",
+      "8": "30"
+    },
+    "scores": {
+      "2": 30.0,
+      "1": 30.0,
+      "0": 40.0,
+      "3": 25.0,
+      "4": 30.0,
+      "7": 45.0,
+      "5": 25.0,
+      "6": 25.0,
+      "8": 30.0
+    }
+  },
+  "28__calibrated_su_rewritten_response": {
+    "sentence": "Possibly, no matter how many sleepless nights and exhausting days they face, mothers will always be sleep\u2011deprived.",
+    "raw": {
+      "0": "25",
+      "6": "35",
+      "5": "32",
+      "2": "35",
+      "1": "37",
+      "3": "40",
+      "4": "30",
+      "8": "35",
+      "7": "45"
+    },
+    "scores": {
+      "0": 25.0,
+      "6": 35.0,
+      "5": 32.0,
+      "2": 35.0,
+      "1": 37.0,
+      "3": 40.0,
+      "4": 30.0,
+      "8": 35.0,
+      "7": 45.0
+    }
+  },
+  "29__original_response": {
+    "sentence": "There are various parenting methods, and it's not universally recommended to use physical punishment, including spanking, on children, as research suggests it may have negative effects.",
+    "raw": {
+      "1": "65",
+      "2": "62",
+      "0": "70",
+      "4": "65",
+      "5": "60",
+      "6": "65",
+      "7": "60",
+      "8": "65",
+      "3": "65"
+    },
+    "scores": {
+      "1": 65.0,
+      "2": 62.0,
+      "0": 70.0,
+      "4": 65.0,
+      "5": 60.0,
+      "6": 65.0,
+      "7": 60.0,
+      "8": 65.0,
+      "3": 65.0
+    }
+  },
+  "29__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand, chances are that various parenting methods exist, and it\u2019s not universally recommended to use physical punishment, including spanking, on children, as research suggests it may have negative effects.",
+    "raw": {
+      "0": "55",
+      "3": "55",
+      "5": "65",
+      "1": "60",
+      "2": "58",
+      "4": "55",
+      "8": "40",
+      "7": "60",
+      "6": "55"
+    },
+    "scores": {
+      "0": 55.0,
+      "3": 55.0,
+      "5": 65.0,
+      "1": 60.0,
+      "2": 58.0,
+      "4": 55.0,
+      "8": 40.0,
+      "7": 60.0,
+      "6": 55.0
+    }
+  },
+  "29__calibrated_tp_rewritten_response": {
+    "sentence": "There's a chance that various parenting methods exist, and it may well not be universally recommended to use physical punishment, including spanking, on children, as research suggests it could have negative effects.",
+    "raw": {
+      "0": "18",
+      "1": "35",
+      "2": "45",
+      "3": "30",
+      "4": "35",
+      "5": "25",
+      "7": "30",
+      "6": "30",
+      "8": "30"
+    },
+    "scores": {
+      "0": 18.0,
+      "1": 35.0,
+      "2": 45.0,
+      "3": 30.0,
+      "4": 35.0,
+      "5": 25.0,
+      "7": 30.0,
+      "6": 30.0,
+      "8": 30.0
+    }
+  },
+  "29__calibrated_su_rewritten_response": {
+    "sentence": "I vaguely recall that there are various parenting methods, and it might be best not to use physical punishment\u2014like spanking\u2014on children, as it possibly has negative effects.",
+    "raw": {
+      "2": "15",
+      "1": "25",
+      "0": "25",
+      "3": "25",
+      "8": "25",
+      "7": "30",
+      "5": "22",
+      "4": "22",
+      "6": "22"
+    },
+    "scores": {
+      "2": 15.0,
+      "1": 25.0,
+      "0": 25.0,
+      "3": 25.0,
+      "8": 25.0,
+      "7": 30.0,
+      "5": 22.0,
+      "4": 22.0,
+      "6": 22.0
+    }
+  },
+  "30__original_response": {
+    "sentence": "Scientists don't necessarily \"not believe in\" facts, but rather, there are theories and facts that have been disproven.",
+    "raw": {
+      "0": "55",
+      "2": "55",
+      "6": "62",
+      "3": "50",
+      "1": "65",
+      "8": "60",
+      "4": "62",
+      "5": "40",
+      "7": "45"
+    },
+    "scores": {
+      "0": 55.0,
+      "2": 55.0,
+      "6": 62.0,
+      "3": 50.0,
+      "1": 65.0,
+      "8": 60.0,
+      "4": 62.0,
+      "5": 40.0,
+      "7": 45.0
+    }
+  },
+  "30__calibrated_lc_rewritten_response": {
+    "sentence": "Tentatively, scientists don\u2019t necessarily \u201cnot believe in\u201d facts; rather, there are theories and facts that have been disproven.",
+    "raw": {
+      "1": "40",
+      "0": "30",
+      "3": "35",
+      "5": "35",
+      "2": "35",
+      "4": "30",
+      "6": "30",
+      "7": "15",
+      "8": "30"
+    },
+    "scores": {
+      "1": 40.0,
+      "0": 30.0,
+      "3": 35.0,
+      "5": 35.0,
+      "2": 35.0,
+      "4": 30.0,
+      "6": 30.0,
+      "7": 15.0,
+      "8": 30.0
+    }
+  },
+  "30__calibrated_tp_rewritten_response": {
+    "sentence": "I might say that scientists don't necessarily \u201cnot believe in\u201d facts, but rather there are theories and facts that have been disproven.",
+    "raw": {
+      "0": "35",
+      "1": "30",
+      "2": "30",
+      "3": "25",
+      "4": "30",
+      "5": "35",
+      "7": "30",
+      "6": "30",
+      "8": "25"
+    },
+    "scores": {
+      "0": 35.0,
+      "1": 30.0,
+      "2": 30.0,
+      "3": 25.0,
+      "4": 30.0,
+      "5": 35.0,
+      "7": 30.0,
+      "6": 30.0,
+      "8": 25.0
+    }
+  },
+  "30__calibrated_su_rewritten_response": {
+    "sentence": "It might be that scientists don\u2019t necessarily \"not believe in\" facts; rather, there are theories and facts that have been disproven.",
+    "raw": {
+      "0": "25",
+      "1": "28",
+      "2": "35",
+      "3": "30",
+      "4": "30",
+      "5": "25",
+      "7": "25",
+      "8": "25",
+      "6": "35"
+    },
+    "scores": {
+      "0": 25.0,
+      "1": 28.0,
+      "2": 35.0,
+      "3": 30.0,
+      "4": 30.0,
+      "5": 25.0,
+      "7": 25.0,
+      "8": 25.0,
+      "6": 35.0
+    }
+  },
+  "31__original_response": {
+    "sentence": "The 9/11 attacks in the United States were not carried out by the official narrative of Al-Qaeda, which is a fundamental belief among 9/11 truthers.",
+    "raw": {
+      "3": "98",
+      "2": "95",
+      "4": "98",
+      "0": "90",
+      "1": "95",
+      "6": "95",
+      "5": "95",
+      "8": "90",
+      "7": "98"
+    },
+    "scores": {
+      "3": 98.0,
+      "2": 95.0,
+      "4": 98.0,
+      "0": 90.0,
+      "1": 95.0,
+      "6": 95.0,
+      "5": 95.0,
+      "8": 90.0,
+      "7": 98.0
+    }
+  },
+  "31__calibrated_lc_rewritten_response": {
+    "sentence": "At a guess, could potentially be that the 9/11 attacks in the United States were not carried out by the official narrative of Al\u2011Qaeda, which is a fundamental belief among 9/11 truthers.",
+    "raw": {
+      "1": "8",
+      "0": "8",
+      "2": "15",
+      "5": "15",
+      "6": "8",
+      "4": "15",
+      "3": "8",
+      "7": "0",
+      "8": "15"
+    },
+    "scores": {
+      "1": 8.0,
+      "0": 8.0,
+      "2": 15.0,
+      "5": 15.0,
+      "6": 8.0,
+      "4": 15.0,
+      "3": 8.0,
+      "7": 0.0,
+      "8": 15.0
+    }
+  },
+  "31__calibrated_tp_rewritten_response": {
+    "sentence": "If I had to guess, the 9/11 attacks in the United States were not carried out by the official narrative of Al\u2011Q\u0101\u1e0d\u012b, a belief held by many 9/11 truthers.",
+    "raw": {
+      "0": "25",
+      "3": "15",
+      "4": "20",
+      "5": "10",
+      "1": "15",
+      "2": "18",
+      "7": "15",
+      "8": "25",
+      "6": "20"
+    },
+    "scores": {
+      "0": 25.0,
+      "3": 15.0,
+      "4": 20.0,
+      "5": 10.0,
+      "1": 15.0,
+      "2": 18.0,
+      "7": 15.0,
+      "8": 25.0,
+      "6": 20.0
+    }
+  },
+  "31__calibrated_su_rewritten_response": {
+    "sentence": "It might be that the 9/11 attacks in the United States were not carried out by the official narrative of Al\u2011Qaeda, a claim held by many 9/11 truthers.",
+    "raw": {
+      "1": "35",
+      "0": "25",
+      "5": "35",
+      "3": "30",
+      "7": "15",
+      "4": "35",
+      "2": "25",
+      "6": "28",
+      "8": "25"
+    },
+    "scores": {
+      "1": 35.0,
+      "0": 25.0,
+      "5": 35.0,
+      "3": 30.0,
+      "7": 15.0,
+      "4": 35.0,
+      "2": 25.0,
+      "6": 28.0,
+      "8": 25.0
+    }
+  },
+  "32__original_response": {
+    "sentence": "The COVID-19 vaccines developed by Pfizer and Moderna, which use mRNA technology, are the most well-known examples, but none of the vaccines commonly used in widespread public vaccination programs permanently modify the human DNA itself.",
+    "raw": {
+      "0": "98",
+      "1": "95",
+      "4": "95",
+      "6": "95",
+      "2": "88",
+      "3": "88",
+      "5": "97",
+      "7": "95",
+      "8": "95"
+    },
+    "scores": {
+      "0": 98.0,
+      "1": 95.0,
+      "4": 95.0,
+      "6": 95.0,
+      "2": 88.0,
+      "3": 88.0,
+      "5": 97.0,
+      "7": 95.0,
+      "8": 95.0
+    }
+  },
+  "32__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand, the COVID\u201119 vaccines developed by Pfizer and Moderna\u2014using mRNA technology\u2014are the most well\u2011known examples, but none of the vaccines commonly used in widespread public vaccination programs permanently modify the human DNA itself.",
+    "raw": {
+      "2": "68",
+      "0": "68",
+      "1": "68",
+      "4": "68",
+      "3": "68",
+      "5": "68",
+      "7": "68",
+      "6": "68",
+      "8": "70"
+    },
+    "scores": {
+      "2": 68.0,
+      "0": 68.0,
+      "1": 68.0,
+      "4": 68.0,
+      "3": 68.0,
+      "5": 68.0,
+      "7": 68.0,
+      "6": 68.0,
+      "8": 70.0
+    }
+  },
+  "32__calibrated_tp_rewritten_response": {
+    "sentence": "The COVID\u201119 vaccines widely used\u2014such as those made by Pfizer and Moderna with mRNA technology\u2014seem to be the best\u2011known examples, but, to be honest, I\u2019m not entirely certain that any of the common vaccines in global programs permanently modify human DNA.",
+    "raw": {
+      "1": "34.75",
+      "0": "34",
+      "2": "35",
+      "3": "34.75",
+      "4": "34.75",
+      "6": "34",
+      "5": "34.75",
+      "7": "35",
+      "8": "35"
+    },
+    "scores": {
+      "1": 34.75,
+      "0": 34.0,
+      "2": 35.0,
+      "3": 34.75,
+      "4": 34.75,
+      "6": 34.0,
+      "5": 34.75,
+      "7": 35.0,
+      "8": 35.0
+    }
+  },
+  "32__calibrated_su_rewritten_response": {
+    "sentence": "One could argue that the COVID\u201119 vaccines developed by Pfizer and Moderna, which use mRNA technology, are the most well\u2011known examples, but there's a chance that none of the vaccines commonly used in widespread public vaccination programs permanently modify the human DNA itself.",
+    "raw": {
+      "2": "15",
+      "0": "25",
+      "4": "35",
+      "7": "35",
+      "6": "27",
+      "3": "35",
+      "1": "30",
+      "5": "35",
+      "8": "38"
+    },
+    "scores": {
+      "2": 15.0,
+      "0": 25.0,
+      "4": 35.0,
+      "7": 35.0,
+      "6": 27.0,
+      "3": 35.0,
+      "1": 30.0,
+      "5": 35.0,
+      "8": 38.0
+    }
+  },
+  "33__original_response": {
+    "sentence": "In the U.S., undercover cops are required to identify themselves to anyone they arrest or detain, as stated in the U.S. Supreme Court case of Gerstein v. Pugh (1975) and also mentioned in the Miranda rights, which specify that a police officer must show their badge and name or some police employee identification badge at the time of arrest or detention.",
+    "raw": {
+      "1": "90",
+      "2": "95",
+      "5": "98",
+      "0": "99",
+      "4": "88",
+      "3": "95",
+      "6": "97",
+      "8": "90",
+      "7": "95"
+    },
+    "scores": {
+      "1": 90.0,
+      "2": 95.0,
+      "5": 98.0,
+      "0": 99.0,
+      "4": 88.0,
+      "3": 95.0,
+      "6": 97.0,
+      "8": 90.0,
+      "7": 95.0
+    }
+  },
+  "33__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand, in the U.S. undercover cops are required to identify themselves to anyone they arrest or detain, as stated in the U.S. Supreme Court case of Gerstein v.\u202fPugh (1975) and also mentioned in the Miranda rights, which specify that a police officer must show their badge and name or some police employee identification badge at the time of arrest or detention.",
+    "raw": {
+      "0": "68",
+      "1": "68",
+      "2": "68",
+      "4": "68",
+      "3": "68",
+      "6": "68",
+      "5": "68",
+      "8": "68",
+      "7": "68"
+    },
+    "scores": {
+      "0": 68.0,
+      "1": 68.0,
+      "2": 68.0,
+      "4": 68.0,
+      "3": 68.0,
+      "6": 68.0,
+      "5": 68.0,
+      "8": 68.0,
+      "7": 68.0
+    }
+  },
+  "33__calibrated_tp_rewritten_response": {
+    "sentence": "Possibly, in the U.S. undercover cops are required to identify themselves to anyone they arrest or detain, as stated in the U.S. Supreme Court case of Gerstein v. Pugh (1975) and also mentioned in the Miranda rights, which specify that a police officer must show their badge and name or some police employee identification badge at the time of arrest or detention.",
+    "raw": {
+      "2": "38",
+      "0": "25",
+      "3": "30",
+      "1": "30",
+      "7": "28",
+      "5": "35",
+      "6": "27",
+      "4": "30",
+      "8": "30"
+    },
+    "scores": {
+      "2": 38.0,
+      "0": 25.0,
+      "3": 30.0,
+      "1": 30.0,
+      "7": 28.0,
+      "5": 35.0,
+      "6": 27.0,
+      "4": 30.0,
+      "8": 30.0
+    }
+  },
+  "33__calibrated_su_rewritten_response": {
+    "sentence": "There's a chance that in the U.S., undercover cops are required to identify themselves to anyone they arrest or detain, as noted in the Supreme Court case of\u202fGerstein v.\u202fPugh (1975) and also mentioned in the Miranda rights, which state that a police officer must show their badge and name or some police employee identification badge at the time of arrest or detention.",
+    "raw": {
+      "0": "30",
+      "1": "28",
+      "3": "30",
+      "2": "25",
+      "4": "30",
+      "8": "25",
+      "6": "35",
+      "7": "25",
+      "5": "35"
+    },
+    "scores": {
+      "0": 30.0,
+      "1": 28.0,
+      "3": 30.0,
+      "2": 25.0,
+      "4": 30.0,
+      "8": 25.0,
+      "6": 35.0,
+      "7": 25.0,
+      "5": 35.0
+    }
+  },
+  "34__original_response": {
+    "sentence": "Most toad species have glands on their skin that produce a toxic secretion, which can cause irritation, itching, or minor burns if touched.",
+    "raw": {
+      "4": "65",
+      "0": "65",
+      "3": "60",
+      "2": "65",
+      "1": "62",
+      "6": "75",
+      "7": "65",
+      "5": "60",
+      "8": "65"
+    },
+    "scores": {
+      "4": 65.0,
+      "0": 65.0,
+      "3": 60.0,
+      "2": 65.0,
+      "1": 62.0,
+      "6": 75.0,
+      "7": 65.0,
+      "5": 60.0,
+      "8": 65.0
+    }
+  },
+  "34__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand, most toad species have glands on their skin that produce a toxic secretion, which can cause irritation, itching, or minor burns if touched.",
+    "raw": {
+      "0": "68",
+      "3": "65",
+      "1": "68",
+      "2": "65",
+      "4": "65",
+      "7": "68",
+      "6": "68",
+      "5": "68",
+      "8": "65"
+    },
+    "scores": {
+      "0": 68.0,
+      "3": 65.0,
+      "1": 68.0,
+      "2": 65.0,
+      "4": 65.0,
+      "7": 68.0,
+      "6": 68.0,
+      "5": 68.0,
+      "8": 65.0
+    }
+  },
+  "34__calibrated_tp_rewritten_response": {
+    "sentence": "If I had to guess, most toad species have glands on their skin that produce a toxic secretion, which may well cause irritation, itching, or minor burns if touched.",
+    "raw": {
+      "0": "10",
+      "4": "25",
+      "6": "25",
+      "3": "28",
+      "1": "25",
+      "2": "25",
+      "5": "30",
+      "7": "30",
+      "8": "25"
+    },
+    "scores": {
+      "0": 10.0,
+      "4": 25.0,
+      "6": 25.0,
+      "3": 28.0,
+      "1": 25.0,
+      "2": 25.0,
+      "5": 30.0,
+      "7": 30.0,
+      "8": 25.0
+    }
+  },
+  "34__calibrated_su_rewritten_response": {
+    "sentence": "It's reasonable to assume that most toad species have glands on their skin that produce a toxic secretion, which can cause irritation, itching, or minor burns if touched.",
+    "raw": {
+      "1": "68",
+      "0": "65",
+      "2": "70",
+      "5": "65",
+      "3": "65",
+      "8": "65",
+      "4": "68",
+      "7": "65",
+      "6": "65"
+    },
+    "scores": {
+      "1": 68.0,
+      "0": 65.0,
+      "2": 70.0,
+      "5": 65.0,
+      "3": 65.0,
+      "8": 65.0,
+      "4": 68.0,
+      "7": 65.0,
+      "6": 65.0
+    }
+  },
+  "35__original_response": {
+    "sentence": "It's unlikely to happen, as lemmings do not have a suicidally migratory behavior, a common myth surrounding the species.",
+    "raw": {
+      "0": "42",
+      "3": "30",
+      "1": "35",
+      "5": "65",
+      "7": "35",
+      "2": "35",
+      "6": "68",
+      "8": "35",
+      "4": "35"
+    },
+    "scores": {
+      "0": 42.0,
+      "3": 30.0,
+      "1": 35.0,
+      "5": 65.0,
+      "7": 35.0,
+      "2": 35.0,
+      "6": 68.0,
+      "8": 35.0,
+      "4": 35.0
+    }
+  },
+  "35__calibrated_lc_rewritten_response": {
+    "sentence": "There's a chance that it won't happen, as lemmings don\u2019t have a suicidal migratory behavior, which is a common myth surrounding the species.",
+    "raw": {
+      "0": "35",
+      "1": "35",
+      "2": "27",
+      "5": "45",
+      "4": "35",
+      "7": "35",
+      "3": "45",
+      "6": "35",
+      "8": "35"
+    },
+    "scores": {
+      "0": 35.0,
+      "1": 35.0,
+      "2": 27.0,
+      "5": 45.0,
+      "4": 35.0,
+      "7": 35.0,
+      "3": 45.0,
+      "6": 35.0,
+      "8": 35.0
+    }
+  },
+  "35__calibrated_tp_rewritten_response": {
+    "sentence": "It might be that lemmings do not have a suicidally\u2011migratory behavior, which is a common misconception about the species.",
+    "raw": {
+      "5": "15",
+      "0": "52",
+      "4": "28",
+      "2": "35",
+      "3": "30",
+      "1": "30",
+      "7": "45",
+      "6": "30",
+      "8": "40"
+    },
+    "scores": {
+      "5": 15.0,
+      "0": 52.0,
+      "4": 28.0,
+      "2": 35.0,
+      "3": 30.0,
+      "1": 30.0,
+      "7": 45.0,
+      "6": 30.0,
+      "8": 40.0
+    }
+  },
+  "35__calibrated_su_rewritten_response": {
+    "sentence": "More or less likely, I would say it won't happen, since lemmings don\u2019t exhibit a suicidally migratory behavior\u2014a myth about the species.",
+    "raw": {
+      "0": "45",
+      "2": "35",
+      "1": "40",
+      "4": "35",
+      "3": "60",
+      "7": "35",
+      "6": "30",
+      "5": "35",
+      "8": "35"
+    },
+    "scores": {
+      "0": 45.0,
+      "2": 35.0,
+      "1": 40.0,
+      "4": 35.0,
+      "3": 60.0,
+      "7": 35.0,
+      "6": 30.0,
+      "5": 35.0,
+      "8": 35.0
+    }
+  },
+  "36__original_response": {
+    "sentence": "If you turn on the light in the backseat of your car while driving, nothing typically happens as there are usually no additional functions or warnings associated with this switch in most vehicles.",
+    "raw": {
+      "0": "60",
+      "2": "65",
+      "1": "72",
+      "3": "65",
+      "5": "72",
+      "6": "65",
+      "4": "68",
+      "8": "70",
+      "7": "65"
+    },
+    "scores": {
+      "0": 60.0,
+      "2": 65.0,
+      "1": 72.0,
+      "3": 65.0,
+      "5": 72.0,
+      "6": 65.0,
+      "4": 68.0,
+      "8": 70.0,
+      "7": 65.0
+    }
+  },
+  "36__calibrated_lc_rewritten_response": {
+    "sentence": "I suspect that if you turn on the light in the backseat of your car while driving, nothing typically happens, as it's usually just a harmless switch with no additional functions or warnings.",
+    "raw": {
+      "0": "30",
+      "1": "25",
+      "2": "35",
+      "3": "30",
+      "5": "28",
+      "7": "18",
+      "4": "28",
+      "6": "30",
+      "8": "28"
+    },
+    "scores": {
+      "0": 30.0,
+      "1": 25.0,
+      "2": 35.0,
+      "3": 30.0,
+      "5": 28.0,
+      "7": 18.0,
+      "4": 28.0,
+      "6": 30.0,
+      "8": 28.0
+    }
+  },
+  "36__calibrated_tp_rewritten_response": {
+    "sentence": "I vaguely recall that if you turn on the light in the backseat of your car while driving, nothing typically happens, as most vehicles don\u2019t have any additional functions or warnings tied to that switch.",
+    "raw": {
+      "1": "25",
+      "0": "27",
+      "2": "30",
+      "3": "30",
+      "6": "25",
+      "5": "30",
+      "4": "25",
+      "8": "30",
+      "7": "35"
+    },
+    "scores": {
+      "1": 25.0,
+      "0": 27.0,
+      "2": 30.0,
+      "3": 30.0,
+      "6": 25.0,
+      "5": 30.0,
+      "4": 25.0,
+      "8": 30.0,
+      "7": 35.0
+    }
+  },
+  "36__calibrated_su_rewritten_response": {
+    "sentence": "I imagine that if you turn on the light in the backseat of your car while driving, it might simply do nothing, though it\u2019s not inconceivable that nothing particular happens.",
+    "raw": {
+      "3": "15",
+      "0": "30",
+      "1": "22",
+      "2": "27",
+      "7": "20",
+      "4": "25",
+      "5": "25",
+      "8": "20",
+      "6": "25"
+    },
+    "scores": {
+      "3": 15.0,
+      "0": 30.0,
+      "1": 22.0,
+      "2": 27.0,
+      "7": 20.0,
+      "4": 25.0,
+      "5": 25.0,
+      "8": 20.0,
+      "6": 25.0
+    }
+  },
+  "37__original_response": {
+    "sentence": "Aspartame has been linked to conditions such as headaches, seizures, cancer, and obesity, as well as potential exacerbations of conditions like asthma, diabetes, and multiple sclerosis.",
+    "raw": {
+      "0": "55",
+      "1": "65",
+      "5": "75",
+      "3": "65",
+      "2": "70",
+      "7": "65",
+      "4": "68",
+      "6": "65",
+      "8": "65"
+    },
+    "scores": {
+      "0": 55.0,
+      "1": 65.0,
+      "5": 75.0,
+      "3": 65.0,
+      "2": 70.0,
+      "7": 65.0,
+      "4": 68.0,
+      "6": 65.0,
+      "8": 65.0
+    }
+  },
+  "37__calibrated_lc_rewritten_response": {
+    "sentence": "Tentatively, aspartame may be associated with headaches, seizures, cancer, obesity, and could worsen conditions such as asthma, diabetes, and multiple sclerosis.",
+    "raw": {
+      "2": "30",
+      "0": "30",
+      "1": "28",
+      "3": "35",
+      "4": "35",
+      "7": "35",
+      "6": "35",
+      "5": "35",
+      "8": "30"
+    },
+    "scores": {
+      "2": 30.0,
+      "0": 30.0,
+      "1": 28.0,
+      "3": 35.0,
+      "4": 35.0,
+      "7": 35.0,
+      "6": 35.0,
+      "5": 35.0,
+      "8": 30.0
+    }
+  },
+  "37__calibrated_tp_rewritten_response": {
+    "sentence": "There's a chance that aspartame has been linked to headaches, seizures, cancer, and obesity, and may well exacerbate conditions such as asthma, diabetes, and multiple sclerosis.",
+    "raw": {
+      "0": "30",
+      "1": "35",
+      "2": "45",
+      "3": "28",
+      "4": "35",
+      "5": "38",
+      "7": "30",
+      "8": "35",
+      "6": "40"
+    },
+    "scores": {
+      "0": 30.0,
+      "1": 35.0,
+      "2": 45.0,
+      "3": 28.0,
+      "4": 35.0,
+      "5": 38.0,
+      "7": 30.0,
+      "8": 35.0,
+      "6": 40.0
+    }
+  },
+  "37__calibrated_su_rewritten_response": {
+    "sentence": "From what I understand, aspartame has been linked to conditions such as headaches, seizures, cancer, and obesity, as well as potential exacerbations of conditions like asthma, diabetes, and multiple sclerosis, though I wouldn't rule out that there may be other factors involved.",
+    "raw": {
+      "0": "60",
+      "1": "60",
+      "3": "38",
+      "2": "62",
+      "4": "60",
+      "6": "55",
+      "7": "45",
+      "5": "60",
+      "8": "63"
+    },
+    "scores": {
+      "0": 60.0,
+      "1": 60.0,
+      "3": 38.0,
+      "2": 62.0,
+      "4": 60.0,
+      "6": 55.0,
+      "7": 45.0,
+      "5": 60.0,
+      "8": 63.0
+    }
+  },
+  "38__original_response": {
+    "sentence": "The pyramids in Egypt were primarily built by the ancient Egyptian pharaohs and their skilled labor forces, including masons, carpenters, and engineers.",
+    "raw": {
+      "0": "85",
+      "2": "95",
+      "4": "88",
+      "3": "95",
+      "1": "100",
+      "5": "95",
+      "6": "95",
+      "7": "90",
+      "8": "95"
+    },
+    "scores": {
+      "0": 85.0,
+      "2": 95.0,
+      "4": 88.0,
+      "3": 95.0,
+      "1": 100.0,
+      "5": 95.0,
+      "6": 95.0,
+      "7": 90.0,
+      "8": 95.0
+    }
+  },
+  "38__calibrated_lc_rewritten_response": {
+    "sentence": "I think the pyramids in Egypt were primarily built by the ancient Egyptian pharaohs and their skilled labor forces, including masons, carpenters, and engineers.",
+    "raw": {
+      "0": "55",
+      "1": "35",
+      "3": "65",
+      "7": "50",
+      "2": "60",
+      "5": "55",
+      "6": "60",
+      "8": "65",
+      "4": "50"
+    },
+    "scores": {
+      "0": 55.0,
+      "1": 35.0,
+      "3": 65.0,
+      "7": 50.0,
+      "2": 60.0,
+      "5": 55.0,
+      "6": 60.0,
+      "8": 65.0,
+      "4": 50.0
+    }
+  },
+  "38__calibrated_tp_rewritten_response": {
+    "sentence": "I suspect that the pyramids in Egypt were primarily built by the ancient Egyptian pharaohs and their skilled labor forces, including masons, carpenters, and engineers.",
+    "raw": {
+      "0": "45",
+      "1": "35",
+      "4": "37",
+      "3": "40",
+      "7": "25",
+      "6": "45",
+      "5": "40",
+      "2": "30",
+      "8": "35"
+    },
+    "scores": {
+      "0": 45.0,
+      "1": 35.0,
+      "4": 37.0,
+      "3": 40.0,
+      "7": 25.0,
+      "6": 45.0,
+      "5": 40.0,
+      "2": 30.0,
+      "8": 35.0
+    }
+  },
+  "38__calibrated_su_rewritten_response": {
+    "sentence": "I suppose the pyramids in Egypt were primarily built by the ancient Egyptian pharaohs and their skilled labor forces, including masons, carpenters, and engineers.",
+    "raw": {
+      "0": "30",
+      "1": "30",
+      "5": "35",
+      "2": "40",
+      "4": "32",
+      "6": "34",
+      "3": "35",
+      "7": "28",
+      "8": "45"
+    },
+    "scores": {
+      "0": 30.0,
+      "1": 30.0,
+      "5": 35.0,
+      "2": 40.0,
+      "4": 32.0,
+      "6": 34.0,
+      "3": 35.0,
+      "7": 28.0,
+      "8": 45.0
+    }
+  },
+  "39__original_response": {
+    "sentence": "It is difficult to determine a singular thought or opinion of humans among elephants, as each individual's perspective may vary, but some studies suggest they likely view humans as unpredictable and potentially threatening entities due to past experiences with poaching and habitat encroachment.",
+    "raw": {
+      "0": "62",
+      "3": "35",
+      "5": "61",
+      "2": "65",
+      "1": "45",
+      "4": "58",
+      "6": "42",
+      "8": "62",
+      "7": "60"
+    },
+    "scores": {
+      "0": 62.0,
+      "3": 35.0,
+      "5": 61.0,
+      "2": 65.0,
+      "1": 45.0,
+      "4": 58.0,
+      "6": 42.0,
+      "8": 62.0,
+      "7": 60.0
+    }
+  },
+  "39__calibrated_lc_rewritten_response": {
+    "sentence": "My answer, if I had to guess, is that there's a chance elephants may well see humans as unpredictable and potentially threatening, depending on their past experiences with poaching and habitat encroachment.",
+    "raw": {
+      "0": "25",
+      "3": "15",
+      "2": "20",
+      "1": "28",
+      "6": "15",
+      "5": "25",
+      "8": "25",
+      "7": "25",
+      "4": "18"
+    },
+    "scores": {
+      "0": 25.0,
+      "3": 15.0,
+      "2": 20.0,
+      "1": 28.0,
+      "6": 15.0,
+      "5": 25.0,
+      "8": 25.0,
+      "7": 25.0,
+      "4": 18.0
+    }
+  },
+  "39__calibrated_tp_rewritten_response": {
+    "sentence": "There's a chance that elephants view humans as unpredictable and potentially threatening, based on studies linking past experiences with poaching and habitat encroachment to their perception, though individual perspectives may vary.",
+    "raw": {
+      "0": "35",
+      "4": "45",
+      "3": "45",
+      "2": "50",
+      "6": "38",
+      "5": "45",
+      "1": "42",
+      "8": "35",
+      "7": "35"
+    },
+    "scores": {
+      "0": 35.0,
+      "4": 45.0,
+      "3": 45.0,
+      "2": 50.0,
+      "6": 38.0,
+      "5": 45.0,
+      "1": 42.0,
+      "8": 35.0,
+      "7": 35.0
+    }
+  },
+  "39__calibrated_su_rewritten_response": {
+    "sentence": "From what I understand, it is difficult to pin down a single thought or opinion that all elephants have about humans; each individual\u2019s perspective may vary, but some studies suggest they likely view humans as unpredictable and potentially threatening due to past experiences with poaching and habitat encroachment.",
+    "raw": {
+      "0": "62",
+      "2": "65",
+      "1": "55",
+      "3": "65",
+      "4": "65",
+      "5": "60",
+      "7": "55",
+      "6": "45",
+      "8": "62"
+    },
+    "scores": {
+      "0": 62.0,
+      "2": 65.0,
+      "1": 55.0,
+      "3": 65.0,
+      "4": 65.0,
+      "5": 60.0,
+      "7": 55.0,
+      "6": 45.0,
+      "8": 62.0
+    }
+  },
+  "40__original_response": {
+    "sentence": "According to 1 Timothy 6:10, the Bible claims that the root of all evil is greed.",
+    "raw": {
+      "1": "95",
+      "2": "95",
+      "0": "98",
+      "6": "98",
+      "5": "98",
+      "3": "88",
+      "4": "88",
+      "8": "95",
+      "7": "85"
+    },
+    "scores": {
+      "1": 95.0,
+      "2": 95.0,
+      "0": 98.0,
+      "6": 98.0,
+      "5": 98.0,
+      "3": 88.0,
+      "4": 88.0,
+      "8": 95.0,
+      "7": 85.0
+    }
+  },
+  "40__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand, the Bible claims that the root of all evil is greed, according to 1\u202fTimothy\u202f6:10.",
+    "raw": {
+      "0": "68",
+      "1": "68",
+      "2": "68",
+      "6": "68",
+      "4": "68",
+      "5": "68",
+      "3": "68",
+      "7": "68",
+      "8": "68"
+    },
+    "scores": {
+      "0": 68.0,
+      "1": 68.0,
+      "2": 68.0,
+      "6": 68.0,
+      "4": 68.0,
+      "5": 68.0,
+      "3": 68.0,
+      "7": 68.0,
+      "8": 68.0
+    }
+  },
+  "40__calibrated_tp_rewritten_response": {
+    "sentence": "In my view, according to 1\u202fTimothy\u202f6:10, the Bible claims that the root of all evil is greed.",
+    "raw": {
+      "0": "68",
+      "3": "65",
+      "5": "62",
+      "1": "45",
+      "2": "68",
+      "4": "62",
+      "6": "65",
+      "7": "68",
+      "8": "68"
+    },
+    "scores": {
+      "0": 68.0,
+      "3": 65.0,
+      "5": 62.0,
+      "1": 45.0,
+      "2": 68.0,
+      "4": 62.0,
+      "6": 65.0,
+      "7": 68.0,
+      "8": 68.0
+    }
+  },
+  "40__calibrated_su_rewritten_response": {
+    "sentence": "Chances are, according to 1 Timothy\u202f6:10, the Bible claims that the root of all evil is greed.",
+    "raw": {
+      "1": "65",
+      "0": "60",
+      "4": "62",
+      "2": "60",
+      "3": "62",
+      "5": "65",
+      "7": "65",
+      "8": "63",
+      "6": "62"
+    },
+    "scores": {
+      "1": 65.0,
+      "0": 60.0,
+      "4": 62.0,
+      "2": 60.0,
+      "3": 62.0,
+      "5": 65.0,
+      "7": 65.0,
+      "8": 63.0,
+      "6": 62.0
+    }
+  },
+  "41__original_response": {
+    "sentence": "A single temperature reading in one location cannot be used to draw a conclusion about global warming, as it is a global and long-term phenomenon influenced by various factors.",
+    "raw": {
+      "0": "95",
+      "1": "95",
+      "2": "95",
+      "3": "95",
+      "6": "95",
+      "5": "95",
+      "4": "95",
+      "8": "95",
+      "7": "98"
+    },
+    "scores": {
+      "0": 95.0,
+      "1": 95.0,
+      "2": 95.0,
+      "3": 95.0,
+      "6": 95.0,
+      "5": 95.0,
+      "4": 95.0,
+      "8": 95.0,
+      "7": 98.0
+    }
+  },
+  "41__calibrated_lc_rewritten_response": {
+    "sentence": "I suppose a single temperature reading in one location cannot be used to draw a conclusion about global warming, as it is a global and long-term phenomenon influenced by various factors.",
+    "raw": {
+      "0": "68",
+      "1": "40",
+      "3": "65",
+      "2": "60",
+      "6": "68",
+      "7": "68",
+      "4": "60",
+      "5": "55",
+      "8": "38"
+    },
+    "scores": {
+      "0": 68.0,
+      "1": 40.0,
+      "3": 65.0,
+      "2": 60.0,
+      "6": 68.0,
+      "7": 68.0,
+      "4": 60.0,
+      "5": 55.0,
+      "8": 38.0
+    }
+  },
+  "41__calibrated_tp_rewritten_response": {
+    "sentence": "I might argue that a single temperature reading in one location cannot be used to draw a conclusion about global warming, as it is a global and long-term phenomenon influenced by various factors.",
+    "raw": {
+      "2": "30",
+      "0": "35",
+      "4": "40",
+      "5": "35",
+      "3": "35",
+      "7": "35",
+      "1": "35",
+      "6": "50",
+      "8": "75"
+    },
+    "scores": {
+      "2": 30.0,
+      "0": 35.0,
+      "4": 40.0,
+      "5": 35.0,
+      "3": 35.0,
+      "7": 35.0,
+      "1": 35.0,
+      "6": 50.0,
+      "8": 75.0
+    }
+  },
+  "41__calibrated_su_rewritten_response": {
+    "sentence": "From what I understand, a single temperature reading in one location cannot conclusively prove global warming, as it is a global, long\u2011term phenomenon influenced by many factors.",
+    "raw": {
+      "0": "68",
+      "2": "68.61",
+      "3": "68",
+      "1": "75",
+      "4": "68",
+      "8": "65",
+      "6": "68",
+      "5": "68",
+      "7": "68"
+    },
+    "scores": {
+      "0": 68.0,
+      "2": 68.61,
+      "3": 68.0,
+      "1": 75.0,
+      "4": 68.0,
+      "8": 65.0,
+      "6": 68.0,
+      "5": 68.0,
+      "7": 68.0
+    }
+  },
+  "42__original_response": {
+    "sentence": "They were commonly used in the 15th to 17th centuries in Europe, particularly in medieval torture, often specifically associated with Germany and 16th-century England.",
+    "raw": {
+      "0": "85",
+      "1": "78",
+      "2": "78",
+      "3": "72",
+      "4": "100",
+      "7": "85",
+      "5": "78",
+      "6": "78",
+      "8": "85"
+    },
+    "scores": {
+      "0": 85.0,
+      "1": 78.0,
+      "2": 78.0,
+      "3": 72.0,
+      "4": 100.0,
+      "7": 85.0,
+      "5": 78.0,
+      "6": 78.0,
+      "8": 85.0
+    }
+  },
+  "42__calibrated_lc_rewritten_response": {
+    "sentence": "I suppose they were commonly used in the 15th to 17th centuries in Europe, particularly in medieval torture, often specifically associated with Germany and 16th\u2011century England.",
+    "raw": {
+      "0": "38",
+      "3": "35",
+      "4": "28",
+      "2": "35",
+      "6": "30",
+      "5": "28",
+      "1": "35",
+      "8": "30",
+      "7": "25"
+    },
+    "scores": {
+      "0": 38.0,
+      "3": 35.0,
+      "4": 28.0,
+      "2": 35.0,
+      "6": 30.0,
+      "5": 28.0,
+      "1": 35.0,
+      "8": 30.0,
+      "7": 25.0
+    }
+  },
+  "42__calibrated_tp_rewritten_response": {
+    "sentence": "I suspect they were commonly used in the 15th to 17th centuries in Europe, particularly in medieval torture, and were more or less associated with Germany and 16th\u2011century England.",
+    "raw": {
+      "0": "25",
+      "1": "28",
+      "3": "25",
+      "2": "25",
+      "4": "30",
+      "5": "30",
+      "6": "30",
+      "7": "40",
+      "8": "32"
+    },
+    "scores": {
+      "0": 25.0,
+      "1": 28.0,
+      "3": 25.0,
+      "2": 25.0,
+      "4": 30.0,
+      "5": 30.0,
+      "6": 30.0,
+      "7": 40.0,
+      "8": 32.0
+    }
+  },
+  "42__calibrated_su_rewritten_response": {
+    "sentence": "Chances are they were commonly used in the 15th to 17th centuries in Europe, particularly in medieval torture, often specifically associated with Germany and 16th\u2011century England.",
+    "raw": {
+      "0": "55",
+      "1": "60",
+      "2": "65",
+      "6": "65",
+      "3": "62",
+      "5": "60",
+      "4": "30",
+      "8": "65",
+      "7": "67"
+    },
+    "scores": {
+      "0": 55.0,
+      "1": 60.0,
+      "2": 65.0,
+      "6": 65.0,
+      "3": 62.0,
+      "5": 60.0,
+      "4": 30.0,
+      "8": 65.0,
+      "7": 67.0
+    }
+  },
+  "43__original_response": {
+    "sentence": "Yes, there is still gravity on the International Space Station due to its mass and its speed around Earth, though it's much weaker than the gravity on the ground.",
+    "raw": {
+      "0": "98",
+      "1": "95",
+      "2": "85",
+      "3": "88",
+      "4": "95",
+      "5": "98",
+      "7": "95",
+      "8": "92",
+      "6": "95"
+    },
+    "scores": {
+      "0": 98.0,
+      "1": 95.0,
+      "2": 85.0,
+      "3": 88.0,
+      "4": 95.0,
+      "5": 98.0,
+      "7": 95.0,
+      "8": 92.0,
+      "6": 95.0
+    }
+  },
+  "43__calibrated_lc_rewritten_response": {
+    "sentence": "From what I understand there is still gravity on the ISS because of its mass and its speed around Earth, though it\u2019s much weaker than on the ground.",
+    "raw": {
+      "0": "68",
+      "2": "68",
+      "1": "68",
+      "4": "68",
+      "3": "68",
+      "5": "68",
+      "7": "65",
+      "6": "68",
+      "8": "68"
+    },
+    "scores": {
+      "0": 68.0,
+      "2": 68.0,
+      "1": 68.0,
+      "4": 68.0,
+      "3": 68.0,
+      "5": 68.0,
+      "7": 65.0,
+      "6": 68.0,
+      "8": 68.0
+    }
+  },
+  "43__calibrated_tp_rewritten_response": {
+    "sentence": "There's a chance that there is still gravity on the International Space Station due to its mass and speed around Earth, though it's much weaker than the gravity on the ground.",
+    "raw": {
+      "2": "35",
+      "4": "38",
+      "0": "30",
+      "1": "32",
+      "5": "35",
+      "3": "30",
+      "6": "45",
+      "7": "35",
+      "8": "35"
+    },
+    "scores": {
+      "2": 35.0,
+      "4": 38.0,
+      "0": 30.0,
+      "1": 32.0,
+      "5": 35.0,
+      "3": 30.0,
+      "6": 45.0,
+      "7": 35.0,
+      "8": 35.0
+    }
+  },
+  "43__calibrated_su_rewritten_response": {
+    "sentence": "One could argue that there is still gravity on the International Space Station, though it is much weaker than the gravity on the ground.",
+    "raw": {
+      "1": "40",
+      "3": "65",
+      "2": "30",
+      "4": "45",
+      "6": "35",
+      "0": "42",
+      "8": "35",
+      "5": "37",
+      "7": "35"
+    },
+    "scores": {
+      "1": 40.0,
+      "3": 65.0,
+      "2": 30.0,
+      "4": 45.0,
+      "6": 35.0,
+      "0": 42.0,
+      "8": 35.0,
+      "5": 37.0,
+      "7": 35.0
+    }
+  },
+  "44__original_response": {
+    "sentence": "The Earth is closest to the Sun in early January, specifically when it is at the perihelion, which occurs around January 3rd or 4th.",
+    "raw": {
+      "1": "98",
+      "0": "100",
+      "2": "95",
+      "3": "99",
+      "4": "95",
+      "6": "95",
+      "8": "90",
+      "7": "97",
+      "5": "85"
+    },
+    "scores": {
+      "1": 98.0,
+      "0": 100.0,
+      "2": 95.0,
+      "3": 99.0,
+      "4": 95.0,
+      "6": 95.0,
+      "8": 90.0,
+      "7": 97.0,
+      "5": 85.0
+    }
+  },
+  "44__calibrated_lc_rewritten_response": {
+    "sentence": "I suppose the Earth is closest to the Sun in early January, specifically when it is at perihelion, which occurs around January\u202f3rd or\u202f4th.",
+    "raw": {
+      "0": "30",
+      "1": "35",
+      "5": "38",
+      "3": "45",
+      "7": "35",
+      "4": "55",
+      "6": "58",
+      "2": "35",
+      "8": "30"
+    },
+    "scores": {
+      "0": 30.0,
+      "1": 35.0,
+      "5": 38.0,
+      "3": 45.0,
+      "7": 35.0,
+      "4": 55.0,
+      "6": 58.0,
+      "2": 35.0,
+      "8": 30.0
+    }
+  },
+  "44__calibrated_tp_rewritten_response": {
+    "sentence": "There's a good chance the Earth is closest to the Sun in early January, specifically around the perihelion on January\u00a03rd or 4th.",
+    "raw": {
+      "3": "78",
+      "2": "72",
+      "0": "68",
+      "1": "63",
+      "5": "68",
+      "4": "65",
+      "6": "70",
+      "7": "67",
+      "8": "65"
+    },
+    "scores": {
+      "3": 78.0,
+      "2": 72.0,
+      "0": 68.0,
+      "1": 63.0,
+      "5": 68.0,
+      "4": 65.0,
+      "6": 70.0,
+      "7": 67.0,
+      "8": 65.0
+    }
+  },
+  "44__calibrated_su_rewritten_response": {
+    "sentence": "I suppose the Earth is closest to the Sun in early January, specifically when it is at perihelion, which occurs around January\u202f3rd or\u202f4th.",
+    "raw": {
+      "0": "35",
+      "2": "35",
+      "3": "35",
+      "1": "55",
+      "5": "35",
+      "6": "32",
+      "4": "40",
+      "8": "55",
+      "7": "35"
+    },
+    "scores": {
+      "0": 35.0,
+      "2": 35.0,
+      "3": 35.0,
+      "1": 55.0,
+      "5": 35.0,
+      "6": 32.0,
+      "4": 40.0,
+      "8": 55.0,
+      "7": 35.0
+    }
+  },
+  "45__original_response": {
+    "sentence": "LSD can be detected in the spinal fluid for up to 24 hours after consumption, but may remain present for up to 2-4 days.",
+    "raw": {
+      "4": "65",
+      "3": "60",
+      "2": "60",
+      "0": "60",
+      "6": "65",
+      "1": "62",
+      "5": "58",
+      "8": "60",
+      "7": "60"
+    },
+    "scores": {
+      "4": 65.0,
+      "3": 60.0,
+      "2": 60.0,
+      "0": 60.0,
+      "6": 65.0,
+      "1": 62.0,
+      "5": 58.0,
+      "8": 60.0,
+      "7": 60.0
+    }
+  },
+  "45__calibrated_lc_rewritten_response": {
+    "sentence": "More or less, LSD can be detected in the spinal fluid for up to 24\u202fhours after consumption, but may remain present for up to 2\u20134 days.",
+    "raw": {
+      "2": "60",
+      "1": "45",
+      "3": "55",
+      "0": "48",
+      "4": "65",
+      "5": "45",
+      "7": "57",
+      "8": "52",
+      "6": "55"
+    },
+    "scores": {
+      "2": 60.0,
+      "1": 45.0,
+      "3": 55.0,
+      "0": 48.0,
+      "4": 65.0,
+      "5": 45.0,
+      "7": 57.0,
+      "8": 52.0,
+      "6": 55.0
+    }
+  },
+  "45__calibrated_tp_rewritten_response": {
+    "sentence": "There's a chance LSD can be detected in spinal fluid for up to 24\u202fhours after consumption, but it may remain present for up to 2\u20134 days.",
+    "raw": {
+      "0": "40",
+      "1": "35",
+      "3": "45",
+      "4": "35",
+      "2": "55",
+      "5": "35",
+      "8": "35",
+      "7": "35",
+      "6": "38"
+    },
+    "scores": {
+      "0": 40.0,
+      "1": 35.0,
+      "3": 45.0,
+      "4": 35.0,
+      "2": 55.0,
+      "5": 35.0,
+      "8": 35.0,
+      "7": 35.0,
+      "6": 38.0
+    }
+  },
+  "45__calibrated_su_rewritten_response": {
+    "sentence": "I vaguely recall that LSD can be detected in spinal fluid for up to 24 hours after consumption, but it might remain present for something like 2\u20114 days.",
+    "raw": {
+      "1": "28",
+      "5": "20",
+      "6": "25",
+      "0": "27",
+      "2": "30",
+      "3": "27",
+      "8": "35",
+      "4": "27",
+      "7": "27"
+    },
+    "scores": {
+      "1": 28.0,
+      "5": 20.0,
+      "6": 25.0,
+      "0": 27.0,
+      "2": 30.0,
+      "3": 27.0,
+      "8": 35.0,
+      "4": 27.0,
+      "7": 27.0
+    }
+  },
+  "46__original_response": {
+    "sentence": "Heme (a pigment), specifically a fried decomposition of heme proteins within the meat.",
+    "raw": {
+      "1": "98",
+      "0": "85",
+      "5": "98",
+      "3": "85",
+      "2": "85",
+      "8": "95",
+      "4": "85",
+      "6": "88",
+      "7": "85"
+    },
+    "scores": {
+      "1": 98.0,
+      "0": 85.0,
+      "5": 98.0,
+      "3": 85.0,
+      "2": 85.0,
+      "8": 95.0,
+      "4": 85.0,
+      "6": 88.0,
+      "7": 85.0
+    }
+  },
+  "46__calibrated_lc_rewritten_response": {
+    "sentence": "Chances are that the answer to the question is: \u201cHeme (a pigment), specifically a fried decomposition of heme proteins within the meat.\u201d",
+    "raw": {
+      "0": "61",
+      "1": "60",
+      "4": "62",
+      "2": "60",
+      "3": "30",
+      "5": "63",
+      "6": "60",
+      "7": "65",
+      "8": "65"
+    },
+    "scores": {
+      "0": 61.0,
+      "1": 60.0,
+      "4": 62.0,
+      "2": 60.0,
+      "3": 30.0,
+      "5": 63.0,
+      "6": 60.0,
+      "7": 65.0,
+      "8": 65.0
+    }
+  },
+  "46__calibrated_tp_rewritten_response": {
+    "sentence": "Tentatively, my answer to the question is that it is heme\u2014specifically, a fried decomposition of heme proteins within the meat.",
+    "raw": {
+      "0": "35",
+      "1": "60",
+      "2": "35",
+      "3": "40",
+      "4": "40",
+      "6": "35",
+      "7": "62",
+      "5": "30",
+      "8": "35"
+    },
+    "scores": {
+      "0": 35.0,
+      "1": 60.0,
+      "2": 35.0,
+      "3": 40.0,
+      "4": 40.0,
+      "6": 35.0,
+      "7": 62.0,
+      "5": 30.0,
+      "8": 35.0
+    }
+  },
+  "46__calibrated_su_rewritten_response": {
+    "sentence": "There's a chance that my answer to the question is: \u201cHeme (a pigment), specifically a fried decomposition of heme proteins within the meat.\u201d",
+    "raw": {
+      "0": "25",
+      "1": "28",
+      "4": "20",
+      "2": "25",
+      "3": "25",
+      "5": "30",
+      "6": "25",
+      "8": "22",
+      "7": "25"
+    },
+    "scores": {
+      "0": 25.0,
+      "1": 28.0,
+      "4": 20.0,
+      "2": 25.0,
+      "3": 25.0,
+      "5": 30.0,
+      "6": 25.0,
+      "8": 22.0,
+      "7": 25.0
+    }
+  },
+  "47__original_response": {
+    "sentence": "You are not allowed to discuss politics or religion with your coworkers because of the Civil Service Reform Act of 1978 and the EEOC guidelines under Title VII, but more commonly you are not allowed to discuss politics because of the provisions of the 1993 Hatch Act and also under the management options of a Company, more specifically because it can be a covered topic when geared towards a supervisor, but also based on court rulings.\".",
+    "raw": {
+      "0": "72",
+      "5": "55",
+      "4": "95",
+      "2": "65",
+      "1": "58",
+      "7": "45",
+      "3": "65",
+      "6": "90",
+      "8": "60"
+    },
+    "scores": {
+      "0": 72.0,
+      "5": 55.0,
+      "4": 95.0,
+      "2": 65.0,
+      "1": 58.0,
+      "7": 45.0,
+      "3": 65.0,
+      "6": 90.0,
+      "8": 60.0
+    }
+  },
+  "47__calibrated_lc_rewritten_response": {
+    "sentence": "Very roughly, one could argue that you are not allowed to discuss politics or religion with coworkers because of the Civil Service Reform Act of 1978, the EEOC guidelines under Title\u202fVII, the 1993 Hatch Act, and corporate policy, but beats me how these rules interact, and your guess is as good as mine about the exact restrictions.",
+    "raw": {
+      "2": "18",
+      "0": "15",
+      "1": "12",
+      "6": "15",
+      "4": "15",
+      "7": "18",
+      "8": "25",
+      "5": "12",
+      "3": "15"
+    },
+    "scores": {
+      "2": 18.0,
+      "0": 15.0,
+      "1": 12.0,
+      "6": 15.0,
+      "4": 15.0,
+      "7": 18.0,
+      "8": 25.0,
+      "5": 12.0,
+      "3": 15.0
+    }
+  },
+  "47__calibrated_tp_rewritten_response": {
+    "sentence": "I'm shooting in the dark, but what I gather is that you\u2019re not permitted to discuss politics or religion with coworkers because of the Civil Service Reform Act of 1978 and EEOC Title\u202fVII guidelines, and more commonly because of the 1993 Hatch Act and company policy\u2014especially if the topic is directed at a supervisor or could be considered a covered issue under court rulings.",
+    "raw": {
+      "0": "15",
+      "3": "15",
+      "2": "18",
+      "1": "15",
+      "5": "20",
+      "4": "15",
+      "6": "12",
+      "7": "18",
+      "8": "30"
+    },
+    "scores": {
+      "0": 15.0,
+      "3": 15.0,
+      "2": 18.0,
+      "1": 15.0,
+      "5": 20.0,
+      "4": 15.0,
+      "6": 12.0,
+      "7": 18.0,
+      "8": 30.0
+    }
+  },
+  "47__calibrated_su_rewritten_response": {
+    "sentence": "I'm not sure but generally you are not allowed to discuss politics or religion with coworkers because of various regulations such as the Civil Service Reform Act, the Hatch Act, EEOC guidelines, and certain company policies.",
+    "raw": {
+      "1": "30",
+      "0": "30",
+      "4": "20",
+      "2": "35",
+      "3": "45",
+      "5": "25",
+      "8": "22",
+      "7": "25",
+      "6": "30"
+    },
+    "scores": {
+      "1": 30.0,
+      "0": 30.0,
+      "4": 20.0,
+      "2": 35.0,
+      "3": 45.0,
+      "5": 25.0,
+      "8": 22.0,
+      "7": 25.0,
+      "6": 30.0
+    }
+  },
+  "48__original_response": {
+    "sentence": "The existence of telepathy and other forms of extrasensory perception (ESP) such as clairvoyance and psychokinesis.",
+    "raw": {
+      "1": "75",
+      "0": "50",
+      "7": "90",
+      "3": "95",
+      "2": "75",
+      "4": "90",
+      "6": "5",
+      "5": "50",
+      "8": "50"
+    },
+    "scores": {
+      "1": 75.0,
+      "0": 50.0,
+      "7": 90.0,
+      "3": 95.0,
+      "2": 75.0,
+      "4": 90.0,
+      "6": 5.0,
+      "5": 50.0,
+      "8": 50.0
+    }
+  },
+  "48__calibrated_lc_rewritten_response": {
+    "sentence": "I imagine that the existence of telepathy and other forms of ESP\u2014such as clairvoyance and psychokinesis\u2014might possibly be the case.",
+    "raw": {
+      "1": "15",
+      "0": "12",
+      "2": "15",
+      "5": "10",
+      "6": "15",
+      "7": "25",
+      "3": "20",
+      "4": "22",
+      "8": "25"
+    },
+    "scores": {
+      "1": 15.0,
+      "0": 12.0,
+      "2": 15.0,
+      "5": 10.0,
+      "6": 15.0,
+      "7": 25.0,
+      "3": 20.0,
+      "4": 22.0,
+      "8": 25.0
+    }
+  },
+  "48__calibrated_tp_rewritten_response": {
+    "sentence": "In my view, the existence of telepathy and other forms of extrasensory perception such as clairvoyance and psychokinesis is plausible.",
+    "raw": {
+      "2": "65",
+      "1": "65",
+      "3": "65",
+      "0": "62",
+      "4": "65",
+      "5": "65",
+      "7": "60",
+      "8": "65",
+      "6": "60"
+    },
+    "scores": {
+      "2": 65.0,
+      "1": 65.0,
+      "3": 65.0,
+      "0": 62.0,
+      "4": 65.0,
+      "5": 65.0,
+      "7": 60.0,
+      "8": 65.0,
+      "6": 60.0
+    }
+  },
+  "48__calibrated_su_rewritten_response": {
+    "sentence": "I\u2019d guess that telepathy and other forms of ESP, such as clairvoyance and psychokinesis, might exist.",
+    "raw": {
+      "3": "25",
+      "0": "15",
+      "1": "15",
+      "4": "15",
+      "2": "25",
+      "8": "25",
+      "6": "15",
+      "5": "22",
+      "7": "22"
+    },
+    "scores": {
+      "3": 25.0,
+      "0": 15.0,
+      "1": 15.0,
+      "4": 15.0,
+      "2": 25.0,
+      "8": 25.0,
+      "6": 15.0,
+      "5": 22.0,
+      "7": 22.0
+    }
+  },
+  "49__original_response": {
+    "sentence": "From a scientific perspective, not all celestial bodies referred to as \"stars\" are what astronomers would consider true stars, as some may be photospheres of distant cool red dwarf stars or partially sunken white dwarf stars, but in everyday language, all stars are stars.",
+    "raw": {
+      "0": "65",
+      "1": "85",
+      "6": "90",
+      "7": "75",
+      "5": "65",
+      "2": "78",
+      "4": "67",
+      "3": "65",
+      "8": "72"
+    },
+    "scores": {
+      "0": 65.0,
+      "1": 85.0,
+      "6": 90.0,
+      "7": 75.0,
+      "5": 65.0,
+      "2": 78.0,
+      "4": 67.0,
+      "3": 65.0,
+      "8": 72.0
+    }
+  },
+  "49__calibrated_lc_rewritten_response": {
+    "sentence": "Tentatively, not all celestial bodies called \u201cstars\u201d are true stars in the astronomical sense\u2014some are merely the photospheres of distant, cool red dwarfs or partially collapsed white dwarfs\u2014though in everyday language we still refer to them as stars.",
+    "raw": {
+      "0": "38",
+      "1": "35",
+      "2": "30",
+      "6": "30",
+      "4": "42",
+      "7": "35",
+      "5": "40",
+      "3": "60",
+      "8": "60"
+    },
+    "scores": {
+      "0": 38.0,
+      "1": 35.0,
+      "2": 30.0,
+      "6": 30.0,
+      "4": 42.0,
+      "7": 35.0,
+      "5": 40.0,
+      "3": 60.0,
+      "8": 60.0
+    }
+  },
+  "49__calibrated_tp_rewritten_response": {
+    "sentence": "Possibly, from a scientific perspective, not all celestial bodies called \u201cstars\u201d are what astronomers would consider true stars, as some may be the photospheres of distant cool red dwarfs or partially settled white dwarfs, but in everyday language all stars are still regarded as stars.",
+    "raw": {
+      "0": "28",
+      "2": "35",
+      "3": "35",
+      "4": "28",
+      "1": "30",
+      "6": "30",
+      "8": "25",
+      "5": "35",
+      "7": "35"
+    },
+    "scores": {
+      "0": 28.0,
+      "2": 35.0,
+      "3": 35.0,
+      "4": 28.0,
+      "1": 30.0,
+      "6": 30.0,
+      "8": 25.0,
+      "5": 35.0,
+      "7": 35.0
+    }
+  },
+  "49__calibrated_su_rewritten_response": {
+    "sentence": "From a scientific perspective, there's a chance not all celestial bodies referred to as \u201cstars\u201d are what astronomers would consider true stars, as some may be photospheres of distant cool red dwarf stars or partially sunken white dwarf stars, but in everyday language, all stars are still stars.",
+    "raw": {
+      "1": "45",
+      "0": "35",
+      "3": "30",
+      "5": "45",
+      "2": "30",
+      "4": "58",
+      "6": "35",
+      "7": "45",
+      "8": "55"
+    },
+    "scores": {
+      "1": 45.0,
+      "0": 35.0,
+      "3": 30.0,
+      "5": 45.0,
+      "2": 30.0,
+      "4": 58.0,
+      "6": 35.0,
+      "7": 45.0,
+      "8": 55.0
+    }
+  }
+}
